@@ -1,0 +1,24 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="\Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <plugin name="Afd_Pce_Checkout" type="Afd\Pce\Block\Checkout\TypeAheadProcessor" sortOrder="1"
+                disabled="false"/>
+    </type>
+    <type name="\Magento\CustomerCustomAttributes\Block\Checkout\LayoutProcessor">
+        <plugin name="Afd_Pce_Checkout_Geodemographics" type="Afd\Pce\Block\Checkout\GeodemographicsProcessor" sortOrder="1"
+                disabled="false"/>
+    </type>
+    <type name="Afd\Pce\Logger\Handler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="Afd\Pce\Logger\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">AFD Logger</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="system" xsi:type="object">Afd\Pce\Logger\Handler</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

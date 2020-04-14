@@ -1,0 +1,75 @@
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="head.components">
+            <block class="Afd\Pce\Block\Afd" name="afd.typeahead" template="Afd_Pce::typeahead.phtml"
+                   after="afd.config"
+                   cacheable="false" ifconfig="afd_typeahead/forms/checkout"/>
+            <block class="Afd\Pce\Block\Afd" name="afd.email" template="Afd_Pce::email.phtml" after="afd.config"
+                   cacheable="false" ifconfig="afd_email/forms/checkout"/>
+            <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
+                   after="afd.config" ifconfig="afd_phone/forms/checkout"
+                   cacheable="false"/>
+        </referenceBlock>
+        <referenceBlock name="checkout.root">
+            <arguments>
+                <argument name="jsLayout" xsi:type="array">
+                    <item name="components" xsi:type="array">
+                        <item name="checkout" xsi:type="array">
+                            <item name="children" xsi:type="array">
+                                <item name="steps" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="shipping-step" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+                                                <item name="shippingAddress" xsi:type="array">
+                                                    <item name="children" xsi:type="array">
+                                                        <!-- The name of the form the field belongs to -->
+                                                        <item name="customer-email" xsi:type="array">
+                                                            <item name="component" xsi:type="string">
+                                                                Afd_Pce/js/form/element/email
+                                                            </item>
+                                                        </item>
+                                                        <item name="address-list" xsi:type="array">
+                                                            <item name="component" xsi:type="string">
+                                                                Afd_Pce/js/view/shipping-address/list
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                                <item name="sidebar" xsi:type="array">
+                                    <item name="children" xsi:type="array">
+                                        <item name="shipping-information" xsi:type="array">
+                                            <item name="children" xsi:type="array">
+                                                <item name="ship-to" xsi:type="array">
+                                                    <item name="component" xsi:type="string">
+                                                        Afd_Pce/js/view/shipping-information/list
+                                                    </item>
+                                                    <item name="rendererTemplates" xsi:type="array">
+                                                        <item name="customer-address" xsi:type="array">
+                                                            <item name="component" xsi:type="string">
+                                                                Afd_Pce/js/view/checkout/shipping-information/address-renderer/shipping
+                                                            </item>
+                                                        </item>
+                                                        <item name="new-customer-address" xsi:type="array">
+                                                            <item name="component" xsi:type="string">
+                                                                Afd_Pce/js/view/checkout/shipping-information/address-renderer/shipping
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                        </item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </item>
+                </argument>
+            </arguments>
+        </referenceBlock>
+    </body>
+</page>

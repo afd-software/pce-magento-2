@@ -1,0 +1,159 @@
+<?php if ($block->getConfig('email/forms/checkout') == 1): ?>
+
+    <script type="text/javascript">
+
+        /* This is when you want to validate using teh magento system - we dont
+        window.emailValidationURL = '<?php /* @escapeNotVerified */ echo $block->getValidateEmailAction(); ?>';
+
+
+    var emailValidationOptions = {
+
+
+        url: emailValidationURL,
+        beforeSend: function() {
+            jQuery('#customer-email, .field [name="email"]').parent().addClass('loading')
+                .closest('form').find('[type="submit"]').addClass('pending');
+        },
+        complete: function() {
+            jQuery('#customer-email, .field [name="email"]').parent().removeClass('loading')
+                .closest('form').find('[type="submit"]').removeClass('pending');
+        }
+    }*/
+
+
+        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+            window.afdEmailOptions = {};
+
+            <?php if($block->getConfig('email/account/useDefaultCredentials') == 0): ?>
+
+
+            <?php if($block->getConfig('email/account/authMethod') == "id"): ?>
+            afdEmailOptions.pceUrl = '<?php echo $block->getConfig('email/account/idPceUrl'); ?>';
+            afdEmailOptions.id = '<?php echo $block->getConfig('email/account/id'); ?>';
+            afdEmailOptions.token = '<?php echo $block->getConfig('email/account/token'); ?>';
+            afdEmailOptions.serial = null;
+            afdEmailOptions.password = null;
+            <?php else: ?>
+            afdEmailOptions.pceUrl = '<?php echo $block->getConfig('email/account/serialPceUrl'); ?>';
+            afdEmailOptions.serial = '<?php echo $block->getConfig('email/account/serial'); ?>';
+            afdEmailOptions.password = '<?php echo $block->getConfig('email/account/password'); ?>';
+            afdEmailOptions.id = null;
+            afdEmailOptions.token = null;
+            <?php endif; ?>
+
+
+            <?php endif; ?>
+
+            function checkEmailLoaded() {
+
+                if ($('[data-afd-control="email"]').length === 0) {
+                    // console.log('waiting')
+                    window.setTimeout(checkEmailLoaded, 100); /* this checks the flag every 100 milliseconds*/
+
+                } else {
+                    $('.afd-error span').text('<?php echo $block->getConfig('phone/fields/msg'); ?> ');
+                    $('[data-afd-control="email"]').afd('email');
+                }
+
+            }
+
+            checkEmailLoaded();
+
+            $(document).on('afd:emailValidationStarted', function (e, el) {
+
+                var $el = $(el);
+
+                // newsletter signup
+                if ($el.closest('.newsletter').length !== 0) {
+                    $el.closest('.control').addClass('afd-loading');
+                //create account
+                } else if ($el.closest('.form-create-account').length !== 0) {
+                    $el.closest('.control').addClass('afd-loading');
+                // my account edit email
+                } else if ($el.closest('.form-edit-account').length !== 0) {
+                    $el.closest('.control').addClass('afd-loading');
+                } else {
+                    $el.closest('.field').addClass('afd-loading');
+                }
+
+                $el.closest('form').find('button').attr('disabled', true);
+
+            });
+
+            $(document).on('afd:emailValidationSuccess', function (e, res, $el) {
+
+                if (typeof res.Result !== 'undefined' && res.Result === '-2') {
+                    $el.closest('form').find('button').attr('disabled', true);
+                } else {
+                    $el.closest('form').find('button').attr('disabled', false);
+                }
+
+                $el.closest('.afd-loading').removeClass('afd-loading');
+            });
+
+        });
+
+    </script>
+
+<?php endif; ?>
+
+<style>
+    .afd-error {
+        display: none;
+        color: #e02b27;
+        font-size: 1.2rem;
+        margin-top: 7px;
+
+    }
+
+    .afd-invalid + .afd-error {
+        display: block;
+    }
+
+    input.afd-invalid {
+        border-color: #ed8380;
+    }
+
+    .afd-loading {
+        position: relative;
+    }
+
+    .afd-loading:before, .afd-loading:after {
+        transition: all 0s linear, opacity 0.2s ease;
+        position: absolute;
+        z-index: 3;
+        content: "";
+        top: 1.2em !important;
+        right: 1em;
+        margin-top: -0.675rem;
+        width: 1.35rem;
+        height: 1.35rem;
+        box-sizing: border-box;
+        border-radius: 500rem;
+        border-style: solid;
+        border-width: 0.1em;
+    }
+
+    .afd-loading:before {
+        border-color: rgba(0, 0, 0, 0.35);
+    }
+
+    .afd-loading:after {
+        animation: button-spin 0.6s linear;
+        animation-iteration-count: infinite;
+        border-color: #fff transparent transparent;
+        box-shadow: 0 0 0 1px transparent;
+    }
+
+    @keyframes button-spin {
+        from {
+            transform: rotate(0deg);
+        }
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+
+</style>

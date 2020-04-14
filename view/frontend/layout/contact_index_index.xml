@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <title>Contact Us</title>
+    </head>
+    <body>
+        <referenceContainer name="content">
+            <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml"
+                   before="contactForm"
+                   cacheable="false"/>
+            <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
+                   before="contactForm" ifconfig="afd_phone/forms/contact"
+                   cacheable="false"/>
+            <block class="Afd\Pce\Block\Afd" name="afd.email" template="Afd_Pce::email.phtml" before="contactForm"
+                   ifconfig="afd_email/forms/contact"
+                   cacheable="false"/>
+            <referenceBlock name="contactForm">
+                <action method="setTemplate">
+                    <argument name="template" xsi:type="string">Afd_Pce::contactForm.phtml</argument>
+                </action>
+            </referenceBlock>
+        </referenceContainer>
+    </body>
+</page>

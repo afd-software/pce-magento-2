@@ -1,0 +1,34 @@
+<?php // not ok needs fixing ?>
+
+<script type="text/javascript">
+
+    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+
+
+        function checkPhoneLoaded() {
+
+            if($('[data-afd-control="phone"]').length === 0) {
+                console.log('waiting')
+                window.setTimeout(checkPhoneLoaded, 100); /* this checks the flag every 100 milliseconds*/
+
+            } else {
+                $('.afd-error span').text('<?php echo $block->getConfig('phone/fields/msg'); ?> ');
+                $('[data-afd-control="phone"]').afd('phone');
+            }
+
+        }
+
+        $(document).on('afd:phoneValidationStared', function(e, $el){
+            $el.parent().addClass('loading');
+        });
+        $(document).on('afd:phoneValidationUpdated', function(e, $el){
+            $el.parent().removeClass('loading');
+        });
+
+        checkPhoneLoaded();
+
+    });
+
+
+</script>

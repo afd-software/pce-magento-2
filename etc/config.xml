@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <afd_general>
+            <account>
+                <method>id</method>
+                <serialPceUrl>https://pce.afd.co.uk/afddata.pce</serialPceUrl>
+                <idPceUrl>https://apps.afd.co.uk/json</idPceUrl>
+                <serial>000000</serial>
+                <password>PASSWORD</password>
+                <id>0000</id>
+                <token>TOKEN</token>
+            </account>
+        </afd_general>
+        <afd_typeahead>
+            <forms>
+                <account>1</account>
+                <checkout>1</checkout>
+            </forms>
+            <fields>
+                <placeholder>Start typing your address</placeholder>
+                <countryAboveStreet>1</countryAboveStreet>
+                <afterHideTypeahead>1</afterHideTypeahead>
+                <enableSearchAgainButton>1</enableSearchAgainButton>
+                <searchAgainMarkup>Search again</searchAgainMarkup>
+                <searchAgainCss>
+.afd-search-again{
+    padding-top: 8px;
+    cursor: pointer;
+    color: #1979c3;
+}
+                </searchAgainCss>
+                <afterClearTypeahead>1</afterClearTypeahead>
+                <beforeHideResults>1</beforeHideResults>
+                <enableManualEntryButton>1</enableManualEntryButton>
+                <manualEntryMarkup>Manually enter address</manualEntryMarkup>
+                <manualEntrySearchMarkup>Search for address</manualEntrySearchMarkup>
+                <manualEntryCss>
+.afd-manual-input-button,
+.afd-manual-input-search-button{
+    padding-top: 8px;
+    cursor: pointer;
+    color: #1979c3;
+}
+.afd-manual-input-button{
+    padding-left: 11px;
+}
+                </manualEntryCss>
+                <highlightMatches>1</highlightMatches>
+                <postcodeFirst>0</postcodeFirst>
+                <hideEmpties>1</hideEmpties>
+                <highlightResults>0</highlightResults>
+                <postcodeFirst>0</postcodeFirst>
+                <hideRegion>GG,IM,JE,GB</hideRegion>
+                <crownDependencies>0</crownDependencies>
+            </fields>
+            <countries>
+                <typeaheadCountries>GG,IM,JE,GB</typeaheadCountries>
+            </countries>
+            <quantity>
+                <maxItems>5</maxItems>
+                <enableFewItemsText>0</enableFewItemsText>
+                <fewItemsText>Can't see your address? Enter it manually</fewItemsText>
+            </quantity>
+            <advanced>
+                <polyfill>1</polyfill>
+            </advanced>
+        </afd_typeahead>
+        <afd_email>
+            <account>
+                <useDefaultCredentials>1</useDefaultCredentials>
+                <method>id</method>
+                <serialPceUrl>https://pce.afd.co.uk/afddata.pce</serialPceUrl>
+                <idPceUrl>https://apps.afd.co.uk/json</idPceUrl>
+                <serial>000000</serial>
+                <password>PASSWORD</password>
+                <id>0000</id>
+                <token>TOKEN</token>
+            </account>
+            <forms>
+                <account>0</account>
+                <register>0</register>
+                <checkout>0</checkout>
+                <contact>0</contact>
+                <newsletter>0</newsletter>
+            </forms>
+            <fields>
+                <msg>Please enter a valid email address</msg>
+            </fields>
+        </afd_email>
+        <afd_phone>
+            <account>
+                <useDefaultCredentials>1</useDefaultCredentials>
+                <method>id</method>
+                <serialPceUrl>https://pce.afd.co.uk/afddata.pce</serialPceUrl>
+                <idPceUrl>https://apps.afd.co.uk/json</idPceUrl>
+                <serial>000000</serial>
+                <password>PASSWORD</password>
+                <id>0000</id>
+                <token>TOKEN</token>
+            </account>
+            <forms>
+                <account>0</account>
+                <checkout>0</checkout>
+                <contact>0</contact>
+            </forms>
+            <fields>
+                <dialingCode>+44</dialingCode>
+                <msg>Please enter a valid phone number</msg>
+            </fields>
+        </afd_phone>
+        <afd_advanced>
+            <debug>
+                <debugLogging>0</debugLogging>
+            </debug>
+        </afd_advanced>
+    </default>
+</config>

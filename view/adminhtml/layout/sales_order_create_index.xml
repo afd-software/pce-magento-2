@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Afd_Pce::css/jquery.typeahead.afd.css"/>
+    </head>
+    <body>
+        <referenceBlock name="content">
+            <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml" cacheable="false"/>
+        </referenceBlock>
+        <referenceBlock name="billing_address">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Afd_Pce::admin_order_billing_address.phtml</argument>
+            </action>
+        </referenceBlock>
+        <referenceBlock name="shipping_address">
+            <action method="setTemplate">
+                <argument name="template" xsi:type="string">Afd_Pce::admin_order_shipping_address.phtml</argument>
+            </action>
+        </referenceBlock>
+    </body>
+</page>

@@ -1,0 +1,445 @@
+.afd-typeahead-container {
+  /**
+   * Restore the font weight unset by the previous rule.
+   */
+  /**
+   * Show the overflow in IE.
+   * 1. Show the overflow in Edge.
+   */
+  /**
+   * Remove the inheritance of text transform in Edge, Firefox, and IE.
+   * 1. Remove the inheritance of text transform in Firefox.
+   */
+  /**
+   * 1. Prevent a WebKit bug where (2) destroys native `audio` and `video`
+   *    controls in Android 4.
+   * 2. Correct the inability to style clickable types in iOS and Safari.
+   */
+  /**
+   * Remove the inner border and padding in Firefox.
+   */
+  /**
+   * Restore the focus styles unset by the previous rule.
+   */
+  /**
+   * Change the border, margin, and padding in all browsers (opinionated).
+   */
+  /**
+   * 1. Correct the text wrapping in Edge and IE.
+   * 2. Correct the color inheritance from `fieldset` elements in IE.
+   * 3. Remove the padding so developers are not caught out when they zero out
+   *    `fieldset` elements in all browsers.
+   */
+  /**
+   * Remove the default vertical scrollbar in IE.
+   */
+  /**
+   * 1. Add the correct box sizing in IE 10-.
+   * 2. Remove the padding in IE 10-.
+   */
+  /**
+   * Correct the cursor style of increment and decrement buttons in Chrome.
+   */
+  /**
+   * 1. Correct the odd appearance in Chrome and Safari.
+   * 2. Correct the outline style in Safari.
+   */
+  /**
+   * Remove the inner padding and cancel buttons in Chrome and Safari on OS X.
+   */
+  /**
+   * Correct the text style of placeholders in Chrome, Edge, and Safari.
+   */
+  /**
+   * 1. Correct the inability to style clickable types in iOS and Safari.
+   * 2. Change font properties to `inherit` in Safari.
+   */ }
+.afd-typeahead-container button,
+.afd-typeahead-container input,
+.afd-typeahead-container optgroup,
+.afd-typeahead-container select,
+.afd-typeahead-container textarea {
+  margin: 0;
+  /* 2 */ }
+.afd-typeahead-container optgroup {
+  font-weight: bold; }
+.afd-typeahead-container button,
+.afd-typeahead-container input {
+  /* 1 */
+  overflow: visible; }
+.afd-typeahead-container button,
+.afd-typeahead-container select {
+  /* 1 */
+  text-transform: none; }
+.afd-typeahead-container button,
+.afd-typeahead-container html [type="button"],
+.afd-typeahead-container [type="reset"],
+.afd-typeahead-container [type="submit"] {
+  -webkit-appearance: button;
+  /* 2 */ }
+.afd-typeahead-container button::-moz-focus-inner,
+.afd-typeahead-container [type="button"]::-moz-focus-inner,
+.afd-typeahead-container [type="reset"]::-moz-focus-inner,
+.afd-typeahead-container [type="submit"]::-moz-focus-inner {
+  border-style: none;
+  padding: 0; }
+.afd-typeahead-container button:-moz-focusring,
+.afd-typeahead-container [type="button"]:-moz-focusring,
+.afd-typeahead-container [type="reset"]:-moz-focusring,
+.afd-typeahead-container [type="submit"]:-moz-focusring {
+  outline: 1px dotted ButtonText; }
+.afd-typeahead-container fieldset {
+  border: 1px solid #c0c0c0;
+  margin: 0 2px;
+  padding: 0.35em 0.625em 0.75em; }
+.afd-typeahead-container legend {
+  box-sizing: border-box;
+  /* 1 */
+  color: inherit;
+  /* 2 */
+  display: table;
+  /* 1 */
+  max-width: 100%;
+  /* 1 */
+  padding: 0;
+  /* 3 */
+  white-space: normal;
+  /* 1 */ }
+.afd-typeahead-container textarea {
+  overflow: auto; }
+.afd-typeahead-container [type="checkbox"],
+.afd-typeahead-container [type="radio"] {
+  box-sizing: border-box;
+  /* 1 */
+  padding: 0;
+  /* 2 */ }
+.afd-typeahead-container [type="number"]::-webkit-inner-spin-button,
+.afd-typeahead-container [type="number"]::-webkit-outer-spin-button {
+  height: auto; }
+.afd-typeahead-container [type="search"] {
+  -webkit-appearance: textfield;
+  /* 1 */
+  outline-offset: -2px;
+  /* 2 */ }
+.afd-typeahead-container [type="search"]::-webkit-search-cancel-button,
+.afd-typeahead-container [type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none; }
+.afd-typeahead-container ::-webkit-input-placeholder {
+  color: inherit;
+  opacity: 0.54; }
+.afd-typeahead-container ::-webkit-file-upload-button {
+  -webkit-appearance: button;
+  /* 1 */ }
+
+.afd-typeahead-container {
+  position: relative;
+  font: 1em Lato, "Helvetica Neue", Arial, Helvetica, sans-serif; }
+.afd-typeahead-container * {
+  box-sizing: border-box;
+  outline: 0; }
+.afd-typeahead-query {
+  position: relative;
+  z-index: 2;
+  width: 100%; }
+.afd-typeahead-filter {
+  position: relative; }
+.afd-typeahead-filter button {
+  min-width: 100%;
+  white-space: nowrap; }
+.afd-typeahead-filter button:after {
+  display: inline-block;
+  margin-left: 4px;
+  width: 0;
+  height: 0;
+  vertical-align: -2px;
+  content: "";
+  border: 4px solid;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+  border-left-color: transparent; }
+.afd-typeahead-field {
+  display: flex;
+  position: relative;
+  width: 100%; }
+.afd-typeahead-button button {
+  border-top-right-radius: 2px;
+  border-bottom-right-radius: 2px; }
+.afd-typeahead-field {
+  color: #555; }
+.afd-typeahead-field input,
+.afd-typeahead-field textarea,
+.afd-typeahead-field [contenteditable],
+.afd-typeahead-field .afd-typeahead-hint {
+  display: block;
+  width: 100%;
+  line-height: 1.25;
+  min-height: calc(0.5em * 2 + 1.25rem + 2px);
+  padding: 0.5em 0.75em;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px 0 0 2px;
+  appearance: none;
+  box-sizing: border-box; }
+.afd-typeahead-field input:focus, .afd-typeahead-field input:active,
+.afd-typeahead-field textarea:focus,
+.afd-typeahead-field textarea:active,
+.afd-typeahead-field [contenteditable]:focus,
+.afd-typeahead-field [contenteditable]:active,
+.afd-typeahead-field .afd-typeahead-hint:focus,
+.afd-typeahead-field .afd-typeahead-hint:active {
+  border-color: #66afe9; }
+.afd-typeahead-field input[type="search"], .afd-typeahead-field input[type="search"]::-webkit-search-cancel-button {
+  appearance: none; }
+.afd-typeahead-field input[type="search"]::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0; }
+.afd-typeahead-container.hint .afd-typeahead-field input,
+.afd-typeahead-container.hint .afd-typeahead-field textarea,
+.afd-typeahead-container.hint .afd-typeahead-field [contenteditable] {
+  background: transparent; }
+.afd-typeahead-container.hint .afd-typeahead-query > :last-child, .afd-typeahead-hint {
+  background: #fff; }
+.afd-typeahead-container button {
+  display: inline-block;
+  margin-bottom: 0;
+  text-align: center;
+  touch-action: manipulation;
+  cursor: pointer;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  line-height: 1.25;
+  padding: 0.5em 0.75em;
+  user-select: none;
+  color: #555; }
+.afd-typeahead-container button:hover, .afd-typeahead-container button:focus {
+  color: #3c3c3c;
+  background-color: #f5f5f5;
+  border-color: #b3b3b3; }
+.afd-typeahead-container button:active, .afd-typeahead-container button.active {
+  background-image: none; }
+.afd-typeahead-container button:focus, .afd-typeahead-container button:active {
+  border-color: #66afe9; }
+.afd-typeahead-container input.disabled,
+.afd-typeahead-container input[disabled],
+.afd-typeahead-container button.disabled,
+.afd-typeahead-container button[disabled] {
+  cursor: not-allowed;
+  pointer-events: none;
+  opacity: 0.65;
+  box-shadow: none;
+  background-color: #fff;
+  border-color: #ccc; }
+.afd-typeahead-container .afd-typeahead-field input,
+.afd-typeahead-container .afd-typeahead-field textarea,
+.afd-typeahead-container .afd-typeahead-field [contenteditable],
+.afd-typeahead-container .afd-typeahead-field .afd-typeahead-hint,
+.afd-typeahead-container .afd-typeahead-field .afd-typeahead-label-container {
+  padding-right: 32px; }
+.afd-typeahead-filter, .afd-typeahead-button {
+  z-index: 1; }
+.afd-typeahead-filter button, .afd-typeahead-button button {
+  margin-left: -1px;
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0; }
+.afd-typeahead-filter:hover, .afd-typeahead-filter:active, .afd-typeahead-filter:focus, .afd-typeahead-button:hover, .afd-typeahead-button:active, .afd-typeahead-button:focus {
+  z-index: 1001; }
+.afd-typeahead-filter:hover button:focus, .afd-typeahead-filter:hover button:active, .afd-typeahead-filter:active button:focus, .afd-typeahead-filter:active button:active, .afd-typeahead-filter:focus button:focus, .afd-typeahead-filter:focus button:active, .afd-typeahead-button:hover button:focus, .afd-typeahead-button:hover button:active, .afd-typeahead-button:active button:focus, .afd-typeahead-button:active button:active, .afd-typeahead-button:focus button:focus, .afd-typeahead-button:focus button:active {
+  z-index: 1001; }
+.afd-typeahead-filter + .afd-typeahead-button button {
+  margin-left: -2px; }
+.afd-typeahead-container.filter .afd-typeahead-filter {
+  z-index: 1001; }
+.afd-typeahead-list, .afd-typeahead-dropdown {
+  position: absolute;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  text-align: left;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  background-clip: padding-box; }
+.afd-typeahead-result.detached .afd-typeahead-list {
+  position: relative;
+  z-index: 1041;
+  top: initial;
+  left: initial; }
+.afd-typeahead-dropdown {
+  right: 0;
+  left: initial;
+  z-index: 1001; }
+.afd-typeahead-list > li {
+  position: relative;
+  border-top: solid 1px #ccc; }
+.afd-typeahead-list > li:first-child {
+  border-top: none; }
+.afd-typeahead-list .afd-typeahead-item[disabled] > a, .afd-typeahead-dropdown .afd-typeahead-dropdown-item[disabled] > a {
+  cursor: not-allowed;
+  color: #bababa;
+  background-color: #fafafa; }
+.afd-typeahead-list .afd-typeahead-item > a, .afd-typeahead-dropdown .afd-typeahead-dropdown-item > a {
+  display: block;
+  padding: 0.5em 0.75em;
+  clear: both;
+  color: #333;
+  text-decoration: none; }
+.afd-typeahead-list .afd-typeahead-item:not([disabled]) > a:hover,
+.afd-typeahead-list .afd-typeahead-item:not([disabled]) > a:focus, .afd-typeahead-list .afd-typeahead-item:not([disabled]).active > a, .afd-typeahead-dropdown .afd-typeahead-dropdown-item:not([disabled]) > a:hover,
+.afd-typeahead-dropdown .afd-typeahead-dropdown-item:not([disabled]) > a:focus, .afd-typeahead-dropdown .afd-typeahead-dropdown-item:not([disabled]).active > a {
+  background-color: #f5f5f5;
+  color: #3c3c3c; }
+.afd-typeahead-list.empty > li {
+  padding: 0.5em 0.75em;
+  color: #333; }
+.afd-typeahead-list > .afd-typeahead-group {
+  border-color: #bfdef6;
+  font-weight: bold; }
+.afd-typeahead-list > .afd-typeahead-group:first-child {
+  border-top: solid 1px #bfdef6; }
+.afd-typeahead-list > .afd-typeahead-group > a,
+.afd-typeahead-list > .afd-typeahead-group > a:hover,
+.afd-typeahead-list > .afd-typeahead-group > a:focus, .afd-typeahead-list > .afd-typeahead-group.active > a {
+  cursor: default;
+  color: #17639f;
+  background: #ecf5fc;
+  display: block;
+  padding: 0.5em 0.75em;
+  clear: both;
+  text-decoration: none; }
+.afd-typeahead-list > li.afd-typeahead-group + li.afd-typeahead-item {
+  border-color: #bfdef6; }
+.afd-typeahead-container.result .afd-typeahead-list, .afd-typeahead-container.filter .afd-typeahead-dropdown, .afd-typeahead-container.hint .afd-typeahead-hint, .afd-typeahead-container.backdrop + .afd-typeahead-backdrop {
+  display: block !important; }
+.afd-typeahead-container .afd-typeahead-list,
+.afd-typeahead-container .afd-typeahead-dropdown,
+.afd-typeahead-container .afd-typeahead-hint,
+.afd-typeahead-container + .afd-typeahead-backdrop {
+  display: none !important; }
+.afd-typeahead-dropdown li:last-child {
+  margin-top: 5px;
+  padding-top: 5px;
+  border-top: solid 1px #ccc; }
+.afd-typeahead-cancel-button {
+  user-select: none;
+  position: absolute;
+  right: 0;
+  cursor: pointer;
+  line-height: 1.25;
+  padding: 0.5em 0.75em;
+  visibility: hidden; }
+.afd-typeahead-label .afd-typeahead-cancel-button {
+  visibility: visible;
+  right: 4px; }
+.afd-typeahead-container.cancel:not(.loading) .afd-typeahead-cancel-button, .afd-typeahead-label .afd-typeahead-cancel-button {
+  visibility: visible; }
+.afd-typeahead-container.cancel:not(.loading) .afd-typeahead-cancel-button:hover, .afd-typeahead-label .afd-typeahead-cancel-button:hover {
+  color: #d0021b; }
+.afd-typeahead-search-icon {
+  padding: 0 1.25rem;
+  width: 16px;
+  height: 16px;
+  background: url(data:image/svg+xml;charset=utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDI1MC4zMTMgMjUwLjMxMyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjUwLjMxMyAyNTAuMzEzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCI+CjxnIGlkPSJTZWFyY2giPgoJPHBhdGggc3R5bGU9ImZpbGwtcnVsZTpldmVub2RkO2NsaXAtcnVsZTpldmVub2RkOyIgZD0iTTI0NC4xODYsMjE0LjYwNGwtNTQuMzc5LTU0LjM3OGMtMC4yODktMC4yODktMC42MjgtMC40OTEtMC45My0wLjc2ICAgYzEwLjctMTYuMjMxLDE2Ljk0NS0zNS42NiwxNi45NDUtNTYuNTU0QzIwNS44MjIsNDYuMDc1LDE1OS43NDcsMCwxMDIuOTExLDBTMCw0Ni4wNzUsMCwxMDIuOTExICAgYzAsNTYuODM1LDQ2LjA3NCwxMDIuOTExLDEwMi45MSwxMDIuOTExYzIwLjg5NSwwLDQwLjMyMy02LjI0NSw1Ni41NTQtMTYuOTQ1YzAuMjY5LDAuMzAxLDAuNDcsMC42NCwwLjc1OSwwLjkyOWw1NC4zOCw1NC4zOCAgIGM4LjE2OSw4LjE2OCwyMS40MTMsOC4xNjgsMjkuNTgzLDBDMjUyLjM1NCwyMzYuMDE3LDI1Mi4zNTQsMjIyLjc3MywyNDQuMTg2LDIxNC42MDR6IE0xMDIuOTExLDE3MC4xNDYgICBjLTM3LjEzNCwwLTY3LjIzNi0zMC4xMDItNjcuMjM2LTY3LjIzNWMwLTM3LjEzNCwzMC4xMDMtNjcuMjM2LDY3LjIzNi02Ny4yMzZjMzcuMTMyLDAsNjcuMjM1LDMwLjEwMyw2Ny4yMzUsNjcuMjM2ICAgQzE3MC4xNDYsMTQwLjA0NCwxNDAuMDQzLDE3MC4xNDYsMTAyLjkxMSwxNzAuMTQ2eiIgZmlsbD0iIzU1NTU1NSIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=) no-repeat scroll center center transparent; }
+.afd-typeahead-container.loading .afd-typeahead-query:before, .afd-typeahead-container.loading .afd-typeahead-query:after {
+  transition: all 0s linear, opacity 0.2s ease;
+  position: absolute;
+  z-index: 3;
+  content: "";
+  top: 50%;
+  right: 0.55em;
+  margin-top: -0.675rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  box-sizing: border-box;
+  border-radius: 500rem;
+  border-style: solid;
+  border-width: 0.1em; }
+.afd-typeahead-container.loading .afd-typeahead-query:before {
+  border-color: rgba(0, 0, 0, 0.35); }
+.afd-typeahead-container.loading .afd-typeahead-query:after {
+  animation: button-spin 0.6s linear;
+  animation-iteration-count: infinite;
+  border-color: #fff transparent transparent;
+  box-shadow: 0 0 0 1px transparent; }
+@keyframes button-spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
+.afd-typeahead-label-container {
+  list-style: none;
+  position: absolute;
+  padding-top: calc(1em * 0.375);
+  padding-left: 6px;
+  width: 100%;
+  flex-wrap: wrap;
+  display: flex; }
+.afd-typeahead-label {
+  display: flex;
+  font-size: calc(1em * 0.875);
+  position: relative;
+  background: #ecf5fc;
+  border: solid 1px #c2e0ff;
+  padding-left: 4px;
+  border-radius: 2px;
+  margin-right: 4px;
+  margin-bottom: calc(1em * 0.375); }
+.afd-typeahead-label > * {
+  align-self: center; }
+.afd-typeahead-label .afd-typeahead-cancel-button {
+  line-height: normal;
+  height: auto;
+  position: static;
+  padding-top: calc(1em * 0.25 - 1px);
+  padding-bottom: calc(1em * 0.25 + 1px);
+  padding-left: 6px;
+  padding-right: 6px;
+  margin-left: 4px;
+  font-size: calc(1em * 0.875);
+  border-left: solid 1px #c2e0ff; }
+.afd-typeahead-label .afd-typeahead-cancel-button:hover {
+  background-color: #d5e9f9; }
+
+
+.sales-order_create-index .afd-typeahead-list{
+  margin-left:30px;
+}
+
+
+.afd-typeahead-list {
+  max-height:252px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.afd-matched-highlight{
+  font-weight: bold;
+}
+
+.afd-manual-input-button,
+.afd-manual-input-search-button,
+.afd-search-again {
+  color: #0071bd;
+  cursor: pointer;
+}
+
+/* admin customer address*/
+.admin__fieldset-wrapper-content .afd-typeahead-list {
+  width: calc( (100%) * 0.5 - 30px );
+  margin-left: calc( (100%) * 0.25 + 30px);
+  top: 30px
+}
+
+.admin__fieldset-wrapper-content .afd-manual-input-button,
+.admin__fieldset-wrapper-content .afd-manual-input-search-button,
+.admin__fieldset-wrapper-content .afd-search-again {
+  margin-left: calc((100% * 0.25) + 15px);
+  margin-top: -24px;
+}
+
+.admin__fieldset-wrapper-content .afd-manual-input-search-button {
+  margin-bottom: 1rem
+}

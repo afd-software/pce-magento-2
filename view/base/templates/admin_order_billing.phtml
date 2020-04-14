@@ -1,0 +1,41 @@
+<div class="afd-typeahead-container field admin__field" id="billing-typeahead" style="display:none;">
+    <div class="admin__field-label">
+        <label><span>Address Search</span></label>
+    </div>
+    <div class="afd-typeahead-field admin__field-control">
+        <div class="afd-typeahead-query">
+            <input
+                class="input-text"
+                type="search"
+                autocomplete="off"
+                data-afd-control="typeahead"
+                name="afd-search"
+            >
+        </div>
+    </div>
+    <div class="afd-manual-input-button" style="display:none"></div>
+    <div class="afd-manual-input-search-button" style="display:none"></div>
+    <style></style>
+    <div class="afd-search-again" style="display:none"></div>
+    <style></style>
+</div>
+
+<script type="text/javascript">
+    require(['jquery', 'afdPce','domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+        $(document).ready(function(){
+            $("#order-billing_address_fields .field-country_id").detach().insertAfter("#order-billing_address_fields .field-company");
+            $("#billing-typeahead").detach().insertAfter("#order-billing_address_fields .field-country_id").show();
+            afdOptions.typeahead.containers = ["#order-billing_address_fields"];
+            $("#order-billing_address_company").attr("data-afd-result", "Organisation");
+            $("#order-billing_address_street0").attr("data-afd-result", "Property");
+            $("#order-billing_address_street1").attr("data-afd-result", "Street");
+            $("#order-billing_address_street2").attr("data-afd-result", "Locality");
+            $("#order-billing_address_city").attr("data-afd-result", "Town");
+            $("#order-billing_address_postcode").attr("data-afd-result", "Postcode");
+            console.log("---")
+            $(document).trigger('afd::page_ready');
+            console.log("---")
+            $(document).trigger("initAfd");
+        })
+    });
+</script>

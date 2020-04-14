@@ -1,0 +1,115 @@
+<script type="text/javascript">
+    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+        window.afd = {
+            ready: {}
+        };
+
+// Identify if this is an admin page
+        var admin = $("[class*=page-layout-admin]").length > 0;
+
+        // Check how many forms are on the page and set the containers array accordingly
+        var formCount = 1;
+        // Identify the billing page of checkout
+        if ($(".checkout-index-index").length > 0 && window.location.hash.substr(1) === "payment") {
+            formCount = 2;
+            afdOptions.typeahead.containers = ['.form-shipping-address', '.billing-address-form'];
+            // Identify the admin create order page which has two forms
+        } else if ($(".sales-order_create-index").length > 0) {
+            formCount = 2;
+            afdOptions.typeahead.containers = ["#order-billing_address_fields", "#order-shipping_address_fields"];
+            $(".sales-order_create-index .afd-manual-input-button").html("<?php echo $block->getConfig('typeahead/fields/manualEntryMarkup');?>");
+            $(".sales-order_create-index .afd-manual-input-search-button").html("<?php echo $block->getConfig('typeahead/fields/manualEntrySearchMarkup');?>");
+            $(".sales-order_create-index .afd-search-again").html("<?php echo $block->getConfig('typeahead/fields/manualEntrySearchMarkup');?>");
+            <?php $manualInputCss = preg_replace("/\r|\n/", "", $block->getConfig('typeahead/fields/manualEntryCss'));?>
+            <?php $searchAgainCss = preg_replace("/\r|\n/", "", $block->getConfig('typeahead/fields/searchAgainCss'));?>
+            $(".sales-order_create-index .afd-manual-input-style").html('<?php echo $manualInputCss ?>');
+            $(".sales-order_create-index .afd-search-again-style").html('<?php echo $searchAgainCss ?>');
+        } else {
+            afdOptions.typeahead.containers = [];
+        }
+
+        // Country selector is different when in admin or frontend
+        var countrySelector = admin ? "[data-index='country_id'] select, #order-billing_address_country_id" : "[name='country_id']";
+
+        // remove any country settings until a country field has loaded - otherwise jQuery module will throw an error
+        afdOptions.country.customCountryControl = null;
+
+        function checkElementsLoaded() {
+            if (
+                typeof $(countrySelector).val() === 'undefined' ||
+                $("[data-afd-result='Organisation']").length < formCount ||
+                $("[data-afd-result='Property']").length < formCount ||
+                $("[data-afd-result='Street']").length < formCount ||
+                $("[data-afd-result='Town']").length < formCount ||
+                $("[data-afd-result='Postcode']").length < formCount
+            ) {
+                window.setTimeout(checkElementsLoaded, 100); /* this checks the flag every 100 milliseconds*/
+            } else {
+                afdOptions.country.customCountryControl = countrySelector;
+                $('[data-afd-control="typeahead"').afd('typeahead');
+                //needs fixing
+                $('[data-afd-control="phone"').afd('phone');
+            }
+
+        }
+
+        checkElementsLoaded();
+
+        // hide regions for fields countries that hide it
+        $(document).on('afd:countryChanged', function (e, code) {
+
+            if (hideStateCountries.includes(code)) {
+                $("[name='shippingAddress.region']").hide();
+                $("[name='shippingAddress.region_id']").hide();
+                $("[name='billingAddresscheckmo.region']").hide();
+                $("[name='billingAddresscheckmo.region_id']").hide();
+                $(".field.region").hide();
+                $("[data-index='region_id']").hide();
+                $("[data-index='region_id_input']").hide();
+            }
+
+        });
+
+
+        $(document).on("afd:pceRetrieveComplete", function (e, result) {
+
+
+            // crown dependency setting
+            if ('<?php echo $block->getConfig('typeahead/fields/crownDependencies');?>' === '1') {
+
+                var country;
+
+                var countryFields = $("#country, " + countrySelector);
+
+                if (result.CountryISO === "GBR") {
+                    switch (result.Town) {
+                        case "Isle of Man":
+                            countryFields.val("IM");
+                            break;
+                        case "Jersey":
+                            countryFields.val("JE");
+                            break;
+                        case "Guernsey":
+                            countryFields.val("GG");
+                            break;
+                        default:
+                            countryFields.val("GB");
+                    }
+                }
+            }
+        });
+
+
+        // in case the form becomes invalid, show all fields
+        $(".form-address-edit").on("invalid-form", function (e) {
+            if (afdOptions.parentClass) {
+                $resultFields.closest('.' + options.typeahead.parentClass).show();
+            } else {
+                $resultFields.show();
+            }
+        });
+
+    });
+
+</script>
