@@ -8,6 +8,12 @@
 
 ?>
 
+<?php
+
+$emailAcive = $block->getConfig('email/enable/enable') == 1 && $block->getConfig('email/forms/newsletter') == 1;
+
+?>
+
 <div class="block newsletter">
     <div class="title"><strong><?= $block->escapeHtml(__('Newsletter')) ?></strong></div>
     <div class="content">
@@ -27,7 +33,7 @@
                                placeholder="<?= $block->escapeHtml(__('Enter your email address')) ?>"
                                data-mage-init='{"mage/trim-input":{}}'
                                data-validate="{required:true, 'validate-email':true}"
-                               <?php echo $block->getConfig('email/forms/newsletter') == 1 ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ; ?>
+                               <?php echo $emailAcive ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ; ?>
                         />
                         <div for="newsletter" generated="true" class="mage-error afd-error" ><?php echo $block->getConfig('email/fields/msg'); ?></div>
                     </label>
@@ -44,3 +50,10 @@
         </form>
     </div>
 </div>
+<?php if($block->getConfig('email/forms/newsletter') == 1) : ?>
+<script type="text/javascript">
+    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+        $('#newsletter').afd('email');
+    })
+</script>
+<?php endif ?>

@@ -7,6 +7,12 @@
 /** @var \Magento\Customer\Block\Form\Register $block */
 ?>
 
+<?php
+
+$emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getConfig('afd_email/forms/register') == 1;
+
+?>
+
 <?= $block->getChildHtml('form_fields_before') ?>
 <?php /* Extensions placeholder */ ?>
 <?= $block->getChildHtml('customer.form.register.extra') ?>
@@ -173,10 +179,11 @@
                        value="<?= $block->escapeHtmlAttr($block->getFormData()->getEmail()) ?>"
                        title="<?= $block->escapeHtmlAttr(__('Email')) ?>" class="input-text"
                        data-mage-init='{"mage/trim-input":{}}'
-                       data-validate="{required:true, 'validate-email':true} " <?php echo $block->getConfig('afd_email/forms/register') == 1 ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ?>>
+                       data-validate="{required:true, 'validate-email':true} " <?php echo $emailActive ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ?>>
                 <div for="email" generated="true" class="mage-error afd-error" >Please enter a valid email address.</div>
             </div>
         </div>
+
         <div class="field password required">
             <label for="password" class="label"><span><?= $block->escapeHtml(__('Password')) ?></span></label>
             <div class="control">
@@ -284,3 +291,10 @@
     }
 
 </script>
+<?php if($emailActive): ?>
+<script type="text/javascript">
+    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+        $('#email_address').afd('email');
+    })
+</script>
+<?php endif; ?>

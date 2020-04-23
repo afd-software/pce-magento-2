@@ -26,7 +26,7 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
         parent::__construct($context, $registry, $adminHelper, $data);
     }
 
-    public function loadOrderAddress()
+    public function loadOrderAddress($addressType)
     {
 
         $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
@@ -43,11 +43,17 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
 
         $logger->info($cus->getId());
 
-        return $cus->getAddressById($_order->getShippingAddress()->getCustomerAddressId());
+        if ($addressType == 'billing') {
+            return $cus->getAddressById($_order->getBillingAddress()->getCustomerAddressId());
+        } elseif ($addressType == 'shipping') {
+            return $cus->getAddressById($_order->getShippingAddress()->getCustomerAddressId());
+        }
+
+
 
     }
 
-    public function getGeodemographicFields()
+    public function getGeodemographicFields($addressType)
     {
 
         $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
@@ -55,15 +61,15 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
         $logger->addWriter($writer);
         //$logger->info(print_r( ['Geodemoraphics'], true));
 
-        $address = $this->loadOrderAddress();
+        $address = $this->loadOrderAddress($addressType);
 
         $customAttributes = $address->getCustomAttributes();
 
         $afdAttributes = [];
 
-        $logger->info($address->getLastName());
+        // $logger->info($address->getLastName());
 
-        $logger->info(print_r($customAttributes, true));
+        // $logger->info(print_r($customAttributes, true));
 
         foreach ($customAttributes as $customAttribute) {
             if (substr($customAttribute->getAttributeCode(), 0, 4) == 'afd_') {

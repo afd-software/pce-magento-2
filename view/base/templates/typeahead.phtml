@@ -5,7 +5,7 @@
             ready: {}
         };
 
-// Identify if this is an admin page
+        // Identify if this is an admin page
         var admin = $("[class*=page-layout-admin]").length > 0;
 
         // Check how many forms are on the page and set the containers array accordingly
@@ -32,30 +32,6 @@
         // Country selector is different when in admin or frontend
         var countrySelector = admin ? "[data-index='country_id'] select, #order-billing_address_country_id" : "[name='country_id']";
 
-        // remove any country settings until a country field has loaded - otherwise jQuery module will throw an error
-        afdOptions.country.customCountryControl = null;
-
-        function checkElementsLoaded() {
-            if (
-                typeof $(countrySelector).val() === 'undefined' ||
-                $("[data-afd-result='Organisation']").length < formCount ||
-                $("[data-afd-result='Property']").length < formCount ||
-                $("[data-afd-result='Street']").length < formCount ||
-                $("[data-afd-result='Town']").length < formCount ||
-                $("[data-afd-result='Postcode']").length < formCount
-            ) {
-                window.setTimeout(checkElementsLoaded, 100); /* this checks the flag every 100 milliseconds*/
-            } else {
-                afdOptions.country.customCountryControl = countrySelector;
-                $('[data-afd-control="typeahead"').afd('typeahead');
-                //needs fixing
-                $('[data-afd-control="phone"').afd('phone');
-            }
-
-        }
-
-        checkElementsLoaded();
-
         // hide regions for fields countries that hide it
         $(document).on('afd:countryChanged', function (e, code) {
 
@@ -71,9 +47,7 @@
 
         });
 
-
         $(document).on("afd:pceRetrieveComplete", function (e, result) {
-
 
             // crown dependency setting
             if ('<?php echo $block->getConfig('typeahead/fields/crownDependencies');?>' === '1') {

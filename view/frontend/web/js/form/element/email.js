@@ -67,6 +67,14 @@ define([
             return this;
         },
 
+        afdInit: function(target) {
+
+            if(afdOptions.magentoOptions.email.emailEnabled && afdOptions.magentoOptions.email.loggedOutCheckoutEnabled) {
+                $(target).afd('email');
+            }
+
+        },
+
         /**
          * Initializes observable properties of instance
          *

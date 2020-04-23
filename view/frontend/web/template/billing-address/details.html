@@ -23,11 +23,13 @@
                         <text args="element.value"/>
                     </if>
                 </ifnot>
+                <br/>
             </if>
         </if>
         <if args="typeof element === 'string'">
             <text args="element"/>
-        </if><br/>
+            <br/>
+        </if>
     </each>
 
     <button visible="!isAddressSameAsShipping()"

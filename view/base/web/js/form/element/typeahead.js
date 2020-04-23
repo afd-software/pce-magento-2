@@ -7,7 +7,7 @@ define([
 
     return Component.extend({
 
-        caller: function () {
+        afdInit: function () {
 
             var identifiers = [
                 "Property",

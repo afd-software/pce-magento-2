@@ -13,7 +13,26 @@ define([
 
         getAfdFieldName: function () {
 
-            var fieldName = this.inputName.substr(22).slice(0, -1);
+            var fieldName = this.inputName.substr(21).slice(0, -1);
+
+            var replacements = [
+                'nhs',
+                'iso',
+                'dps',
+                'udprn',
+                'pct',
+                'lea',
+                'tv',
+                'soa',
+                'eer',
+                'uprn',
+                'sic',
+                'id'
+            ];
+
+            for (var i = 0; i < replacements.length; i++) {
+                fieldName = fieldName.replace('_' + replacements[i], '_' + replacements[i].toUpperCase());
+            }
 
             fieldName = this.snakeToCamel(fieldName);
 
@@ -23,7 +42,7 @@ define([
 
         },
 
-        snakeToCamel: function (s) {
+            snakeToCamel: function (s) {
             return s.replace(/(\_\w)/g, function (m) {
                 return m[1].toUpperCase();
             });

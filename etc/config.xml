@@ -68,6 +68,9 @@
             </advanced>
         </afd_typeahead>
         <afd_email>
+            <enable>
+                <enable>0</enable>
+            </enable>
             <account>
                 <useDefaultCredentials>1</useDefaultCredentials>
                 <method>id</method>
@@ -84,6 +87,7 @@
                 <checkout>0</checkout>
                 <contact>0</contact>
                 <newsletter>0</newsletter>
+                <invitation>0</invitation>
             </forms>
             <fields>
                 <msg>Please enter a valid email address</msg>

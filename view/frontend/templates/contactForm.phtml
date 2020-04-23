@@ -10,15 +10,14 @@ $scopeConfig = \Magento\Framework\App\ObjectManager::getInstance()
     ->get('Magento\Framework\App\Config\ScopeConfigInterface');
 
 $phoneAttribute = "";
-$emailValidation = "";
+
+$emailActive = $scopeConfig->getValue('afd_email/enable/enable') == 1 && $scopeConfig->getValue('afd_email/forms/contact') == 1;
 
 if ($scopeConfig->getValue('afd_phone/forms/contact') == 1) {
     $phoneAttribute = "data-afd-control=\"phone\"";
 }
 
-if ($scopeConfig->getValue('afd_email/forms/contact') == 1) {
-    $emailAttribute = "data-afd-control=\"email\"";
-}
+$emailAttribute = $emailActive ? "data-afd-control=\"email\"" : "";
 
 
 ?>
@@ -76,3 +75,11 @@ if ($scopeConfig->getValue('afd_email/forms/contact') == 1) {
         border-color: #ed8380;
     }
 </style>
+
+<?php if ($emailActive): ?>
+<script type="text/javascript">
+    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+        $('#email').afd('email');
+    })
+</script>
+<?php endif ?>

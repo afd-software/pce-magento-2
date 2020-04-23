@@ -14,8 +14,8 @@
 
     <each args="data: address().customAttributes, as: 'element'">
         <each args="data: Object.keys(element), as: 'attribute'">
-            <if args="element[attribute].attribute_code.substring(0, 4) !== 'afd_'">
-                <if args="typeof element[attribute] === 'object'">
+            <if args="typeof element[attribute] === 'object'">
+                <if args="element[attribute].attribute_code.substring(0, 4) !== 'afd_'">
                     <if args="element[attribute].label">
                         <text args="element[attribute].label"/>
                     </if>
@@ -24,11 +24,16 @@
                             <text args="element[attribute].value"/>
                         </if>
                     </ifnot>
+                    <br/>
                 </if>
             </if>
             <if args="typeof element[attribute] === 'string'">
-                <text args="element[attribute]"/>
-            </if><br/>
+                <if args="element.attribute_code.substring(0, 4) !== 'afd_'">
+                    <text args="element[attribute]"/>
+                    <br/>
+                </if>
+            </if>
+            </if>
         </each>
     </each>
 

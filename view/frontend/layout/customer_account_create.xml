@@ -8,12 +8,6 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml" before="checkout.root"
-                   cacheable="false"/>
-            <block class="Afd\Pce\Block\Afd" name="afd.typeahead" template="Afd_Pce::typeahead.phtml" before="checkout.root"
-                   cacheable="false"/>
-            <block class="Afd\Pce\Block\Afd" name="afd.email" template="Afd_Pce::email.phtml" before="checkout.root"
-                   cacheable="false"/>
             <referenceBlock  name="customer_form_register">
                 <action method="setTemplate">
                     <argument name="template" xsi:type="string">Afd_Pce::form/register.phtml</argument>

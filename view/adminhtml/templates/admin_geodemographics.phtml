@@ -9,37 +9,44 @@
                     <span class="title">Billing Address</span>
                     <table class="admin__table-secondary">
                         <tbody>
-                            <?php $afdAttributes = $block->getGeodemographicFields(); ?>
-                            <?php foreach ( $afdAttributes as $attribute): ?>
-                                <tr>
-                                    <th>Order Status</th>
-                                    <td><span><?php echo $attribute->getValue() ?></span></td>
-                                </tr>
-                            <?php endforeach; ?>
+                        <?php $afdAttributes = $block->getGeodemographicFields('billing'); ?>
+                        <?php foreach ($afdAttributes as $attribute): ?>
+                            <tr>
+                                <th>
+                                    <span><?php echo $block->convertAttributeCode($attribute->getAttributeCode()) ?></span>
+                                </th>
+                                <td><span><?php echo $attribute->getValue() ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
-        <div class="admin__page-section-item">
-            <div class="admin__page-section-item-title">
-                <div class="admin__page-section-item order-billing-address">
-                    <div class="admin__page-section-item-title">
-                        <span class="title">Shipping Address</span>
-                        <table class="admin__table-secondary">
-                            <tbody>
-                            <?php $afdAttributes = $block->getGeodemographicFields(); ?>
-                            <?php foreach ( $afdAttributes as $attribute): ?>
-                                <tr>
-                                    <th><span><?php echo $block->convertAttributeCode($attribute->getAttributeCode()) ?></span></th>
-                                    <td><span><?php echo $attribute->getValue() ?></span></td>
-                                </tr>
-                            <?php endforeach; ?>
-                            </tbody>
-                        </table>
+    </div>
+    <div class="admin__page-section-item">
+        <div class="admin__page-section-item-title">
+            <div class="admin__page-section-item order-billing-address">
+                <div class="admin__page-section-item-title">
+                    <span class="title">Shipping Address</span>
+                    <table class="admin__table-secondary">
+                        <tbody>
+                        <?php $afdAttributes = $block->getGeodemographicFields('shipping'); ?>
+                        <?php foreach ($afdAttributes as $attribute): ?>
+                            <tr>
+                                <th>
+                                    <span><?php echo $block->convertAttributeCode($attribute->getAttributeCode()) ?></span>
+                                </th>
+                                <td><span><?php echo $attribute->getValue() ?></span></td>
+                            </tr>
+                        <?php endforeach; ?>
+                        </tbody>
+                    </table>
 
-                    </div>
                 </div>
             </div>
+        </div>
+
     </div>
 </section>
+<div style="clear:both"></div>

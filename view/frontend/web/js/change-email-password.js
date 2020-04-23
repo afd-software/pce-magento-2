@@ -79,9 +79,14 @@ define([
 
             $(this.options.currentPasswordSelector).attr('data-validate', "{required:true}").prop('disabled', false);
             $(this.options.emailSelector).attr('data-validate', "{required:true}").prop('disabled', false);
-            $(this.options.emailSelector).attr('data-afd-control', 'email');
-            $(this.options.emailSelector).attr('data-afd-additional-options', 'afdEmailOptions');
-            $('<div for="email" generated="true" class="mage-error afd-error">Please enter a valid email address.</div>').insertAfter(this.options.emailSelector);
+
+            if(window.afdOptions.magentoOptions.email.emailEnabled && window.afdOptions.magentoOptions.email.accountChangeEmailEnabled) {
+                $(this.options.emailSelector).attr('data-afd-control', 'email');
+                $(this.options.emailSelector).attr('data-afd-additional-options', 'afdEmailOptions');
+                $(this.options.emailSelector).afd('email');
+                $('<div for="email" generated="true" class="mage-error afd-error">Please enter a valid email address.</div>').insertAfter(this.options.emailSelector);
+            }
+
             this._updatePasswordFieldWithEmailValue();
             $(this.options.confirmPasswordSelector).attr(
                 'data-validate',

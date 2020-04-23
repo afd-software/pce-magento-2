@@ -7,12 +7,12 @@
     <referenceBlock name="head.components">
         <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml"
                cacheable="false"/>
-    </referenceBlock>
-    <!--<referenceContainer name="footer">
         <block class="Afd\Pce\Block\Afd" name="afd.email.newsletter" template="Afd_Pce::email.phtml"
-               cacheable="false" ifconfig="afd_email/forms/newsletter"/>
+               cacheable="false" ifconfig="afd_email/enable/enable"/>
+    </referenceBlock>
+    <referenceContainer name="footer">
         <block class="Afd\Pce\Block\Subscribe" name="form.subscribe" as="subscribe" before="-"
-               template="Afd_Pce::subscribe.phtml" ifconfig="afd_email/forms/newsletter">
+               template="Afd_Pce::subscribe.phtml">
         </block>
-    </referenceContainer>-->
+    </referenceContainer>
 </page>
