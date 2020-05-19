@@ -6,7 +6,6 @@
 
 /** @var \Magento\Customer\Block\Widget\Telephone $block */
 ?>
-
 <div class="field telephone <?= $block->isRequired() ? 'required' : '' ?>">
     <label for="telephone" class="label">
         <span>
@@ -33,3 +32,12 @@
         </div>
     </div>
 </div>
+<script type="text/javascript">
+    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+        $('#telephone')
+            .afd('phone')
+            .siblings('.afd-error')
+            .find('span')
+            .text(afdOptions.magentoOptions.phone.invalidMessage);
+    })
+</script>

@@ -1,0 +1,81 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+?>
+<?php
+/**
+ * Create account form template
+ *
+ * @see \Magento\CustomerCustomAttributes\Block\Form
+ */
+/* @var $block \Magento\CustomerCustomAttributes\Block\Form */
+?>
+
+<?php if ($block->hasUserDefinedAttributes()) : ?>
+    <?php if ($block->isShowContainer()) : ?>
+        <fieldset class="fieldset">
+    <?php endif;?>
+    <?php foreach ($block->getUserDefinedAttributes() as $attribute) :?>
+        <div <?php echo substr($attribute->getAttributeCode(), 0, 4) == "afd_" ? "style=\"display:none\"" : ""; ?>>
+            <?php $attributeContent = $block->getAttributeHtml($attribute);?>
+            <?php if ($attributeContent) : ?>
+                <?= /* @noEscape */ $attributeContent ?>
+            <?php endif;?>
+        </div>
+    <?php endforeach;?>
+    <?php if ($block->isShowContainer()) : ?>
+        </fieldset>
+    <?php endif;?>
+<?php endif; ?>
+
+<script>
+    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+        $(document).ready(function(){
+
+            $('[name^="afd_"]').each(function(index, element){
+
+                $(element).attr('data-afd-result', getAfdFieldName($(element).attr('id')));
+
+            })
+
+        });
+
+        // gets the pce fieldname from the magento attribute code
+        var getAfdFieldName = function (fieldName) {
+            fieldName = fieldName.substr(3);
+            var replacements = [
+                'nhs',
+                'iso',
+                'dps',
+                'udprn',
+                'pct',
+                'lea',
+                'tv',
+                'soa',
+                'eer',
+                'uprn',
+                'sic',
+                'id'
+            ];
+
+            for (var i = 0; i < replacements.length; i++) {
+                fieldName = fieldName.replace('_' + replacements[i], '_' + replacements[i].toUpperCase());
+            }
+
+            fieldName = snakeToCamel(fieldName);
+            fieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+            return fieldName;
+
+        };
+
+        var snakeToCamel = function (s) {
+            return s.replace(/(\_\w)/g, function (m) {
+                return m[1].toUpperCase();
+            });
+        }
+
+    });
+</script>

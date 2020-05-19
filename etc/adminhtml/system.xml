@@ -383,6 +383,15 @@
             <label>Phone Validation</label>
             <tab>afd</tab>
             <resource>Afd_Pce::config</resource>
+            <group id="enable" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
+                   showInStore="0">
+                <label>Enable Phone Validation</label>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Enable Phone Validation</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
             <group id="account" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0"
                    showInStore="0">
                 <label>Phone Authentication Settings</label>

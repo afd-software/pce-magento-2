@@ -47,7 +47,13 @@
             emailEnabled: <?php echo $block->getConfig('email/enable/enable'); ?> === 1,
             accountChangeEmailEnabled: <?php echo $block->getConfig('email/forms/account'); ?> === 1,
             loggedOutCheckoutEnabled: <?php echo $block->getConfig('email/forms/checkout'); ?> === 1
+        },
+        phone: {
+            phoneEnabled: <?php echo $block->getConfig('phone/enable/enable'); ?> === 1,
+            loggedOutCheckoutEnabled: <?php echo $block->getConfig('phone/forms/checkout'); ?> === 1,
+            invalidMessage: '<?php echo $block->getConfig("phone/fields/msg"); ?>'
         }
+
     }
 
 </script>

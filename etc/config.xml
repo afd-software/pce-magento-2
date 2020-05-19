@@ -94,6 +94,9 @@
             </fields>
         </afd_email>
         <afd_phone>
+            <enable>
+                <enable>0</enable>
+            </enable>
             <account>
                 <useDefaultCredentials>1</useDefaultCredentials>
                 <method>id</method>

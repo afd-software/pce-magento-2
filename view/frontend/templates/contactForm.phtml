@@ -9,16 +9,13 @@
 $scopeConfig = \Magento\Framework\App\ObjectManager::getInstance()
     ->get('Magento\Framework\App\Config\ScopeConfigInterface');
 
-$phoneAttribute = "";
+
 
 $emailActive = $scopeConfig->getValue('afd_email/enable/enable') == 1 && $scopeConfig->getValue('afd_email/forms/contact') == 1;
-
-if ($scopeConfig->getValue('afd_phone/forms/contact') == 1) {
-    $phoneAttribute = "data-afd-control=\"phone\"";
-}
+$phoneActive = $scopeConfig->getValue('afd_phone/enable/enable') == 1 && $scopeConfig->getValue('afd_phone/forms/contact') == 1;
 
 $emailAttribute = $emailActive ? "data-afd-control=\"email\"" : "";
-
+$phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
 
 ?>
 <form class="form contact"
@@ -82,4 +79,12 @@ $emailAttribute = $emailActive ? "data-afd-control=\"email\"" : "";
         $('#email').afd('email');
     })
 </script>
+<?php endif ?>
+
+<?php if ($phoneActive): ?>
+    <script type="text/javascript">
+        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+            $('#telephone').afd('phone');
+        })
+    </script>
 <?php endif ?>

@@ -4,22 +4,7 @@
 
     require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
 
-
-
-        function checkPhoneLoaded() {
-
-            if($('[data-afd-control="phone"]').length === 0) {
-                console.log('waiting');
-                window.setTimeout(checkPhoneLoaded, 100); /* this checks the flag every 100 milliseconds*/
-
-            } else {
-                $('.afd-error span').text('<?php echo $block->getConfig('phone/fields/msg'); ?> ');
-
-                $('[data-afd-control="phone"]').afd('phone');
-            }
-
-        }
-
+        
         $(document).on('afd:phoneValidationStared', function(e, el){
             var $el = $(el);
             $el.parent().addClass('afd-loading');
@@ -28,8 +13,6 @@
             var $el = $(el);
             $el.parent().removeClass('afd-loading');
         });
-
-        checkPhoneLoaded();
 
     });
 

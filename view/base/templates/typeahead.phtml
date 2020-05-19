@@ -32,9 +32,7 @@
         // Country selector is different when in admin or frontend
         var countrySelector = admin ? "[data-index='country_id'] select, #order-billing_address_country_id" : "[name='country_id']";
 
-        // hide regions for fields countries that hide it
-        $(document).on('afd:countryChanged', function (e, code) {
-
+        function hideRegions(code) {
             if (hideStateCountries.includes(code)) {
                 $("[name='shippingAddress.region']").hide();
                 $("[name='shippingAddress.region_id']").hide();
@@ -44,8 +42,14 @@
                 $("[data-index='region_id']").hide();
                 $("[data-index='region_id_input']").hide();
             }
+        }
 
+        // hide regions for fields countries that hide it
+        $(document).on('afd:countryChanged', function (e, code) {
+            hideRegions(code);
         });
+
+        hideRegions($(countrySelector).val());
 
         $(document).on("afd:pceRetrieveComplete", function (e, result) {
 

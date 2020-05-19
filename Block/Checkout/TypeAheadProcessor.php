@@ -106,6 +106,8 @@ class TypeAheadProcessor
 
         }
         if($this->_scopeConfig->getValue('afd_phone/forms/checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
+
+            $addressFieldset['telephone']['component'] = 'Afd_Pce/js/form/element/telephone';
             $addressFieldset['telephone']['config']['elementTmpl'] = 'Afd_Pce/form/element/telephone';
         }
 
