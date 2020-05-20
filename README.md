@@ -22,7 +22,6 @@ If you require AFD functionality to work in a different way or on a different pa
 To get started with AFD Software's Magento integration you will need authentication credentials.  If you don't yet have authentication credentials contact our sales team on +44 (0)1624 811 711 or email us at [postcode@afd.co.uk](mailto:postcode@afd.co.uk).
 
 * Install the module via composer `composer require afd/module-pce`
-* 
 
 ## Typeahead
 
@@ -113,3 +112,4 @@ The data collected is assigned to Magento native "Custom Customer Address Attrib
 The screenshot below is an example of how the data is displayed on the order page in the admin panel.
 
 <img src="https://www.afd.co.uk/img/1080/integrations/magento-censation.png">
+
