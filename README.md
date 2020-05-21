@@ -112,4 +112,3 @@ The data collected is assigned to Magento native "Custom Customer Address Attrib
 The screenshot below is an example of how the data is displayed on the order page in the admin panel.
 
 <img src="https://www.afd.co.uk/img/1080/integrations/magento-censation.png">
-
