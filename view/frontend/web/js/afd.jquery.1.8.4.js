@@ -255,7 +255,10 @@
 
 
       if (_this.options.country.customCountryControl) {
-        var customCountryControl = $(_this.options.country.customCountryControl);
+
+       var customCountryControl = _this.options.typeahead.containers.length === 0
+           ? $(_this.options.country.customCountryControl)
+           : _this.$element.closest(_this.options.typeahead.containers.toString()).find(_this.options.country.customCountryControl);
 
         if (_this.options.country.customCountryConverter) {
           if (typeof _this.options.country.customCountryConverter !== 'function') {
@@ -17805,6 +17808,8 @@
 
             defineProperty(assertThisInitialized(assertThisInitialized(_this)), "handleHideShowControls", function (country) {
               var controlType = _this.controlType;
+
+              _this.$searchAgainButton.hide();
 
               if (_this.options[controlType].hideForCountries.length > 0) {
                 if (_this.options[controlType].hideForCountries.indexOf(country) > -1) {

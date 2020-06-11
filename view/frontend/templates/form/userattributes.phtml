@@ -35,6 +35,40 @@
 
         $(document).ready(function(){
 
+            // gets the pce fieldname from the magento attribute code
+            var getAfdFieldName = function (fieldName) {
+                fieldName = fieldName.substr(3);
+                var replacements = [
+                    'nhs',
+                    'iso',
+                    'dps',
+                    'udprn',
+                    'pct',
+                    'lea',
+                    'tv',
+                    'soa',
+                    'eer',
+                    'uprn',
+                    'sic',
+                    'id'
+                ];
+
+                for (var i = 0; i < replacements.length; i++) {
+                    fieldName = fieldName.replace('_' + replacements[i], '_' + replacements[i].toUpperCase());
+                }
+
+                fieldName = snakeToCamel(fieldName);
+                fieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
+                return fieldName;
+
+            };
+
+            var snakeToCamel = function (s) {
+                return s.replace(/(\_\w)/g, function (m) {
+                    return m[1].toUpperCase();
+                });
+            };
+
             $('[name^="afd_"]').each(function(index, element){
 
                 $(element).attr('data-afd-result', getAfdFieldName($(element).attr('id')));
@@ -43,39 +77,7 @@
 
         });
 
-        // gets the pce fieldname from the magento attribute code
-        var getAfdFieldName = function (fieldName) {
-            fieldName = fieldName.substr(3);
-            var replacements = [
-                'nhs',
-                'iso',
-                'dps',
-                'udprn',
-                'pct',
-                'lea',
-                'tv',
-                'soa',
-                'eer',
-                'uprn',
-                'sic',
-                'id'
-            ];
 
-            for (var i = 0; i < replacements.length; i++) {
-                fieldName = fieldName.replace('_' + replacements[i], '_' + replacements[i].toUpperCase());
-            }
-
-            fieldName = snakeToCamel(fieldName);
-            fieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
-            return fieldName;
-
-        };
-
-        var snakeToCamel = function (s) {
-            return s.replace(/(\_\w)/g, function (m) {
-                return m[1].toUpperCase();
-            });
-        }
 
     });
 </script>

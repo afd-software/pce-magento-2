@@ -10,8 +10,8 @@
             <label>General Settings</label>
             <tab>afd</tab>
             <resource>Afd_Pce::config</resource>
-            <group id="account" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="account" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Account Settings</label>
                 <comment>
                     Add your AFD credentials here. These will be used by default but if you have credentials that are
@@ -40,29 +40,29 @@
                         <field id="method">id</field>
                     </depends>
                 </field>
-                <field id="serial" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="serial" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Serial</label>
                     <depends>
                         <field id="method">serial</field>
                     </depends>
                 </field>
-                <field id="password" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="password" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Password</label>
                     <depends>
                         <field id="method">serial</field>
                     </depends>
                 </field>
-                <field id="id" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="id" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD ID</label>
                     <depends>
                         <field id="method">id</field>
                     </depends>
                 </field>
-                <field id="token" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="token" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Token</label>
                     <depends>
                         <field id="method">id</field>
@@ -76,40 +76,40 @@
             <label>Typeahead</label>
             <tab>afd</tab>
             <resource>Afd_Pce::config</resource>
-            <group id="forms" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="forms" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Form settings</label>
                 <comment>Select which forms typeahead should be activated on</comment>
                 <field id="account" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>My Account - Add/Edit Adrress</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="checkout" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="fields" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="fields" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Field configuration</label>
-                <field id="placeholder" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="placeholder" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>Placeholder text</label>
                 </field>
                 <field id="countryAboveStreet" translate="label" type="select" sortOrder="20" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Move country field above street</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="afterHideTypeahead" translate="label" type="select" sortOrder="30" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Hide typeahead field after selection</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="enableSearchAgainButton" translate="label" type="select" sortOrder="40" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Enable search again button</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <depends>
@@ -117,7 +117,7 @@
                     </depends>
                 </field>
                 <field id="searchAgainMarkup" translate="label" type="textarea" sortOrder="50" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Markup for what should be displayed for search again button</label>
                     <comment>Can be HTML</comment>
                     <depends>
@@ -126,7 +126,7 @@
                     </depends>
                 </field>
                 <field id="searchAgainCss" translate="label" type="textarea" sortOrder="60" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>CSS for search again button</label>
                     <comment>Within the context `.afd-search-again`</comment>
                     <depends>
@@ -135,22 +135,22 @@
                     </depends>
                 </field>
                 <field id="afterClearTypeahead" translate="label" type="select" sortOrder="70" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Clear typeahead field after selection</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="beforeHideResults" translate="label" type="select" sortOrder="80" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Hide address fields before search</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="enableManualEntryButton" translate="label" type="select" sortOrder="90" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Enable manual entry button</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="manualEntryMarkup" translate="label" type="textarea" sortOrder="100" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Markup for what should be displayed for manual entry button</label>
                     <comment>Can be HTML</comment>
                     <depends>
@@ -158,7 +158,7 @@
                     </depends>
                 </field>
                 <field id="manualEntrySearchMarkup" translate="label" type="textarea" sortOrder="110" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Markup for what should be displayed for reactivate search button</label>
                     <comment>Can be HTML</comment>
                     <depends>
@@ -166,7 +166,7 @@
                     </depends>
                 </field>
                 <field id="manualEntryCss" translate="label" type="textarea" sortOrder="120" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>CSS for markup button</label>
                     <comment>Within the context `.afd-manual-input-button` or `.afd-manual-input-search-button`
                     </comment>
@@ -175,27 +175,27 @@
                     </depends>
                 </field>
                 <field id="hideEmpties" translate="label" type="select" sortOrder="130" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Hide empty address fields</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="highlightMatches" translate="label" type="select" sortOrder="140" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Highlight matching search strings in results</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="postcodeFirst" translate="label" type="select" sortOrder="150" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Display postcode before address in results</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="hideRegion" translate="label" type="multiselect" sortOrder="160" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Countries for which the region field should be hidden</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                 </field>
                 <field id="crownDependencies" translate="label" type="select" sortOrder="170" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Automatically change countries for crown dependencies</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Will change the country field to either "Isle of Man", "Jersey" or "Guernsey" if the result
@@ -203,46 +203,46 @@
                     </comment>
                 </field>
             </group>
-            <group id="countries" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="countries" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Country Configuration</label>
                 <field id="typeaheadCountries" translate="label" type="multiselect" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Which countries should typeahead be activated on?</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                 </field>
             </group>
-            <group id="manualEntry" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="manualEntry" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Manual Entry Configuration</label>
             </group>
-            <group id="quantity" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="quantity" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Results Quantity</label>
-                <field id="maxItems" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="maxItems" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>Maximum number of results returned</label>
                 </field>
                 <field id="enableFewItemsText" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>If zero or fewer than maximum number of results are returned show suggestion for manual
                         entry
                     </label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="fewItemsText" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="fewItemsText" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>Suggestion text</label>
                     <depends>
                         <field id="enableFewItemsText">1</field>
                     </depends>
                 </field>
             </group>
-            <group id="advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Advanced Options</label>
-                <field id="polyfill" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="polyfill" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>Enable JavaScript Polyfill</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Our Javascript requires the use of `Promise` which is not natively available in IE11.
@@ -257,20 +257,20 @@
             <label>Email Validation</label>
             <tab>afd</tab>
             <resource>Afd_Pce::config</resource>
-            <group id="enable" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="enable" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Enable Email Validation</label>
                 <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Enable Email Validation</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="account" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="account" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Email Authentication Settings</label>
                 <field id="useDefaultCredentials" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Use default authentication settings</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Select "No" if you have specific email validation credentials</comment>
@@ -306,8 +306,8 @@
                         <field id="useDefaultCredentials">0</field>
                     </depends>
                 </field>
-                <field id="serial" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="serial" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Serial</label>
                     <depends>
                         <field id="authMethod">serial</field>
@@ -315,24 +315,24 @@
                     </depends>
                 </field>
                 <field id="password" translate="label" type="text" sortOrder="1" showInDefault="1"
-                       showInWebsite="0"
-                       showInStore="0">
+                       showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Password</label>
                     <depends>
                         <field id="authMethod">serial</field>
                         <field id="useDefaultCredentials">0</field>
                     </depends>
                 </field>
-                <field id="id" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="id" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD ID</label>
                     <depends>
                         <field id="authMethod">id</field>
                         <field id="useDefaultCredentials">0</field>
                     </depends>
                 </field>
-                <field id="token" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="token" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Token</label>
                     <depends>
                         <field id="authMethod">id</field>
@@ -340,40 +340,40 @@
                     </depends>
                 </field>
             </group>
-            <group id="forms" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="forms" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Form settings</label>
                 <comment>Select which forms email validation should be activated on</comment>
                 <field id="account" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>My Account - Change Email Adrress</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="register" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Register Account</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="checkout" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Logged Out - Checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="contact" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Contact Us Form</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="newsletter" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Newsletter Signup - Footer</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="fields" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="0">
+            <group id="fields" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1">
                 <label>Field settings</label>
-                <field id="msg" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="msg" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>Invalid Email Message</label>
                 </field>
             </group>
@@ -383,20 +383,20 @@
             <label>Phone Validation</label>
             <tab>afd</tab>
             <resource>Afd_Pce::config</resource>
-            <group id="enable" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="enable" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Enable Phone Validation</label>
                 <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Enable Phone Validation</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="account" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="account" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Phone Authentication Settings</label>
                 <field id="useDefaultCredentials" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Use default authentication settings</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>Select "No" if you have specific phone validation credentials</comment>
@@ -432,8 +432,8 @@
                         <field id="useDefaultCredentials">0</field>
                     </depends>
                 </field>
-                <field id="serial" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="serial" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Serial</label>
                     <depends>
                         <field id="authMethod">serial</field>
@@ -441,24 +441,24 @@
                     </depends>
                 </field>
                 <field id="password" translate="label" type="text" sortOrder="1" showInDefault="1"
-                       showInWebsite="0"
-                       showInStore="0">
+                       showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Password</label>
                     <depends>
                         <field id="authMethod">serial</field>
                         <field id="useDefaultCredentials">0</field>
                     </depends>
                 </field>
-                <field id="id" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="id" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD ID</label>
                     <depends>
                         <field id="authMethod">id</field>
                         <field id="useDefaultCredentials">0</field>
                     </depends>
                 </field>
-                <field id="token" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="token" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>AFD Token</label>
                     <depends>
                         <field id="authMethod">id</field>
@@ -466,38 +466,38 @@
                     </depends>
                 </field>
             </group>
-            <group id="forms" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0"
-                   showInStore="0">
+            <group id="forms" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
                 <label>Form settings</label>
                 <comment>Select which forms phone validation should be activated on</comment>
                 <field id="account" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>My Account - Add/Edit Adrress</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="checkout" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Checkout</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="contact" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="0" showInStore="0">
+                       showInWebsite="1" showInStore="1">
                     <label>Contact Us Form</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
-            <group id="fields" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0">
+            <group id="fields" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1">
                 <label>Field settings</label>
-                <field id="dialingCode" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="dialingCode" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>Default international dialing code</label>
                     <comment>Prefix with "+", e.g. "+44". This will validate phone numbers of this country code without the
                         user inputting the country code. If the user prefixes their number "00" or "+" this setting will be
                         overridden and the country supplied code will be used for validation.
                     </comment>
                 </field>
-                <field id="msg" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="0"
-                       showInStore="0">
+                <field id="msg" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
                     <label>Invalid Phone Message</label>
                 </field>
             </group>

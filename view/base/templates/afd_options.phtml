@@ -24,7 +24,7 @@
             showForCountries: '<?php echo $block->getConfig('typeahead/countries/typeaheadCountries');?>'.split(',')
         },
         country: {
-            customCountryControl: '.modal-component [name="country_id"], .form-address-edit #country'
+            customCountryControl: '[name="country_id"], .form-address-edit #country'
         },
         phone: {
             defaultDialingCode: '<?php echo $block->getConfig('phone/fields/dialingCode');?>'
