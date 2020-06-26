@@ -14,7 +14,7 @@
         <referenceContainer name="content">
             <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
                    before="contactForm" ifconfig="afd_phone/forms/contact"
-                   cacheable="false"/>
+                   />
             <referenceBlock name="contactForm">
                 <action method="setTemplate">
                     <argument name="template" xsi:type="string">Afd_Pce::contactForm.phtml</argument>

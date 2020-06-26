@@ -4,10 +4,10 @@
         <referenceBlock name="head.components">
             <block class="Afd\Pce\Block\Afd" name="afd.typeahead" template="Afd_Pce::typeahead.phtml"
                    after="afd.config"
-                   cacheable="false" ifconfig="afd_typeahead/forms/checkout"/>
+                    ifconfig="afd_typeahead/forms/checkout"/>
             <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
                    after="afd.config" ifconfig="afd_phone/forms/checkout"
-                   cacheable="false"/>
+                   />
         </referenceBlock>
         <referenceBlock name="checkout.root">
             <arguments>

@@ -67,11 +67,11 @@
     </container>
     <htmlContent name="afd.main">
         <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"
-               cacheable="false"/>
+               />
     </htmlContent>
     <htmlContent name="afd">
         <block class="Afd\Pce\Block\Afd" name="afd.customer" template="Afd_Pce::afd_admin_customer_address.phtml"
-               cacheable="false"/>
+               />
     </htmlContent>
     <fieldset name="general">
         <argument name="data" xsi:type="array">
