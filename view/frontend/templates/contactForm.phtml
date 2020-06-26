@@ -9,8 +9,6 @@
 $scopeConfig = \Magento\Framework\App\ObjectManager::getInstance()
     ->get('Magento\Framework\App\Config\ScopeConfigInterface');
 
-
-
 $emailActive = $scopeConfig->getValue('afd_email/enable/enable') == 1 && $scopeConfig->getValue('afd_email/forms/contact') == 1;
 $phoneActive = $scopeConfig->getValue('afd_phone/enable/enable') == 1 && $scopeConfig->getValue('afd_phone/forms/contact') == 1;
 
