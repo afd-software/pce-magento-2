@@ -1,7 +1,7 @@
 <img alt="AFD Software" src="http://www.afd.co.uk/img/200/logo.png" align="left">
 
 # Magento 2 Integration
-
+ 
 ## Introduction
 
 The AFD PCE Magento module harnesses the power of our powerful "Postcode Evolution" engine and makes it available in the world's most popular eCommerce platform.
