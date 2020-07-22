@@ -28,15 +28,12 @@ define([
         },
 
         afdInit: function (target) {
-            console.log('aaa');
             if (afdOptions.magentoOptions.email.emailEnabled && afdOptions.magentoOptions.email.loggedOutCheckoutEnabled) {
                 $(target)
                     .afd('email')
                     .siblings('.afd-error')
                     .text(afdOptions.magentoOptions.email.invalidMessage);
             }
-
-        },
-
+        }
     });
 });

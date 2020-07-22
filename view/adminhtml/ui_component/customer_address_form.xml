@@ -5,14 +5,18 @@
  * See COPYING.txt for license details.
  */
 -->
-<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd" component="Magento_Customer/js/form/components/form">
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd"
+      component="Magento_Customer/js/form/components/form">
 
     <argument name="data" xsi:type="array">
         <item name="js_config" xsi:type="array">
             <item name="provider" xsi:type="string">customer_address_form.customer_address_form_data_source</item>
         </item>
         <item name="config" xsi:type="array">
-            <item name="deleteConfirmationMessage" translate="true" xsi:type="string">Are you sure you want to delete this address?</item>
+            <item name="deleteConfirmationMessage" translate="true" xsi:type="string">Are you sure you want to delete
+                this address?
+            </item>
         </item>
         <item name="label" xsi:type="string" translate="true">Update Address</item>
         <item name="reverseMetadataMerge" xsi:type="boolean">true</item>
@@ -66,12 +70,10 @@
         </argument>
     </container>
     <htmlContent name="afd.main">
-        <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"
-               />
+        <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"/>
     </htmlContent>
-    <htmlContent name="afd">
-        <block class="Afd\Pce\Block\Afd" name="afd.customer" template="Afd_Pce::afd_admin_customer_address.phtml"
-               />
+    <htmlContent name="afd.address">
+        <block class="Afd\Pce\Block\Afd" name="afd.customer" template="Afd_Pce::admin_customer_address.phtml" />
     </htmlContent>
     <fieldset name="general">
         <argument name="data" xsi:type="array">
@@ -193,7 +195,8 @@
                 </validation>
             </settings>
         </field>
-        <field name="country_id" component="Magento_Customer/js/form/element/country" sortOrder="90" formElement="select">
+        <field name="country_id" component="Magento_Customer/js/form/element/country" sortOrder="90"
+               formElement="select">
             <settings>
                 <validation>
                     <rule name="required-entry" xsi:type="boolean">true</rule>

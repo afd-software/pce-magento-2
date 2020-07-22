@@ -89,13 +89,9 @@ class TypeAheadProcessor
                 'label' => __('Search for Address'),
                 'provider' => 'checkoutProvider',
                 'visible' => true,
-                'initialValue' => false,
-                'sortOrder' => 70,
-                'valueMap' => [
-                    'true' => true,
-                    'false' => false
-                ]
+                'sortOrder' => 70
             ];
+
             // Sets template for address fields - see view/frontend/web/template/form/element
             $addressFieldset['street']['children'][0]['config']['elementTmpl'] = 'Afd_Pce/form/element/property';
             $addressFieldset['street']['children'][1]['config']['elementTmpl'] = 'Afd_Pce/form/element/street';
@@ -103,14 +99,13 @@ class TypeAheadProcessor
             $addressFieldset['city']['config']['elementTmpl'] = 'Afd_Pce/form/element/city';
             $addressFieldset['company']['config']['elementTmpl'] = 'Afd_Pce/form/element/company';
             $addressFieldset['postcode']['config']['elementTmpl'] = 'Afd_Pce/form/element/postcode';
+            $addressFieldset['region_id']['config']['elementTmpl'] = 'Afd_Pce/form/element/region';
 
         }
         if($this->_scopeConfig->getValue('afd_phone/forms/checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
-
             $addressFieldset['telephone']['component'] = 'Afd_Pce/js/form/element/telephone';
             $addressFieldset['telephone']['config']['elementTmpl'] = 'Afd_Pce/form/element/telephone';
         }
-
 
         $addressFieldset['country_id']['config']['sortOrder'] = 65;
 

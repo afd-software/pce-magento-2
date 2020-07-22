@@ -2,7 +2,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <tab id="afd" translate="label" sortOrder="800">
+        <tab id="afd" translate="label" sortOrder="800" class="afd-extensions">
             <label>AFD Software</label>
         </tab>
         <section id="afd_general" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -88,6 +88,16 @@
                 <field id="checkout" translate="label" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Checkout</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="adminCustomer" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Admin - Manage Customer</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="adminOrder" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Admin - Create Order</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
@@ -212,10 +222,6 @@
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                 </field>
             </group>
-            <group id="manualEntry" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1"
-                   showInStore="1">
-                <label>Manual Entry Configuration</label>
-            </group>
             <group id="quantity" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Results Quantity</label>
@@ -238,6 +244,39 @@
                     </depends>
                 </field>
             </group>
+            <group id="reverseGeocode" translate="label" type="text" sortOrder="55" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Reverse Geocoding</label>
+                <comment>Reverse Geocoding allows the integration to estimate a users address based on their devices
+                    location.
+                </comment>
+                <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Enable Reverse Geocoding</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="mobileOnly" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Only Display on Mobile Devices</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>The quality of reverse geocoding lookup results are significantly higher on mobile devices
+                        that have GPS functionality. When this option is enabled the button will only be displayed on
+                        mobile devices.
+                    </comment>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                </field>
+                <field id="buttonText" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Button Text</label>
+                    <depends>
+                        <field id="enable">1</field>
+                    </depends>
+                    <comment>This can be plain text or HTML, for example an `svg` element can be used to draw an icon.
+                    </comment>
+                </field>
+            </group>
             <group id="advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Advanced Options</label>
@@ -249,6 +288,11 @@
                         Enabling this will retrieve a polyfill from polyfill.io. You can safely disable this if you do
                         not need to support IE 11 or you are using your own polyfills.
                     </comment>
+                </field>
+                <field id="communityEdition" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Community Edition</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
         </section>
@@ -369,6 +413,11 @@
                     <label>Newsletter Signup - Footer</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="adminCustomer" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Admin - Edit Customer</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="fields" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1">
                 <label>Field settings</label>
@@ -485,14 +534,26 @@
                     <label>Contact Us Form</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="adminCustomer" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Admin - Edit Customer Address</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="adminOrder" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Admin - New Order</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
             <group id="fields" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1">
                 <label>Field settings</label>
                 <field id="dialingCode" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Default international dialing code</label>
-                    <comment>Prefix with "+", e.g. "+44". This will validate phone numbers of this country code without the
-                        user inputting the country code. If the user prefixes their number "00" or "+" this setting will be
+                    <comment>Prefix with "+", e.g. "+44". This will validate phone numbers of this country code without
+                        the
+                        user inputting the country code. If the user prefixes their number "00" or "+" this setting will
+                        be
                         overridden and the country supplied code will be used for validation.
                     </comment>
                 </field>

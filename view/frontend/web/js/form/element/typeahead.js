@@ -19,21 +19,24 @@ define([
             var $target = $(target);
             var $container = $target.closest('form');
             var countrySelector = '[name="country_id"]';
+            var reverseGeocodeEnabled = window.checkoutConfig.afd.reverseGeocodeEnable === '1';
 
             function checkElementsLoaded() {
                 if (
                     typeof $container.find(countrySelector).val() === 'undefined' ||
-                    $container.find("[data-afd-result='Organisation']").length < 1 ||
-                    $container.find("[data-afd-result='Property']").length < 1 ||
-                    $container.find("[data-afd-result='Street']").length < 1 ||
-                    $container.find("[data-afd-result='Town']").length < 1 ||
-                    $container.find("[data-afd-result='Postcode']").length < 1 ||
-                    $container.find("[data-afd-control='typeahead']").length < 1
+                    $container.find('[data-afd-result="Organisation"]').length < 1 ||
+                    $container.find('[data-afd-result="Property"]').length < 1 ||
+                    $container.find('[data-afd-result="Street"]').length < 1 ||
+                    $container.find('[data-afd-result="Town"]').length < 1 ||
+                    $container.find('[data-afd-result="Postcode"]').length < 1 ||
+                    $container.find('[data-afd-control="typeahead"]').length < 1 ||
+                    (reverseGeocodeEnabled && $container.find('.reverse-geocode-button').length < 1 )
                 ) {
                     window.setTimeout(checkElementsLoaded, 100); /* this checks the flag every 100 milliseconds*/
                 } else {
                     afdOptions.country.customCountryControl = countrySelector;
                     $(target).find('[data-afd-control="typeahead"]').afd('typeahead');
+                    $container.find('.reverse-geocode-button').afd('reverseGeocodeButton')
                 }
             }
             checkElementsLoaded();

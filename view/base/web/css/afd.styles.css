@@ -1,0 +1,41 @@
+.reverse-geocode-button {
+    margin-bottom: 16px;
+}
+
+.geodemographic-input {
+    display: none !important;
+}
+
+.afd-extensions strong {
+    padding-left: 24px;
+    background-image: url('../images/logo.png');
+    background-size: 19px;
+    background-repeat: no-repeat;
+}
+
+.afd-typeahead-query {
+    display:flex;
+}
+
+.afd-typeahead-query input {
+    flex-grow: 1;
+}
+
+.afd-typeahead-with-reverse-geocode.afd-typeahead-query input {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+button.reverse-geocode-button {
+    height: 32px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+button.reverse-geocode-button > span {
+    white-space: nowrap;
+}
+
+button.reverse-geocode-button > span svg {
+    fill: white;
+}

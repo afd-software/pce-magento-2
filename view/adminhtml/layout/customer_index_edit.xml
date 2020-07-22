@@ -2,5 +2,10 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
         <css src="Afd_Pce::css/jquery.typeahead.afd.css"/>
+        <css src="Afd_Pce::css/jquery.phone.afd.css"/>
     </head>
+    <referenceBlock name="content">
+        <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml" />
+        <block class="Afd\Pce\Block\Afd" name="afd.email" template="Afd_Pce::admin_customer_edit.phtml" />
+    </referenceBlock>
 </page>

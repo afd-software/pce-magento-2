@@ -25,6 +25,9 @@ class ConfigProvider implements ConfigProviderInterface
         $config['afd']['enableSearchAgainButton'] = $this->helperData->getConfigValue('afd_typeahead/fields/enableSearchAgainButton');
         $config['afd']['searchAgainMarkup'] = $this->helperData->getConfigValue('afd_typeahead/fields/searchAgainMarkup');
         $config['afd']['searchAgainCss'] = $this->helperData->getConfigValue('afd_typeahead/fields/searchAgainCss');
+        $config['afd']['reverseGeocodeEnable'] = $this->helperData->getConfigValue('afd_typeahead/reverseGeocode/enable');
+        $config['afd']['reverseGeocodeMobileOnly'] = $this->helperData->getConfigValue('afd_typeahead/reverseGeocode/mobileOnly');
+        $config['afd']['reverseGeocodeText'] = $this->helperData->getConfigValue('afd_typeahead/reverseGeocode/buttonText');
         return $config;
     }
 }

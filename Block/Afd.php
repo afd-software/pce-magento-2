@@ -21,4 +21,10 @@ class Afd extends \Magento\Framework\View\Element\Template
         return $this->helperData->getConfigValue('afd_' . $code);
     }
 
+    public function getMageVersion(){
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        return $productMetadata->getVersion();
+    }
+
 }

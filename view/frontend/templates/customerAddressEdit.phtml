@@ -104,12 +104,20 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                 <div class="afd-typeahead-container field">
                     <label class="label"><span>Address Search</span></label>
                     <div class="afd-typeahead-field">
-                        <div class="afd-typeahead-query">
+                        <div class="afd-typeahead-query<?php if ($block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?> afd-typeahead-with-reverse-geocode<?php endif ?>">
+                            <?php if ($block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?>
+                                <div class="reverse-geocode-container">
+                                    <button class="primary action reverse-geocode-button" data-afd-control="reverseGeocodeButton" id="reverseGeocodeButton">
+                                        <span><?php echo $block->getConfig('afd_typeahead/reverseGeocode/buttonText') ?></span>
+                                    </button>
+                                </div>
+                            <?php endif ?>
                             <input
                                     class="input-text"
                                     type="search"
                                     autocomplete="off"
                                     data-afd-control="typeahead"
+                                    id="typeahead"
                                     placeholder="<?php echo $block->getConfig('afd_typeahead/fields/placeholder') ?>"
                                     name="afd-search-<?php echo rand(); ?>"
                             >
@@ -131,6 +139,12 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                             <?php echo $block->getConfig('afd_typeahead/fields/searchAgainCss') ?>
                         </style>
                     <?php endif ?>
+
+                </div>
+            <?php endif; ?>
+            <?php if ($block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?>
+                <div class="afd-form-control">
+                    <ul data-afd-control="reverseGeocodeResultsList"></ul>
                 </div>
             <?php endif; ?>
             <!--/AFD Typeahead-->
@@ -212,7 +226,7 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                 <div class="control">
                     <select id="region_id" name="region_id" title="<?= /* @noEscape */
                     $block->getAttributeData()->getFrontendLabel('region') ?>" class="validate-select region_id"
-                            <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?>>
+                            <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?> data-afd-result="TraditionalCounty">
                         <option value=""><?= $block->escapeHtml(__('Please select a region, state or province.')) ?></option>
                     </select>
 
@@ -296,7 +310,11 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
             </div>
         </div>
     </form>
+
     <script type="text/x-magento-init">
+
+
+
     {
         "#form-validate": {
             "addressValidation": {
@@ -324,11 +342,19 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
 
     </script>
 
+    <script type="text/javascript">
+        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+            $('#typeahead').afd('typeahead');
+            $('#reverseGeocodeButton').afd('reverseGeocodeButton');
+
+        })
+    </script>
 
 <?php if ($phoneActive): ?>
     <script type="text/javascript">
         require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
             $('#telephone').afd('phone');
         })
+
     </script>
 <?php endif ?>

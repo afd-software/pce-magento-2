@@ -25,14 +25,16 @@ To get started with AFD Software's Magento integration you will need authenticat
 
 ## Typeahead
 
-<img src="https://www.afd.co.uk/img/480/integrations/magento-typeahead.png" align="right">
+<img src="https://www.afd.co.uk/img/360/integrations/magento-typeahead.png" align="right">
 
-Typeahead address searching makes inputting addresses a much more pleasent experience for the customer and ensures that the data that is collected is accurate - essential for ecommerce.
+Typeahead address searching makes inputting addresses a much more pleasant experience for the customer and ensures that the data that is collected is accurate - essential for eCommerce.
 
 Typeahead is available on the following forms:
 
 * Checkout - Shipping and Billing
 * My Account - Address Management
+* Admin - Manage Customer Address
+* Admin - Create Order
 
 Our Magento typeahead plugin comes equipped with these great features:
 
@@ -48,8 +50,14 @@ Our Magento typeahead plugin comes equipped with these great features:
   * Hide search field after address retrieve is complete
   * Hide region field for countries that do not require region as part of their address (e.g. UK)
 * Consise searching:
-  * Highlight the segment of the results that match the serach string
+  * Highlight the segment of the results that match the search string
   * Set the number of search results shown
+
+## Reverse Geocoding
+
+<img src="https://www.afd.co.uk/img/360/integrations/reverse-geocode.png" align="right">
+
+It is also possible to retrieve a users address using the browser geolocation api.  Activating this feature will add a button next to the typeahead field that when clicked will ask the user for permission to access their location, after permission has been granted our integration will collect the location from the device and perform a reverse geocoding lookup that will return a list of the closest addresses to user's current location. 
 
 ## Email Address Validation
 
@@ -66,6 +74,7 @@ This functionality is available on the following forms:
 * My Account - Change email address
 * Contact Us
 * Newsletter Signup
+* Admin - Manage Customer
   
 Email validation is a valuable merchants tool for merchants as it helps prevent typos in email addresses forms and help prevent fraud.
 
@@ -87,8 +96,10 @@ Additionally the field will mask the phone number so that it is displayed in the
 This functionality is available on the following forms:
 
 * Checkout - Shipping and Billing
-* My Acount - Address Management
+* My Account - Address Management
 * Contact Us
+* Admin - Manage Customer Address
+* Admin - Create Order
 
 Our module comes equipped with the following customisation options:
   

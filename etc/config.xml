@@ -17,6 +17,8 @@
             <forms>
                 <account>1</account>
                 <checkout>1</checkout>
+                <adminCustomer>0</adminCustomer>
+                <adminOrder>0</adminOrder>
             </forms>
             <fields>
                 <placeholder>Start typing your address</placeholder>
@@ -63,8 +65,14 @@
                 <enableFewItemsText>0</enableFewItemsText>
                 <fewItemsText>Can't see your address? Enter it manually</fewItemsText>
             </quantity>
+            <reverseGeocode>
+                <enable>0</enable>
+                <mobileOnly>1</mobileOnly>
+                <buttonText>Find Address Automatically</buttonText>
+            </reverseGeocode>
             <advanced>
                 <polyfill>1</polyfill>
+                <communityEdition>0</communityEdition>
             </advanced>
         </afd_typeahead>
         <afd_email>
@@ -87,7 +95,7 @@
                 <checkout>0</checkout>
                 <contact>0</contact>
                 <newsletter>0</newsletter>
-                <invitation>0</invitation>
+                <adminCustomer>0</adminCustomer>
             </forms>
             <fields>
                 <msg>Please enter a valid email address</msg>
@@ -111,6 +119,8 @@
                 <account>0</account>
                 <checkout>0</checkout>
                 <contact>0</contact>
+                <adminCustomer>0</adminCustomer>
+                <adminOrder>0</adminOrder>
             </forms>
             <fields>
                 <dialingCode>+44</dialingCode>

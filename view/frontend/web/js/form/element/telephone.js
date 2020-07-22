@@ -29,6 +29,7 @@ define([
             if(afdOptions.magentoOptions.phone.phoneEnabled && afdOptions.magentoOptions.phone.loggedOutCheckoutEnabled) {
                 $(target)
                     .afd('phone')
+                    .closest('div')
                     .siblings('.afd-error')
                     .find('span')
                     .text(afdOptions.magentoOptions.phone.invalidMessage);

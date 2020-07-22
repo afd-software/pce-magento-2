@@ -5,6 +5,7 @@
             <module name="Magento_CustomerCustomAttributes" />
             <module name="Magento_Customer" />
             <module name="Temando_Shipping" />
+            <module name="Amazon_Payment" />
         </sequence>
     </module>
 </config>

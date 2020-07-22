@@ -28,7 +28,6 @@ define([
                     $("[data-index='street']").find(".admin__field").each(function(index){
                         $(this).find("input").attr("data-afd-result", identifiers[index]);
                     });
-                    $(document).trigger("initAfd");
                 }
             }
             f();

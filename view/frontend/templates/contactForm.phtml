@@ -36,7 +36,6 @@ $phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
             <div class="control">
                 <input name="email" id="email" title="<?= $block->escapeHtmlAttr(__('Email')) ?>" value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('email') ?: $this->helper(\Magento\Contact\Helper\Data::class)->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}" <?php echo $emailAttribute ?> data-afd-additional-options="afdEmailOptions" />
                 <div for="email" generated="true" class="afd-error mage-error"><?php echo $scopeConfig->getValue('afd_email/fields/msg'); ?></div>
-
             </div>
         </div>
         <div class="field telephone">

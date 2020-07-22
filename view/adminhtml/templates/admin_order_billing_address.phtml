@@ -115,29 +115,29 @@ endif; ?>
             >
         </div>
     </div>
-    <div class="afd-manual-input-button" style="display:none; margin-left:30px"></div>
-    <div class="afd-manual-input-search-button" style="display:none; margin-left:30px"></div>
-    <style class="afd-manual-input-style"></style>
-    <div class="afd-search-again" style="display:none; margin-left:30px"></div>
-    <style class="afd-search-again-style"></style>
 </div>
+<div id="billing-manual-input" class="afd-manual-input-button" style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually</div>
+<div id="billing-manual-input-search" class="afd-manual-input-search-button" style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address</div>
+<div id="billing-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">Search Again</div>
+<style class="afd-manual-input-style"></style>
+<style class="afd-search-again-style"></style>
+<div for="telephone" generated="true" id="afd-billing-phone-error" class="afd-error mage-error">Please enter a valid phone number</div>
 
 <script type="text/javascript">
     require(['jquery', 'afdPce','domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
         $(document).ready(function(){
-            console.log($("#order-billing_address_company"));
-            $("#order-billing_address_fields .field-country_id").detach().insertAfter("#order-billing_address_fields .field-company");
-            $("#billing-typeahead").detach().insertAfter("#order-billing_address_fields .field-country_id").show();
-            $("#order-billing_address_company").attr("data-afd-result", "Organisation");
-            $("#order-billing_address_street0").attr("data-afd-result", "Property");
-            $("#order-billing_address_street1").attr("data-afd-result", "Street");
-            $("#order-billing_address_street2").attr("data-afd-result", "Locality");
-            $("#order-billing_address_city").attr("data-afd-result", "Town");
-            $("#order-billing_address_postcode").attr("data-afd-result", "Postcode");
-
-            // jQuery(document).trigger('afd::page_ready');
-            $(document).trigger("initAfd");
-
+            $('#order-billing_address_fields .field-country_id').detach().insertAfter('#order-billing_address_fields .field-company');
+            $('#afd-billing-phone-error').detach().insertAfter('[name="order[billing_address][telephone]"]');
+            $('#billing-typeahead').detach().insertAfter('#order-billing_address_fields .field-country_id').show();
+            $('#billing-manual-input, #billing-manual-input-search, #billing-search-again').detach().insertAfter('#billing-typeahead');
+            $('#order-billing_address_company').attr('data-afd-result', 'Organisation');
+            $('#order-billing_address_street0').attr('data-afd-result', 'Property');
+            $('#order-billing_address_street1').attr('data-afd-result', 'Street');
+            $('#order-billing_address_street2').attr('data-afd-result', 'Locality');
+            $('#order-billing_address_city').attr('data-afd-result', 'Town');
+            $('#order-billing_address_postcode').attr('data-afd-result', 'Postcode');
+            $('#billing-typeahead').find('[data-afd-control="typeahead"]').afd('typeahead');
+            $('[name="order[billing_address][telephone]"]').afd('phone');
         })
     });
 </script>

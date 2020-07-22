@@ -1,0 +1,87 @@
+<script src="https://cdn.afd.co.uk/plugins/shared/utils.js"></script>
+<script>
+    require(['jquery', 'afdPcePostRender', 'domReady!'], function ($) {
+
+        afdOptions.postRender = {};
+
+        if (afdOptions.magentoOptions.typeahead.adminEditCustomerEnabled) {
+            var typeaheadTemplate = '<div class="afd-typeahead-container afd-form-control form-group admin__field">';
+            typeaheadTemplate += '<div class="admin__field-label">';
+            typeaheadTemplate += '<label>';
+            typeaheadTemplate += '<span>Address Search</span>';
+            typeaheadTemplate += '</label>';
+            typeaheadTemplate += '</div>';
+            typeaheadTemplate += '<div class="afd-typeahead-field admin__field-control">';
+            typeaheadTemplate += '<div class="afd-typeahead-query">';
+            typeaheadTemplate += '<input class="form-control" placeholder="Start typing your address" type="search" autocomplete="off" data-afd-control="typeahead" name="lion">';
+            typeaheadTemplate += '</div>';
+            typeaheadTemplate += '</div>';
+            typeaheadTemplate += '</div>';
+
+            afdOptions.postRender.typeahead = {
+                field: {
+                    selector: '[data-index="middlename"]',
+                    action: 'after',
+                    classes: 'admin__field',
+                    template: typeaheadTemplate
+                },
+                addressSearch: {
+                    selector: '[data-index="company"]',
+                    action: 'before'
+                },
+                searchAgain: {
+                    selector: '[data-index="company"]',
+                    action: 'before'
+                },
+                manualInput: {
+                    selector: '[data-index="company"]',
+                    action: 'before',
+                    template: '<div class="afd-manual-input-button">Manual Input</div>'
+                },
+                manualInputSearch: {
+                    selector: '[data-index="company"]',
+                    action: 'before'
+                }
+            };
+
+            afdOptions.postRender.results = [
+                ['[name="company"]', 'Organisation'],
+                ['[name="street[0]"]', 'Property'],
+                ['[name="street[1]"]', 'Street'],
+                ['[name="street[2]"]', 'Locality'],
+                ['[name="city"]', 'Town'],
+                ['[name="postcode"]', 'Postcode'],
+                ['[name="region_id"]', 'TraditionalCounty']
+            ];
+
+            afdOptions.typeahead.parentClass = 'admin__field';
+            afdOptions.typeahead.containerOnlyContainsControl = true;
+        }
+
+        if (afdOptions.magentoOptions.phone.adminEditCustomerEnabled) {
+
+            afdOptions.postRender.phone = {
+                selector: '.modal-content [name="telephone"]'
+            };
+        }
+
+        afdOptions.country.customCountryControl = '.modal-content [name="country_id"]';
+        afdOptions.typeahead.containers = [];
+
+        function checkElementsLoaded() {
+            if ($('.modal-content [name="telephone"]').length < 1) {
+                window.setTimeout(checkElementsLoaded, 100); /* this checks the flag every 100 milliseconds*/
+            } else {
+                $(document).trigger('afd::initPostRender');
+            }
+        }
+
+        checkElementsLoaded();
+
+        $(document).trigger('afd::initPostRender');
+
+        $('.modal-content [name="telephone"]')
+            .closest('div')
+            .append('<div for="telephone" generated="true" class="afd-error mage-error">Please enter a valid phone number</div>');
+    });
+</script>

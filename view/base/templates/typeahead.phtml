@@ -81,6 +81,7 @@
 
         // in case the form becomes invalid, show all fields
         $(".form-address-edit").on("invalid-form", function (e) {
+            var $resultFields = $('[data-afd-result]');
             if (afdOptions.parentClass) {
                 $resultFields.closest('.' + options.typeahead.parentClass).show();
             } else {
