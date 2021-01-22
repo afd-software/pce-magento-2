@@ -1,20 +1,41 @@
-<?php // not ok needs fixing ?>
+<?php if ($block->getConfig('phone/enable/enable') == 1): ?>
 
-<script type="text/javascript">
+    <script type="text/javascript">
 
-    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
 
-        
-        $(document).on('afd:phoneValidationStared', function(e, el){
-            var $el = $(el);
-            $el.parent().addClass('afd-loading');
+            window.afdPhoneOptions = {};
+
+            <?php if($block->getConfig('phone/account/useDefaultCredentials') == 0): ?>
+
+
+            <?php if($block->getConfig('phone/account/authMethod') == "id"): ?>
+                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('phone/account/idPceUrl'); ?>';
+                afdPhoneOptions.id = '<?php echo $block->getConfig('phone/account/id'); ?>';
+                afdPhoneOptions.token = '<?php echo $block->getConfig('phone/account/token'); ?>';
+                afdPhoneOptions.serial = null;
+                afdPhoneOptions.password = null;
+            <?php else: ?>
+                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('phone/account/serialPceUrl'); ?>';
+                afdPhoneOptions.serial = '<?php echo $block->getConfig('phone/account/serial'); ?>';
+                afdPhoneOptions.password = '<?php echo $block->getConfig('phone/account/password'); ?>';
+                afdPhoneOptions.id = null;
+                afdPhoneOptions.token = null;
+            <?php endif; ?>
+
+
+            <?php endif; ?>
+
+            $(document).on('afd:phoneValidationStared', function (e, el) {
+                var $el = $(el);
+                $el.parent().addClass('afd-loading');
+            });
+            $(document).on('afd:phoneValidationUpdated', function (e, el) {
+                var $el = $(el);
+                $el.parent().removeClass('afd-loading');
+            });
+
         });
-        $(document).on('afd:phoneValidationUpdated', function(e, el){
-            var $el = $(el);
-            $el.parent().removeClass('afd-loading');
-        });
 
-    });
-
-
-</script>
+    </script>
+<?php endif; ?>

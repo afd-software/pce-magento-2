@@ -72,7 +72,7 @@
             </reverseGeocode>
             <advanced>
                 <polyfill>1</polyfill>
-                <communityEdition>0</communityEdition>
+                <enterpriseEdition>1</enterpriseEdition>
             </advanced>
         </afd_typeahead>
         <afd_email>

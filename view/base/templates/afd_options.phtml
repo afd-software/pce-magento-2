@@ -3,7 +3,7 @@
 <?php } ?>
 <script>
 
-    var regionMap = function(result) {
+    var regionMap = function (result) {
 
         var regions = <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>;
         var countryMap = {
@@ -36,7 +36,7 @@
 
         var val = '';
         for (var regionIndex in regions[mappedCountry]) {
-            if(regions[mappedCountry][regionIndex].code === result.TraditionalCounty){
+            if (regions[mappedCountry][regionIndex].code === result.TraditionalCounty) {
                 val = regionIndex;
             }
         }
@@ -85,36 +85,55 @@
     };
 
     <?php if($block->getConfig('general/account/method') == "id"){; ?>
-        afdOptions.pceUrl = '<?php echo $block->getConfig('general/account/idPceUrl'); ?>';
-        afdOptions.id = '<?php echo $block->getConfig('general/account/id'); ?>';
-        afdOptions.token = '<?php echo $block->getConfig('general/account/token'); ?>';
+    afdOptions.pceUrl = '<?php echo $block->getConfig('general/account/idPceUrl'); ?>';
+    afdOptions.id = '<?php echo $block->getConfig('general/account/id'); ?>';
+    afdOptions.token = '<?php echo $block->getConfig('general/account/token'); ?>';
     <?php } else { ?>
-        afdOptions.pceUrl = '<?php echo $block->getConfig('general/account/serialPceUrl'); ?>';
-        afdOptions.serial = '<?php echo $block->getConfig('general/account/serial'); ?>';
-        afdOptions.password = '<?php echo $block->getConfig('general/account/password'); ?>';
+    afdOptions.pceUrl = '<?php echo $block->getConfig('general/account/serialPceUrl'); ?>';
+    afdOptions.serial = '<?php echo $block->getConfig('general/account/serial'); ?>';
+    afdOptions.password = '<?php echo $block->getConfig('general/account/password'); ?>';
     <?php } ?>
     var hideStateCountries = '<?php echo $block->getConfig('typeahead/fields/hideRegion');?>'.split(',');
     // custom options that are needed in some parts of the application where templates cannot access back end config
     afdOptions.magentoOptions = {
         typeahead: {
-            adminEditCustomerEnabled:   <?php echo $block->getConfig('typeahead/forms/adminCustomer'); ?> === 1
-        },
-        email: {
-            emailEnabled: <?php echo $block->getConfig('email/enable/enable'); ?> === 1,
-            accountChangeEmailEnabled: <?php echo $block->getConfig('email/forms/account'); ?> === 1,
-            loggedOutCheckoutEnabled: <?php echo $block->getConfig('email/forms/checkout'); ?> === 1,
-            adminEditCustomerEnabled:   <?php echo $block->getConfig('email/forms/adminCustomer'); ?> === 1
-        },
-        phone: {
-            phoneEnabled: <?php echo $block->getConfig('phone/enable/enable'); ?> === 1,
-            loggedOutCheckoutEnabled: <?php echo $block->getConfig('phone/forms/checkout'); ?> === 1,
-            invalidMessage: '<?php echo $block->getConfig("phone/fields/msg"); ?>',
-            adminEditCustomerEnabled:   <?php echo $block->getConfig('phone/forms/adminCustomer'); ?> === 1
-        },
-        version: '<?php echo $block->getMageVersion() ?>'
+            adminEditCustomerEnabled:   <?php echo $block->getConfig('typeahead/forms/adminCustomer'); ?> === 1,
+        adminCreateOrderEnabled:   <?php echo $block->getConfig('typeahead/forms/adminOrder'); ?> === 1
+    },
+    email: {
+        emailEnabled: <?php echo $block->getConfig('email/enable/enable'); ?> ===
+        1,
+            accountChangeEmailEnabled
+    : <?php echo $block->getConfig('email/forms/account'); ?> ===
+        1,
+            loggedOutCheckoutEnabled
+    : <?php echo $block->getConfig('email/forms/checkout'); ?> ===
+        1,
+            adminEditCustomerEnabled
+    :   <?php echo $block->getConfig('email/forms/adminCustomer'); ?> ===
+        1
+    }
+    ,
+    phone: {
+        phoneEnabled: <?php echo $block->getConfig('phone/enable/enable'); ?> ===
+        1,
+            loggedOutCheckoutEnabled
+    : <?php echo $block->getConfig('phone/forms/checkout'); ?> ===
+        1,
+            invalidMessage
+    :
+        '<?php echo $block->getConfig("phone/fields/msg"); ?>',
+            adminEditCustomerEnabled
+    :   <?php echo $block->getConfig('phone/forms/adminCustomer'); ?> ===
+        1,
+            adminCreateOrderEnabled
+    :   <?php echo $block->getConfig('phone/forms/adminOrder'); ?> ===
+        1
+    }
+    ,
+    version: '<?php echo $block->getMageVersion() ?>'
 
     }
-
 </script>
 
 <style>
@@ -123,12 +142,14 @@
     }
 
 
-     .control.loading {
-         position: relative
-     }
+    .control.loading {
+        position: relative
+    }
+
     .field .control:before {
         border-color: rgba(0, 0, 0, 0.35);
     }
+
     .field .control.loading:before, .field .control.loading:after {
         transition: all 0s linear, opacity 0.2s ease;
         position: absolute;

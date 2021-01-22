@@ -1,17 +1,12 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright    Magento, Inc. All rights reserved.
+ * Copyright © Magento, Inc. All rights reserved.
  * See COPYING.txt for license details.
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
-        <referenceBlock name="after.body.start">
-            <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml" />
-            <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
-                   ifconfig="afd_phone/forms/adminOrder" />
-        </referenceBlock>
         <referenceBlock name="form_account">
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Afd_Pce::order/create/form/account.phtml</argument>

@@ -16,9 +16,6 @@
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Afd_Pce::customerAddressEdit.phtml</argument>
             </action>
-            <action method="setTemplate"  ifconfig="afd_typeahead/advanced/communityEdition">
-                <argument name="template" xsi:type="string">Afd_Pce::customerAddress.phtml</argument>
-            </action>
         </referenceBlock>
         <referenceBlock name="customer_form_address_user_attributes">
             <action method="setTemplate">

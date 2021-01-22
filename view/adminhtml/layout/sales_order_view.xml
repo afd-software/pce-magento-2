@@ -8,7 +8,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="order_additional_info">
-                <block class="Afd\Pce\Block\Adminhtml\Order\View\Additional"  name="afd.geodemographics" template="Afd_Pce::admin_geodemographics.phtml" />
+                <block class="Afd\Pce\Block\Adminhtml\Order\View\Additional"  name="afd.geodemographics" template="Afd_Pce::admin_geodemographics.phtml" ifconfig="afd_typeahead/advanced/enterpriseEdition" />
         </referenceBlock>
     </body>
 </page>

@@ -41,7 +41,7 @@ $phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
         <div class="field telephone">
             <label class="label" for="telephone"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
             <div class="control">
-                <input name="telephone" id="telephone" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>" value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('telephone')) ?>" class="input-text" type="text" <?php echo $phoneAttribute; ?> />
+                <input name="telephone" id="telephone" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>" value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('telephone')) ?>" class="input-text" type="text" <?php echo $phoneAttribute; ?> data-afd-additional-options="afdPhoneOptions" />
                 <div for="telephone" generated="true" class="afd-error mage-error"><?php echo $scopeConfig->getValue('afd_phone/fields/msg'); ?></div>
             </div>
         </div>

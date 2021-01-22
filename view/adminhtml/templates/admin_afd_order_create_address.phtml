@@ -1,0 +1,175 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/** @var \Magento\Sales\Block\Adminhtml\Order\Create\Form\Address $block */
+
+/**
+ * @var \Magento\Customer\Model\ResourceModel\Address\Collection $addressCollection
+ */
+$addressCollection = $block->getData('customerAddressCollection');
+
+$addressArray = [];
+if ($block->getCustomerId()) :
+    $addressArray = $addressCollection->setCustomerFilter([$block->getCustomerId()])->toArray();
+endif;
+
+/**
+ * @var \Magento\Sales\ViewModel\Customer\AddressFormatter $customerAddressFormatter
+ */
+$customerAddressFormatter = $block->getData('customerAddressFormatter');
+
+/**
+ * @var \Magento\Sales\Block\Adminhtml\Order\Create\Billing\Address|\Magento\Sales\Block\Adminhtml\Order\Create\Shipping\Address $block
+ */
+if ($block->getIsShipping()) :
+    $_fieldsContainerId = 'order-shipping_address_fields';
+    $_addressChoiceContainerId = 'order-shipping_address_choice';
+    ?>
+    <script>
+        require(["Magento_Sales/order/create/form"], function(){
+            order.shippingAddressContainer = '<?= $block->escapeJs($_fieldsContainerId) ?>';
+            order.setAddresses(<?= /* @noEscape  */ $block->getAddressCollectionJson() ?>);
+        });
+    </script>
+<?php
+else :
+    $_fieldsContainerId = 'order-billing_address_fields';
+    $_addressChoiceContainerId = 'order-billing_address_choice';
+    ?>
+    <script>
+        require(["Magento_Sales/order/create/form"], function(){
+            order.billingAddressContainer = '<?= $block->escapeJs($_fieldsContainerId) ?>';
+        });
+    </script>
+<?php
+endif; ?>
+
+<fieldset class="admin__fieldset">
+    <legend class="admin__legend <?= $block->escapeHtmlAttr($block->getHeaderCssClass()) ?>">
+        <span><?= $block->escapeHtml($block->getHeaderText()) ?></span>
+    </legend><br>
+
+    <fieldset id="<?= $block->escapeHtmlAttr($_addressChoiceContainerId) ?>" class="admin__fieldset order-choose-address">
+        <?php if ($block->getIsShipping()) : ?>
+            <div class="admin__field admin__field-option admin__field-shipping-same-as-billing">
+                <input type="checkbox" id="order-shipping_same_as_billing" name="shipping_same_as_billing"
+                       onclick="order.setShippingAsBilling(this.checked)" class="admin__control-checkbox"
+                       <?php if ($block->getIsAsBilling()) : ?>checked<?php endif; ?> />
+                <label for="order-shipping_same_as_billing" class="admin__field-label">
+                    <?= $block->escapeHtml(__('Same As Billing Address')) ?>
+                </label>
+            </div>
+        <?php endif; ?>
+        <div class="admin__field admin__field-select-from-existing-address">
+            <label class="admin__field-label"><?= $block->escapeHtml(__('Select from existing customer addresses:')) ?></label>
+            <?php $_id = $block->getForm()->getHtmlIdPrefix() . 'customer_address_id' ?>
+            <div class="admin__field-control">
+                <select id="<?= $block->escapeHtmlAttr($_id) ?>"
+                        name="<?= /* @noEscape */ $block->getForm()->getHtmlNamePrefix() ?>[customer_address_id]"
+                        onchange="order.selectAddress(this, '<?= $block->escapeHtmlAttr($block->escapeJs($_fieldsContainerId)) ?>')"
+                        class="admin__control-select">
+                    <option value=""><?= $block->escapeHtml(__('Add New Address')) ?></option>
+                    <?php foreach ($addressArray as $addressId => $address) : ?>
+                        <option
+                                value="<?= $block->escapeHtmlAttr($addressId) ?>"<?php if ($addressId == $block->getAddressId()) : ?> selected="selected"<?php endif; ?>>
+                            <?= $block->escapeHtml($customerAddressFormatter->getAddressAsString($address)) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+    </fieldset>
+
+    <div class="order-address admin__fieldset" id="<?= $block->escapeHtmlAttr($_fieldsContainerId) ?>">
+        <?= $block->getForm()->toHtml() ?>
+
+        <div class="admin__field admin__field-option order-save-in-address-book">
+            <input name="<?= /* @noEscape */ $block->getForm()->getHtmlNamePrefix() ?>[save_in_address_book]" type="checkbox" id="<?= /* @noEscape */ $block->getForm()->getHtmlIdPrefix() ?>save_in_address_book" value="1"<?php if (!$block->getDontSaveInAddressBook()) : ?> checked="checked"<?php endif; ?> class="admin__control-checkbox"/>
+            <label for="<?= /* @noEscape */ $block->getForm()->getHtmlIdPrefix() ?>save_in_address_book"
+                   class="admin__field-label"><?= $block->escapeHtml(__('Save in address book')) ?></label>
+        </div>
+    </div>
+    <?php $hideElement = 'address-' . ($block->getIsShipping() ? 'shipping' : 'billing') . '-overlay'; ?>
+    <div style="display: none;" id="<?= /* @noEscape */ $hideElement ?>" class="order-methods-overlay">
+        <span><?= $block->escapeHtml(__('You don\'t need to select a shipping address.')) ?></span>
+    </div>
+
+    <script>
+        require(["Magento_Sales/order/create/form"], function(){
+            order.bindAddressFields('<?= $block->escapeJs($_fieldsContainerId) ?>');
+            order.bindAddressFields('<?= $block->escapeJs($_addressChoiceContainerId) ?>');
+            <?php if ($block->getIsShipping() && $block->getIsAsBilling()) : ?>
+            order.disableShippingAddress(true);
+            <?php endif; ?>
+        });
+    </script>
+</fieldset>
+
+
+<div class="afd-typeahead-container field admin__field" id="shipping-typeahead" style="display:none;">
+    <div class="admin__field-label">
+        <label><span>Address Search</span></label>
+    </div>
+    <div class="afd-typeahead-field admin__field-control">
+        <div class="afd-typeahead-query">
+            <input
+                    class="input-text"
+                    type="search"
+                    autocomplete="off"
+                    data-afd-control="typeahead"
+                    name="afd-search"
+            >
+        </div>
+    </div>
+</div>
+
+<div id="shipping-manual-input" class="afd-manual-input-button" style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually</div>
+<div id="shipping-manual-input-search" class="afd-manual-input-search-button" style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address</div>
+<div id="shipping-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">Search Again</div>
+<style class="afd-manual-input-style"></style>
+<style class="afd-search-again-style"></style>
+<div for="telephone" generated="true" id="afd-shipping-phone-error" class="afd-error mage-error">Please enter a valid phone number</div>
+
+
+<script>
+    require(['jquery', 'afdPce', 'Magento_Sales/order/create/form', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+        if(afdOptions.magentoOptions.typeahead.adminCreateOrderEnabled) {
+
+            $("#order-shipping_address_fields .field-country_id").detach().insertAfter("#order-shipping_address_fields .field-company");
+            $("#shipping-typeahead").detach().insertAfter("#order-shipping_address .field-country_id").show();
+            $('#shipping-manual-input, #shipping-manual-input-search, #shipping-search-again').detach().insertAfter('#shipping-typeahead');
+            $("#order-shipping_address_company").attr("data-afd-result", "Organisation");
+            $("#order-shipping_address_street0").attr("data-afd-result", "Property");
+            $("#order-shipping_address_street1").attr("data-afd-result", "Street");
+            $("#order-shipping_address_street2").attr("data-afd-result", "Locality");
+            $("#order-shipping_address_city").attr("data-afd-result", "Town");
+            $("#order-shipping_address_postcode").attr("data-afd-result", "Postcode");
+            $("#shipping-typeahead").find('[data-afd-control="typeahead"]').afd('typeahead');
+
+
+
+        }
+
+        if(afdOptions.magentoOptions.phone.adminCreateOrderEnabled) {
+
+            $('#afd-shipping-phone-error').detach().insertAfter('[name="order[shipping_address][telephone]"]');
+
+            afdOptions.phone.countryControl = '#order-shipping_address_country_id';
+            initPhoneAdminOrder($('[name="order[shipping_address][telephone]"]'));
+
+
+            function initPhoneAdminOrder($el) {
+                $el.addClass('afd-padding-fix')
+                    .attr('data-afd-additional-options', 'afdPhoneOptions')
+                    .afd('phone');
+            }
+
+        }
+
+    });
+
+</script>

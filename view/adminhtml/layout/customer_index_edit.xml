@@ -6,6 +6,8 @@
     </head>
     <referenceBlock name="content">
         <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml" />
+        <block class="Afd\Pce\Block\Afd" name="afd.email.config" template="Afd_Pce::email.phtml" />
+        <block class="Afd\Pce\Block\Afd" name="afd.phone.config" template="Afd_Pce::phone.phtml" />
         <block class="Afd\Pce\Block\Afd" name="afd.email" template="Afd_Pce::admin_customer_edit.phtml" />
     </referenceBlock>
 </page>

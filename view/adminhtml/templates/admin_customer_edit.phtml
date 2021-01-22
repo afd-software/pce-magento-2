@@ -1,24 +1,19 @@
 <script type="text/javascript" src="https://cdn.afd.co.uk/plugins/shared/utils.js"></script>
 <script type="text/javascript">
-    require(['jquery', 'afdPcePostRender'], function ($) {
+    require(['jquery', 'afdPce'], function ($) {
 
-        afdOptions.postRender = {};
-
-        if (afdOptions.magentoOptions.email.adminEditCustomerEnabled) {
-
-            afdOptions.postRender.email = {
-                selector: '[name="customer[email]"]'
-            };
-        }
 
         function checkElementsLoaded() {
             if ($('[name="customer[email]"]').length < 1) {
                 window.setTimeout(checkElementsLoaded, 100); /* this checks the flag every 100 milliseconds*/
             } else {
                 $('[name="customer[email]"]')
+                    .attr('data-afd-additional-options', 'afdEmailOptions')
+                    .afd('email')
                     .closest('div')
                     .append('<div for="customer[email]" generated="true" class="afd-error mage-error">Please enter a valid email address</div>');
-                $(document).trigger('afd::initPostRender');
+
+
             }
         }
 

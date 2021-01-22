@@ -1,0 +1,169 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/** @var $block \Magento\Sales\Block\Adminhtml\Order\Create\Form\Account */
+?>
+
+<div class="admin__page-section-title <?= $block->escapeHtmlAttr($block->getHeaderCssClass()) ?>">
+    <span class="title"><?= $block->escapeHtml($block->getHeaderText()) ?></span>
+    <div class="actions"></div>
+</div>
+<div id="customer_account_fields" class="admin__page-section-content">
+    <?= $block->getForm()->getHtml() ?>
+</div>
+
+
+<?php
+    // there are two different versions of this base file depending on the magento version 'account'phtml'
+    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+    $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+    $version = $productMetadata->getVersion();
+
+?>
+
+<?php if(substr( $version, 0 , 3) == 2.3) :  ?>
+
+<script>
+    require(["prototype", "Magento_Sales/order/create/form"], function(){
+        order.accountFieldsBind($('customer_account_fields'));
+    });
+</script>
+
+<?php else :
+    $scriptString = <<<script
+    require(["prototype", "Magento_Sales/order/create/form"], function(){
+        order.accountFieldsBind($('customer_account_fields'));
+    });
+script;
+?>
+<?= /* @noEscape */  $secureRenderer->renderTag('script', [], $scriptString, false)?>
+<?php endif; ?>
+
+<div class="afd-typeahead-container field admin__field" id="billing-typeahead" style="display:none;">
+    <div class="admin__field-label">
+        <label><span>Address Search</span></label>
+    </div>
+    <div class="afd-typeahead-field admin__field-control">
+        <div class="afd-typeahead-query">
+            <input
+                    class="input-text"
+                    id="afd-billing-typeahead"
+                    type="search"
+                    autocomplete="off"
+                    name="afd-search"
+            >
+        </div>
+    </div>
+</div>
+
+<div class="afd-typeahead-container field admin__field" id="shipping-typeahead" style="display:none;">
+    <div class="admin__field-label">
+        <label><span>Address Search</span></label>
+    </div>
+    <div class="afd-typeahead-field admin__field-control">
+        <div class="afd-typeahead-query">
+            <input
+                    class="input-text"
+                    id="afd-shipping-typeahead"
+                    type="search"
+                    autocomplete="off"
+                    name="afd-search"
+            >
+        </div>
+    </div>
+</div>
+
+<div id="shipping-manual-input" class="afd-manual-input-button" style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually</div>
+<div id="shipping-manual-input-search" class="afd-manual-input-search-button" style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address</div>
+<div id="shipping-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">Search Again</div>
+<style class="afd-manual-input-style"></style>
+<style class="afd-search-again-style"></style>
+<div for="telephone" generated="true" id="afd-shipping-phone-error" class="afd-error mage-error">Please enter a valid phone number</div>
+
+<div id="billing-manual-input" class="afd-manual-input-button" style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually</div>
+<div id="billing-manual-input-search" class="afd-manual-input-search-button" style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address</div>
+<div id="billing-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">Search Again</div>
+<style class="afd-manual-input-style"></style>
+<style class="afd-search-again-style"></style>
+<div for="telephone" generated="true" id="afd-billing-phone-error" class="afd-error mage-error">Please enter a valid phone number</div>
+
+<script>
+    require(['jquery', 'afdPce', 'Magento_Sales/order/create/form', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+
+
+        if(afdOptions.magentoOptions.typeahead.adminCreateOrderEnabled) {
+
+            afdOptions.typeahead.containerOnlyContainsControl = true;
+            afdOptions.typeahead.parentClass = 'admin__field';
+
+            $('#order-billing_address_fields .field-country_id').detach().insertAfter('#order-billing_address_fields .field-company');
+            $('#billing-typeahead').detach().insertAfter('#order-billing_address_fields .field-country_id').show();
+            $('#billing-manual-input, #billing-manual-input-search, #billing-search-again').detach().insertAfter('#billing-typeahead');
+            $('#order-billing_address_company').attr('data-afd-result', 'Organisation');
+            $('#order-billing_address_street0').attr('data-afd-result', 'Property');
+            $('#order-billing_address_street1').attr('data-afd-result', 'Street');
+            $('#order-billing_address_street2').attr('data-afd-result', 'Locality');
+            $('#order-billing_address_city').attr('data-afd-result', 'Town');
+            $('#order-billing_address_postcode').attr('data-afd-result', 'Postcode');
+            $('#afd-billing-typeahead').afd('typeahead');
+
+            $('#order-shipping_address_fields .field-country_id').detach().insertAfter("#order-shipping_address_fields .field-company");
+            $('#shipping-typeahead').detach().insertAfter("#order-shipping_address .field-country_id").show();
+            $('#shipping-manual-input, #shipping-manual-input-search, #shipping-search-again').detach().insertAfter('#shipping-typeahead');
+            $('#order-shipping_address_company').attr('data-afd-result', 'Organisation');
+            $('#order-shipping_address_street0').attr('data-afd-result', 'Property');
+            $('#order-shipping_address_street1').attr('data-afd-result', 'Street');
+            $('#order-shipping_address_street2').attr('data-afd-result', 'Locality');
+            $('#order-shipping_address_city').attr('data-afd-result', 'Town');
+            $('#order-shipping_address_postcode').attr('data-afd-result', 'Postcode');
+            $('#afd-shipping-typeahead').afd('typeahead');
+            $('.afd-manual-input-button').triggerHandler('click');
+
+        }
+
+        if(afdOptions.magentoOptions.phone.adminCreateOrderEnabled) {
+
+            if (typeof window.intlTelInputUtils === 'undefined') {
+                window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
+                    .then(function () {
+                        $('#afd-shipping-phone-error').detach().insertAfter('[name="order[shipping_address][telephone]"]');
+                        $('#afd-billing-phone-error').detach().insertAfter('[name="order[billing_address][telephone]"]');
+
+                        afdOptions.phone.countryControl = '#order-shipping_address_country_id';
+                        initPhoneAdminOrder($('[name="order[shipping_address][telephone]"]'));
+                        afdOptions.phone.countryControl = '#order-billing_address_country_id';
+                        initPhoneAdminOrder($('[name="order[billing_address][telephone]"]'));
+                    });
+            } else {
+
+                $('#afd-shipping-phone-error').detach().insertAfter('[name="order[shipping_address][telephone]"]');
+                $('#afd-billing-phone-error').detach().insertAfter('[name="order[billing_address][telephone]"]');
+
+                afdOptions.phone.countryControl = '#order-shipping_address_country_id';
+                initPhoneAdminOrder($('[name="order[shipping_address][telephone]"]'));
+                afdOptions.phone.countryControl = '#order-billing_address_country_id';
+                initPhoneAdminOrder($('[name="order[billing_address][telephone]"]'));
+
+            }
+
+            function initPhoneAdminOrder($el) {
+                $el.addClass('afd-padding-fix')
+                    .attr('data-afd-additional-options', 'afdPhoneOptions')
+                    .afd('phone');
+            }
+
+        }
+
+    });
+
+</script>
+
+<style>
+    .afd-padding-fix {
+        padding-left: 90px !important;
+    }
+</style>

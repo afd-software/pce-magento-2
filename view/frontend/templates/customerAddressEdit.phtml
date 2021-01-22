@@ -8,32 +8,39 @@
 ?>
 
 <?php
-
-$phoneActive = $block->getConfig('afd_phone/enable/enable') == 1 && $block->getConfig('afd_phone/forms/account') == 1;
-$phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
-
-$typeaheadActive = $block->getConfig('afd_typeahead/forms/account') == 1;
-
-function afdResultFieldAttribute($field, $active)
-{
-
-    echo $active ? "data-afd-result=\"" . $field . "\"" : "";
-
-}
-
+// there are two different versions of this base file depending on the magento version
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+$version = $productMetadata->getVersion();
 ?>
 
 
-<?php
-/**
- * Edit customer address template
- *
- * @var $block \Magento\Customer\Block\Address\Edit
- */
-/** @var \Magento\Customer\Helper\Address $addressHelper */
-$addressHelper = $this->helper(\Magento\Customer\Helper\Address::class);
-$requiredAttributesPrechecked = $block->getData('required_attributes_prechecked');
-?>
+    <?php
+
+    $phoneActive = $block->getConfig('afd_phone/enable/enable') == 1 && $block->getConfig('afd_phone/forms/account') == 1;
+    $phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
+    $typeaheadActive = $block->getConfig('afd_typeahead/forms/account') == 1;
+
+    function afdResultFieldAttribute($field, $active)
+    {
+
+        echo $active ? "data-afd-result=\"" . $field . "\"" : "";
+
+    }
+
+    ?>
+
+
+    <?php
+    /**
+     * Edit customer address template
+     *
+     * @var $block \Magento\Customer\Block\Address\Edit
+     */
+    /** @var \Magento\Customer\Helper\Address $addressHelper */
+    $addressHelper = $this->helper(\Magento\Customer\Helper\Address::class);
+    $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked');
+    ?>
     <form class="form-address-edit" action="<?= $block->escapeUrl($block->getSaveUrl()) ?>" method="post"
           id="form-validate" enctype="multipart/form-data"
           data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>">
@@ -56,33 +63,34 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                 </div>
             <?php endif; ?>
             <?php if ($addressHelper->isAttributeVisible('telephone')) : ?>
-                <div class="field telephone <?php if (in_array('telephone', $requiredAttributesPrechecked)) :
-                    ?>required<?php endif; ?>">
-                    <label class="label"
-                           for="telephone"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
-                    <div class="control">
-                        <input type="text" name="telephone"
-                               value="<?= $block->escapeHtml($block->getAddress()->getTelephone()) ?>"
-                               title="<?= $block->escapeHtml(__('Phone Number')) ?>"
-                               class="input-text <?= /* @noEscape */
-                               $addressHelper->getAttributeValidationClass('telephone') ?>"
-                               id="telephone" <?php echo $phoneAttribute; ?>/>
-                        <div for="telephone" generated="true"
-                             class="afd-error mage-error"><?php echo $block->getConfig('afd_phone/fields/msg'); ?></div>
-                    </div>
+            <div class="field telephone <?php if (in_array('telephone', $requiredAttributesPrechecked)) :
+                ?>required<?php endif; ?>">
+                <label class="label"
+                       for="telephone"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="telephone"
+                           value="<?= $block->escapeHtml($block->getAddress()->getTelephone()) ?>"
+                           title="<?= $block->escapeHtml(__('Phone Number')) ?>"
+                           class="input-text <?= /* @noEscape */
+                           $addressHelper->getAttributeValidationClass('telephone') ?>"
+                           id="telephone"
+                           data-afd-additional-options="afdPhoneOptions"
+                    />
+                    <div for="telephone" generated="true"
+                         class="afd-error mage-error"><?php echo $block->getConfig('afd_phone/fields/msg'); ?></div>
                 </div>
-            <?php endif; ?>
-            <?php if ($addressHelper->isAttributeVisible('fax')) : ?>
-                <div class="field fax">
-                    <label class="label" for="fax"><span><?= $block->escapeHtml(__('Fax')) ?></span></label>
-                    <div class="control">
-                        <input type="text" name="fax" id="fax" title="<?= $block->escapeHtmlAttr(__('Fax')) ?>"
-                               value="<?= $block->escapeHtml($block->getAddress()->getFax()) ?>"
-                               class="input-text <?= /* @noEscape */
-                               $addressHelper->getAttributeValidationClass('fax') ?>"/>
+                <?php endif; ?>
+                <?php if ($addressHelper->isAttributeVisible('fax')) : ?>
+                    <div class="field fax">
+                        <label class="label" for="fax"><span><?= $block->escapeHtml(__('Fax')) ?></span></label>
+                        <div class="control">
+                            <input type="text" name="fax" id="fax" title="<?= $block->escapeHtmlAttr(__('Fax')) ?>"
+                                   value="<?= $block->escapeHtml($block->getAddress()->getFax()) ?>"
+                                   class="input-text <?= /* @noEscape */
+                                   $addressHelper->getAttributeValidationClass('fax') ?>"/>
+                        </div>
                     </div>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
         </fieldset>
         <fieldset class="fieldset">
             <legend class="legend"><span><?= $block->escapeHtml(__('Address')) ?></span></legend>
@@ -226,14 +234,14 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                 <div class="control">
                     <select id="region_id" name="region_id" title="<?= /* @noEscape */
                     $block->getAttributeData()->getFrontendLabel('region') ?>" class="validate-select region_id"
-                            <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?> data-afd-result="TraditionalCounty">
+                        <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?> data-afd-result="TraditionalCounty">
                         <option value=""><?= $block->escapeHtml(__('Please select a region, state or province.')) ?></option>
                     </select>
 
                     <input type="text" id="region" name="region" value="<?= $block->escapeHtml($block->getRegion()) ?>"
                            title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?>"
                            class="input-text <?= /* @noEscape */ $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('region') ?>"
-                           <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?>/>
+                        <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?>/>
                 </div>
             </div>
 
@@ -242,7 +250,7 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                         $block->getAttributeData()->getFrontendLabel('postcode') ?></span></label>
                 <div class="control">
                     <input type="text" name="postcode"
-                           <?php afdResultFieldAttribute("Postcode", $typeaheadActive); ?>
+                        <?php afdResultFieldAttribute("Postcode", $typeaheadActive); ?>
                            value="<?= $block->escapeHtml($block->getAddress()->getPostcode()) ?>"
                            title="<?= /* @noEscape */
                            $block->getAttributeData()->getFrontendLabel('postcode') ?>" id="zip"
@@ -313,8 +321,6 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
 
     <script type="text/x-magento-init">
 
-
-
     {
         "#form-validate": {
             "addressValidation": {
@@ -342,19 +348,62 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
 
     </script>
 
-    <script type="text/javascript">
-        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+    <script>
+        require(['jquery', 'afdPce', 'domReady!'], function ($) {
+            console.log($('#typeahead'));
             $('#typeahead').afd('typeahead');
             $('#reverseGeocodeButton').afd('reverseGeocodeButton');
-
-        })
-    </script>
-
-<?php if ($phoneActive): ?>
-    <script type="text/javascript">
-        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
-            $('#telephone').afd('phone');
+            $('#country').on('change',function(){
+                window.setTimeout(function(){
+                    $('#typeahead').afd('typeahead');
+                    $('#reverseGeocodeButton').afd('reverseGeocodeButton');
+                }, 50)
+            });
         })
 
+
     </script>
-<?php endif ?>
+
+    <?php if ($phoneActive): ?>
+        <script type="text/javascript">
+            require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+                // todo fix this
+                if (typeof window.intlTelInputUtils === 'undefined') {
+                    window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
+                        .then(function(){
+                            var pn = $('#telephone').val();
+                            $('#telephone').afd('phone').val(pn);
+                        });
+                } else {
+                    var pn = $('#telephone').val();
+                    $('#telephone').afd('phone').val(pn);
+                }
+
+                $('#country').on('change',function(){
+                    window.setTimeout(function(){
+                        $('#telephone').afd('phone');
+                    }, 50)
+                });
+
+                $('.form-address-edit .submit')
+                    .off('mousedown.afd')
+                    .on('mousedown.afd', function(){
+                    $('.telephone > .control > .iti').each(function(){
+                        var $input = $(this).find('.input-text').first();
+                        var dailCode = $(this).find('.iti__selected-dial-code').first().text();
+                        if ($input.val().substring(0, dailCode.length) !== dailCode ) {
+                            $input.val(dailCode + ' ' + $input.val());
+                            $input.triggerHandler('change');
+                        }
+                    })
+                })
+
+            })
+
+        </script>
+
+    <?php endif ?>
+
+
+
+
