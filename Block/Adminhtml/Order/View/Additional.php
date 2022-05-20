@@ -29,9 +29,9 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
     public function loadOrderAddress($addressType)
     {
 
-        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
+        // $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
+        // $logger = new \Zend\Log\Logger();
+        // $logger->addWriter($writer);
 
         $_order = $this->getOrder();
 
@@ -41,7 +41,7 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
             ->setWebsiteId(null)
             ->loadByEmail($_order->getCustomerEmail());
 
-        $logger->info($cus->getId());
+        // $logger->info($cus->getId());
 
         if ($addressType == 'billing') {
             return $cus->getAddressById($_order->getBillingAddress()->getCustomerAddressId());
@@ -56,10 +56,10 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
     public function getGeodemographicFields($addressType)
     {
 
-        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
-        //$logger->info(print_r( ['Geodemoraphics'], true));
+        // $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
+        // $logger = new \Zend\Log\Logger();
+        // $logger->addWriter($writer);
+        // $logger->info(print_r( ['Geodemoraphics'], true));
 
         $address = $this->loadOrderAddress($addressType);
 

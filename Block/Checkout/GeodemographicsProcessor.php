@@ -27,9 +27,9 @@ class GeodemographicsProcessor
         $billingAddressFieldset = &$jsLayout['components']['checkout']['children']['steps']['children']['billing-step']
         ['children']['payment']['children']['payments-list']['children'];
 
-        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
-        $logger = new \Zend\Log\Logger();
-        $logger->addWriter($writer);
+//        $writer = new \Zend\Log\Writer\Stream(BP . '/var/log/debug.log');
+//        $logger = new \Zend\Log\Logger();
+ //       $logger->addWriter($writer);
 
         // $logger->info(print_r($jsLayout['components']['checkout']['children']['steps']['children']['billing-step']
         // ['children'], true));
