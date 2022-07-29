@@ -1331,7 +1331,7 @@
 	      // Set @@toStringTag to native iterators
 	      _setToStringTag(IteratorPrototype, TAG, true);
 	      // fix for some old engines
-	      if (!_library && typeof IteratorPrototype[ITERATOR$3] != 'function') _hide(IteratorPrototype, ITERATOR$3, returnThis);
+	      if (typeof IteratorPrototype[ITERATOR$3] != 'function') _hide(IteratorPrototype, ITERATOR$3, returnThis);
 	    }
 	  }
 	  // fix Array#{values, @@iterator}.name in V8 / FF
@@ -1340,7 +1340,7 @@
 	    $default = function values() { return $native.call(this); };
 	  }
 	  // Define iterator
-	  if ((!_library || FORCED) && (BUGGY || VALUES_BUG || !proto[ITERATOR$3])) {
+	  if (BUGGY || VALUES_BUG || !proto[ITERATOR$3]) {
 	    _hide(proto, ITERATOR$3, $default);
 	  }
 	  // Plug for library
@@ -3484,7 +3484,7 @@
 	          if (_this.$customCountryField.length === 0) {
 	            throw 'Custom country field selector `' + _this.options.country.customCountryControl + '` supplied, but no matching control found.';
 	          }
-	          console.log(_this.$customCountryField)
+
 	          _this.$customCountryField.off('change.afd', _this.onCustomCountryChange).on('change.afd', _this.onCustomCountryChange);
 	        }
 	      });
@@ -3738,7 +3738,8 @@
 	        _this.$fieldSets.show(); // manually triggering keyup on the field, without this some validators still think the field is empty
 
 
-	        $el.keyup();
+	        $el.triggerHandler('keyup');
+	        $el.triggerHandler('change');
 	        $$3(document).trigger('afd:populateResultsComplete');
 	      });
 
@@ -3974,6 +3975,7 @@
 	      });
 
 	      defineProperty(assertThisInitialized(assertThisInitialized(_this)), "handleHideShowControls", function (country) {
+
 	        var controlType = _this.controlType;
 
 	        _this.$searchAgainButton.hide();
@@ -24666,10 +24668,12 @@
 	      event(this.$element, 'focusout', this.onFocusOut);
 	      event(this.countryControl, 'change', this.onCountryControlChange);
 	      event(this.$element, 'countrychange', this.onCountryChange);
+	      var initValue = this.$element.val();
 	      this.iti = intlTelInput$1(this.element, {
 	        utilsScript: 'https://cdn.afd.co.uk/plugins/shared/utils.js',
 	        separateDialCode: true
-	      }); // set default country
+	      });
+	      this.$element.val(initValue); // set default country
 
 	      this.iti.setNumber(this.options.phone.defaultDialingCode);
 	      this.countryData = this.iti.getSelectedCountryData();
@@ -26618,3 +26622,4 @@
 	})($$1);
 
 })));
+

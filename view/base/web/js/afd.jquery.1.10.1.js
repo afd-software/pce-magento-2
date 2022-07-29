@@ -1573,7 +1573,9 @@
 
 	  defineProperty(this, "setupParams", function (requestOptions) {
 	    var defaultData = {
-	      format: 'json'
+	      format: 'json',
+		  intp: 'mag010603',
+		  intf: 'jqu011001'
 	    };
 
 	    if (_this.options.serial && _this.options.password) {
@@ -3500,7 +3502,7 @@
 	        // hide or show controls based on the country - also returns country
 
 	        var country = _this.getInitialCountry(); // if set to hide result fields beforehand
-
+			_this.country = country;
 
 	        if (_this.options[controlType].beforeHideResults) {
 	          _this.$manualInputSearchButton.hide();
@@ -3526,14 +3528,13 @@
 
 	        if (_this.options[controlType].notEmptyShowResults) {
 	          var container = _this.$element.closest(_this.containers);
-
 	          var allEmpty = !_this.multiForms ? $$3('[data-afd-result]:empty').filter(function () {
 	            return $$3.trim($$3(this).val()).length !== 0;
 	          }).length === 0 : container.find('[data-afd-result]:empty').filter(function () {
 	            return $$3.trim($$3(this).val()).length !== 0;
 	          }).length === 0;
-
 	          if (!allEmpty) {
+
 	            _this.showResultFields();
 
 	            _this.$fieldSets.show();
@@ -3697,7 +3698,9 @@
 
 	        if (regionFields.indexOf(fieldName) > -1 && _this.options[controlType].regionMap) {
 	          if (!$el.is('select')) {
-	            throw '<' + $el.prop('tagName').toLowerCase() + '> is not a valid tag for `[data-afd-result="' + fieldName + '"]`, when regionMap is set.  This should be <select>';
+				  $el.val(_this.result[fieldName])
+				  $el.closest('.' + _this.options[controlType].parentClass).show();
+				  return;
 	          }
 
 	          var regionAttribute = _this.options[controlType].regionAttribute;
@@ -3707,6 +3710,7 @@
 
 	          var optionValue = $el.find('[' + regionAttribute + '="' + mappedResult + '"]').val();
 	          $el.val(optionValue);
+			  $el.closest('.' + _this.options[controlType].parentClass).show();
 	          return;
 	        } // if pushup option is turned off, just fill out the form
 
@@ -3823,7 +3827,8 @@
 	      });
 
 	      defineProperty(assertThisInitialized(assertThisInitialized(_this)), "hideResultFields", function (country) {
-	        var controlType = _this.controlType; // only do this if the current control is visible - needed if both lookup and typeahead are on same form
+
+	      	var controlType = _this.controlType; // only do this if the current control is visible - needed if both lookup and typeahead are on same form
 
 	        var controlRestricted = _this.options[controlType].showForCountries.length > 0 || _this.options[controlType].hideForCountries.length > 0;
 	        var controlVisible = !controlRestricted || _this.options[controlType].showForCountries.length > 0 && _this.options[controlType].showForCountries.indexOf(country) > -1 || _this.options[controlType].hideForCountries.length > 0 && _this.options[controlType].hideForCountries.indexOf(country) === -1;
@@ -3852,13 +3857,17 @@
 	      });
 
 	      defineProperty(assertThisInitialized(assertThisInitialized(_this)), "showResultFields", function () {
+
 	        var controlType = _this.controlType; // parentClass is for input containers whcih may include labels/validation etc
 
 	        if (_this.options[controlType].parentClass) {
 	          _this.$resultFields.closest('.' + _this.options[controlType].parentClass).show();
+
 	        } else {
 	          _this.$resultFields.show();
 	        }
+
+
 
 	        _this.$fieldSets.show();
 	      });
@@ -3975,7 +3984,7 @@
 	      });
 
 	      defineProperty(assertThisInitialized(assertThisInitialized(_this)), "handleHideShowControls", function (country) {
-	        console.log(country);
+
 	        var controlType = _this.controlType;
 
 	        _this.$searchAgainButton.hide();
@@ -4050,11 +4059,13 @@
 	      });
 
 	      defineProperty(assertThisInitialized(assertThisInitialized(_this)), "getInitialCountry", function () {
+
 	        var country = null;
 
 	        if (_this.$customCountryField) {
+
 	          country = _this.$customCountryField.val();
-				console.log(_this.$customCountryField);
+
 	          if (_this.options.country.customCountryConverter) {
 	            if (typeof _this.options.country.customCountryConverter !== 'function') {
 	              throw 'customCountryConverter Must be a function';
@@ -8023,7 +8034,8 @@
 	    _this = possibleConstructorReturn(this, getPrototypeOf(AfdTypeahead).call(this, $element, options)); // specifying controltype is important for the options that the addressTools Mixin uses
 
 	    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "init", function () {
-	      try {
+			_this.getInitialCountry();
+	    	try {
 	        _this.initFields();
 
 	        _this.$element.typeahead(_this.typeaheadOptions);
@@ -8040,7 +8052,7 @@
 	      _this.options.typeahead.manualInputButton && event(_this.$manualInputButton, 'click', _this.onAfdManualInputButtonClick);
 	      _this.options.typeahead.manualInputButton && event(_this.$manualInputSearchButton, 'click', _this.onAfdManualInputSearchButtonClick);
 
-	      _this.getInitialCountry();
+
 	    });
 
 	    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "setupTypeaheadRequestOptions", function () {
@@ -10239,7 +10251,7 @@
 	    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "validateEmail", function (email) {
 	      var requestOptions = _this.setupParams({
 	        data: 'email',
-	        task: 'live',
+	        task: _this.options.email.task,
 	        fields: 'standard',
 	        email: email,
 	        afdc: _this.options.afdc
@@ -24488,19 +24500,20 @@
 	    _this = possibleConstructorReturn(this, getPrototypeOf(AfdPhone).call(this, element, options));
 
 	    defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onKeyUp", function () {
+
 	      var $element = _this.$element;
 
 	      var val = _this.$element.val(); // dont do validation until focus out, however we can provide useful info on each type
 	      // handle double naughts
 
-
+			console.log(val);
 	      if (_this.$element.val().startsWith('00')) {
 	        val = val.replace('00', '+');
 	      }
 
 	      _this.$element.val(val); // Update data attributes
 
-
+			console.log(_this.$element.val());
 	      _this.updateDataAttributes(); // AFD only gets validated on focusOut
 
 
@@ -24511,7 +24524,7 @@
 	      if (_this.iti.isValidNumber()) {
 	        _this.iti.setNumber(_this.iti.getNumber('2'));
 	      }
-
+			console.log(_this.iti.getNumber());
 	      $$a(document).trigger('afd:phoneValidationUpdated', $element);
 	    });
 

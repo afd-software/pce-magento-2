@@ -4,10 +4,10 @@
         <referenceBlock name="head.components">
             <block class="Afd\Pce\Block\Afd" name="afd.typeahead" template="Afd_Pce::typeahead.phtml"
                    after="afd.config"
-                    ifconfig="afd_typeahead/forms/checkout"/>
+                   ifconfig="afd_typeahead/forms/checkout"/>
             <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
                    after="afd.config" ifconfig="afd_phone/forms/checkout"
-                   />
+            />
         </referenceBlock>
         <referenceBlock name="checkout.root">
             <arguments>
@@ -20,9 +20,9 @@
                                         <item name="shipping-step" xsi:type="array">
                                             <item name="children" xsi:type="array">
                                                 <item name="shippingAddress" xsi:type="array">
-                                                    <item name="component" xsi:type="string">Afd_Pce/js/view/shipping</item>
+                                                    <item name="component" xsi:type="string">Afd_Pce/js/view/shipping
+                                                    </item>
                                                     <item name="children" xsi:type="array">
-                                                        <!-- The name of the form the field belongs to -->
                                                         <item name="customer-email" xsi:type="array">
                                                             <item name="component" xsi:type="string">
                                                                 Afd_Pce/js/form/element/email

@@ -4,26 +4,16 @@
  * See COPYING.txt for license details.
  */
 -->
-<select class="select" data-bind="
+<input class="input-text" type="text" data-afd-result="TraditionalCounty" autocomplete="off" data-bind="
+    value: value,
+    valueUpdate: 'keyup',
+    hasFocus: focused,
     attr: {
         name: inputName,
-        id: uid,
-        disabled: disabled,
+        placeholder: placeholder,
         'aria-describedby': getDescriptionId(),
         'aria-required': required,
         'aria-invalid': error() ? true : 'false',
-        placeholder: placeholder
-    },
-    hasFocus: focused,
-    optgroup: options,
-    value: value,
-    optionsCaption: caption,
-    optionsValue: 'value',
-    optionsText: 'label',
-    optionsAfterRender: function(option, item) {
-        if (item && item.disabled) {
-            ko.applyBindingsToNode(option, {attr: {disabled: true}}, item);
-        }
-    }"
-        data-afd-result="TraditionalCounty"
-/>
+        id: uid,
+        disabled: disabled
+    }" />

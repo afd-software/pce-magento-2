@@ -55,6 +55,7 @@
                 <highlightResults>0</highlightResults>
                 <postcodeFirst>0</postcodeFirst>
                 <hideRegion>GG,IM,JE,GB</hideRegion>
+                <zipPlusFour>1</zipPlusFour>
                 <crownDependencies>0</crownDependencies>
             </fields>
             <countries>
@@ -99,6 +100,7 @@
             </forms>
             <fields>
                 <msg>Please enter a valid email address</msg>
+                <emailTask>live</emailTask>
             </fields>
         </afd_email>
         <afd_phone>

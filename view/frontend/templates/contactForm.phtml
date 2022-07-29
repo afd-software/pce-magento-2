@@ -12,9 +12,6 @@ $scopeConfig = \Magento\Framework\App\ObjectManager::getInstance()
 $emailActive = $scopeConfig->getValue('afd_email/enable/enable') == 1 && $scopeConfig->getValue('afd_email/forms/contact') == 1;
 $phoneActive = $scopeConfig->getValue('afd_phone/enable/enable') == 1 && $scopeConfig->getValue('afd_phone/forms/contact') == 1;
 
-$emailAttribute = $emailActive ? "data-afd-control=\"email\"" : "";
-$phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
-
 ?>
 <form class="form contact"
       action="<?= $block->escapeUrl($block->getFormAction()) ?>"
@@ -34,14 +31,14 @@ $phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
         <div class="field email required">
             <label class="label" for="email"><span><?= $block->escapeHtml(__('Email')) ?></span></label>
             <div class="control">
-                <input name="email" id="email" title="<?= $block->escapeHtmlAttr(__('Email')) ?>" value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('email') ?: $this->helper(\Magento\Contact\Helper\Data::class)->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}" <?php echo $emailAttribute ?> data-afd-additional-options="afdEmailOptions" />
+                <input name="email" id="email" title="<?= $block->escapeHtmlAttr(__('Email')) ?>" value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('email') ?: $this->helper(\Magento\Contact\Helper\Data::class)->getUserEmail()) ?>" class="input-text" type="email" data-validate="{required:true, 'validate-email':true}" data-afd-additional-options="afdEmailOptions" />
                 <div for="email" generated="true" class="afd-error mage-error"><?php echo $scopeConfig->getValue('afd_email/fields/msg'); ?></div>
             </div>
         </div>
         <div class="field telephone">
             <label class="label" for="telephone"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
             <div class="control">
-                <input name="telephone" id="telephone" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>" value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('telephone')) ?>" class="input-text" type="text" <?php echo $phoneAttribute; ?> data-afd-additional-options="afdPhoneOptions" />
+                <input name="telephone" id="telephone" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>" value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('telephone')) ?>" class="input-text" type="text" data-afd-additional-options="afdPhoneOptions" />
                 <div for="telephone" generated="true" class="afd-error mage-error"><?php echo $scopeConfig->getValue('afd_phone/fields/msg'); ?></div>
             </div>
         </div>

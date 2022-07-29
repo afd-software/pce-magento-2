@@ -3,30 +3,59 @@
 <?php } ?>
 <script>
 
+    var countryMap = {
+        'ALB': 'AL',
+        'ARG': 'AR',
+        'AUT': 'AT',
+        'AUS': 'AU',
+        'BEL': 'BE',
+        'BGR': 'BG',
+        'BOL': 'BL',
+        'BRA': 'BR',
+        'CAN': 'CA',
+        'CHE': 'CH',
+        'CHL': 'CL',
+        'CHN': 'CN',
+        'COL' :'CO',
+        'DEU': 'DE',
+        'DNK': 'DK',
+        'ECU': 'EC',
+        'EST': 'EE',
+        'ESP': 'ES',
+        'FIN': 'FI',
+        'FRA': 'FR',
+        'GRC': 'GR',
+        'GUY': 'GY',
+        'HRV': 'HR',
+        'IND': 'IN',
+        'ISL': 'IS',
+        'ITA': 'IT',
+        'LTU': 'LT',
+        'LVA': 'LV',
+        'MEX': 'MX',
+        'PER': 'PE',
+        'POL': 'PL',
+        'PRT': 'PT',
+        'PRY': 'PY',
+        'ROU': 'RO',
+        'SWE': 'SE',
+        'SUR': 'SR',
+        'URY': 'UY',
+        'USA': 'US',
+        'VEN': 'VE'
+    };
+
+    var regions = <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>;
+
+    const selectRegionCountries = Object.entries(regions).filter(function(region){
+        return region[0] !== 'config'
+    }).map(function(region){
+        return region[0]
+    })
+
     var regionMap = function (result) {
 
-        var regions = <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>;
-        var countryMap = {
-            'AUT': 'AT',
-            'AUS': 'AU',
-            'BEL': 'BE',
-            'BRA': 'BR',
-            'CAN': 'CA',
-            'CHE': 'CH',
-            'CHN': 'CN',
-            'DEU': 'DE',
-            'EST': 'EE',
-            'ESP': 'ES',
-            'FIN': 'FI',
-            'FRA': 'FR',
-            'HRV': 'HR',
-            'IND': 'IN',
-            'LTU': 'LT',
-            'LVA': 'LV',
-            'MEX': 'MX',
-            'ROU': 'RO',
-            'USA': 'US'
-        };
+
 
         if (typeof countryMap[result.CountryISO] === 'undefined') {
             return null;
@@ -37,6 +66,10 @@
         var val = '';
         for (var regionIndex in regions[mappedCountry]) {
             if (regions[mappedCountry][regionIndex].code === result.TraditionalCounty) {
+                val = regionIndex;
+                break;
+            }
+            if(mappedCountry === 'CN' && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
                 val = regionIndex;
             }
         }
@@ -77,7 +110,8 @@
             countryControl: '[name="country_id"]'
         },
         email: {
-            loadingSpinner: '.field'
+            loadingSpinner: '.field',
+            task: '<?php echo $block->getConfig('email/fields/emailTask');?>'
         },
         reverseGeocode: {
             containers: ['.form-shipping-address', '.billing-address-form', '.form-address-edit']
@@ -98,7 +132,9 @@
     afdOptions.magentoOptions = {
         typeahead: {
             adminEditCustomerEnabled:   <?php echo $block->getConfig('typeahead/forms/adminCustomer'); ?> === 1,
-        adminCreateOrderEnabled:   <?php echo $block->getConfig('typeahead/forms/adminOrder'); ?> === 1
+            adminCreateOrderEnabled:   <?php echo $block->getConfig('typeahead/forms/adminOrder'); ?> === 1,
+            zipPlusFour:   <?php echo $block->getConfig('typeahead/fields/zipPlusFour'); ?> === 1
+
     },
     email: {
         emailEnabled: <?php echo $block->getConfig('email/enable/enable'); ?> ===

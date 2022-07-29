@@ -240,7 +240,7 @@ $version = $productMetadata->getVersion();
 
                     <input type="text" id="region" name="region" value="<?= $block->escapeHtml($block->getRegion()) ?>"
                            title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?>"
-                           class="input-text <?= /* @noEscape */ $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('region') ?>"
+                           class="input-text <?= /* @noEscape */ $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('region') ?>" data-afd-result="TraditionalCounty"
                         <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?>/>
                 </div>
             </div>
@@ -350,7 +350,6 @@ $version = $productMetadata->getVersion();
 
     <script>
         require(['jquery', 'afdPce', 'domReady!'], function ($) {
-            console.log($('#typeahead'));
             $('#typeahead').afd('typeahead');
             $('#reverseGeocodeButton').afd('reverseGeocodeButton');
             $('#country').on('change',function(){
@@ -358,6 +357,14 @@ $version = $productMetadata->getVersion();
                     $('#typeahead').afd('typeahead');
                     $('#reverseGeocodeButton').afd('reverseGeocodeButton');
                 }, 50)
+            });
+
+            $(document).on('afd:populateResultsComplete', function(e){
+                console.log(!afdOptions.magentoOptions.typeahead.zipPlusFour)
+                if(!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
+                    const originalVal = $('[data-afd-result="Postcode"]').val()
+                    $('[data-afd-result="Postcode"]').val(originalVal.substr(0,5))
+                }
             });
         })
 
@@ -369,7 +376,7 @@ $version = $productMetadata->getVersion();
             require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
                 // todo fix this
                 if (typeof window.intlTelInputUtils === 'undefined') {
-                    window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
+                     window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
                         .then(function(){
                             var pn = $('#telephone').val();
                             $('#telephone').afd('phone').val(pn);
@@ -379,11 +386,11 @@ $version = $productMetadata->getVersion();
                     $('#telephone').afd('phone').val(pn);
                 }
 
-                $('#country').on('change',function(){
+                /*$('#country').on('change',function(){
                     window.setTimeout(function(){
-                        $('#telephone').afd('phone');
+                        // $('#telephone').afd('phone');
                     }, 50)
-                });
+                });*/
 
                 $('.form-address-edit .submit')
                     .off('mousedown.afd')

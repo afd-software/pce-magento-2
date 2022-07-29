@@ -204,6 +204,11 @@
                     <label>Countries for which the region field should be hidden</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
                 </field>
+                <field id="zipPlusFour" translate="label" type="select" sortOrder="170" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Use Zip+4 for USA addresses</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="crownDependencies" translate="label" type="select" sortOrder="170" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Automatically change countries for crown dependencies</label>
@@ -424,6 +429,12 @@
                 <field id="msg" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Invalid Email Message</label>
+                </field>
+                <field id="emailTask" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>AFD Email Task</label>
+                    <comment>The email 'task' when communicating with AFD servers.  Unless advised by AFD support this should be 'live'.
+                    </comment>
                 </field>
             </group>
         </section>

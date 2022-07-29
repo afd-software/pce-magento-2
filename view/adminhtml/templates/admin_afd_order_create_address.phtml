@@ -135,7 +135,9 @@ endif; ?>
 
 
 <script>
+
     require(['jquery', 'afdPce', 'Magento_Sales/order/create/form', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
 
         if(afdOptions.magentoOptions.typeahead.adminCreateOrderEnabled) {
 
@@ -149,8 +151,10 @@ endif; ?>
             $("#order-shipping_address_city").attr("data-afd-result", "Town");
             $("#order-shipping_address_postcode").attr("data-afd-result", "Postcode");
             $("#shipping-typeahead").find('[data-afd-control="typeahead"]').afd('typeahead');
-
-
+            // todo This click is compensating for that fact that afdOptions.typeahead.notEmptyShowResults is broken
+            window.setTimeout(function(){
+                $('.afd-manual-input-button').triggerHandler('click');
+            }, 1000);
 
         }
 

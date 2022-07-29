@@ -6,7 +6,9 @@ class TypeAheadProcessor
 {
 
     protected $_scopeConfig;
-    public function __construct(\Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig)
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    )
     {
         $this->_scopeConfig = $scopeConfig;
     }
@@ -99,7 +101,9 @@ class TypeAheadProcessor
             $addressFieldset['city']['config']['elementTmpl'] = 'Afd_Pce/form/element/city';
             $addressFieldset['company']['config']['elementTmpl'] = 'Afd_Pce/form/element/company';
             $addressFieldset['postcode']['config']['elementTmpl'] = 'Afd_Pce/form/element/postcode';
-            $addressFieldset['region_id']['config']['elementTmpl'] = 'Afd_Pce/form/element/region';
+            $addressFieldset['region_id']['component'] = 'Afd_Pce/js/form/element/region';
+            $addressFieldset['region_id']['config']['elementTmpl'] = 'Afd_Pce/form/element/region-id';
+
 
         }
         if($this->_scopeConfig->getValue('afd_phone/forms/checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
