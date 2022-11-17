@@ -25,18 +25,20 @@ class TypeAheadProcessor
         $shippingConfiguration = &$jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
         ['children']['shippingAddress']['children']['shipping-address-fieldset']['children'];
 
-        $billingFormType =
-            $this->_scopeConfig->getValue('checkout/options/display_billing_address_on', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 0
-                ? 'payments-list' : 'afterMethods';
         $billingConfiguration = &$jsLayout['components']['checkout']['children']['steps']['children']['billing-step']
-        ['children']['payment']['children'][$billingFormType]['children'];
+        ['children']['payment']['children']['payments-list']['children'];
 
         //Checks if shipping step available.
         if (isset($shippingConfiguration)) {
             $shippingConfiguration = $this->processAddress(
                 $shippingConfiguration,
                 'shippingAddress',
-                ['checkoutProvider']
+                [
+                    'checkoutProvider',
+                    'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.street',
+                    'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.city',
+                    'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.country_id'
+                ]
             );
         }
 
@@ -52,7 +54,12 @@ class TypeAheadProcessor
                 $billingForm['children']['form-fields']['children'] = $this->processAddress(
                     $billingForm['children']['form-fields']['children'],
                     $billingForm['dataScopePrefix'],
-                    ['checkoutProvider']
+                    [
+                        'checkoutProvider',
+                        'checkout.steps.billing-step.payment.payments-list.' . $key . '.form-fields.street',
+                        'checkout.steps.billing-step.payment.payments-list.' . $key . '.form-fields.city',
+                        'checkout.steps.billing-step.payment.payments-list.' . $key . '.form-fields.country_id'
+                    ]
                 );
             }
         }
