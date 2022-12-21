@@ -26,7 +26,6 @@ define([
             function checkElementsLoaded() {
                 if (
                     typeof $container.find(countrySelector).val() === 'undefined' ||
-                    $container.find('[data-afd-result="Organisation"]').length < 1 ||
                     $container.find('[data-afd-result="Property"]').length < 1 ||
                     $container.find('[data-afd-result="Street"]').length < 1 ||
                     $container.find('[data-afd-result="Town"]').length < 1 ||
@@ -42,8 +41,6 @@ define([
                     $container.find('.reverse-geocode-button').afd('reverseGeocodeButton')
 
                     const hideRegions = function(){
-                        console.log('hi');
-
                         // not ideal
                         setTimeout(function(){
                             if(selectRegionCountries.indexOf($container.find(countrySelector).val()) > -1) {

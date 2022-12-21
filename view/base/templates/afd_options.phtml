@@ -55,8 +55,6 @@
 
     var regionMap = function (result) {
 
-
-
         if (typeof countryMap[result.CountryISO] === 'undefined') {
             return null;
         }
@@ -79,6 +77,7 @@
     };
 
     var afdOptions = {
+        platformVersion: 'mag010606',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('typeahead/quantity/maxItems');?>',
             pushUp: true,
@@ -133,8 +132,19 @@
         typeahead: {
             adminEditCustomerEnabled:   <?php echo $block->getConfig('typeahead/forms/adminCustomer'); ?> === 1,
             adminCreateOrderEnabled:   <?php echo $block->getConfig('typeahead/forms/adminOrder'); ?> === 1,
-            zipPlusFour:   <?php echo $block->getConfig('typeahead/fields/zipPlusFour'); ?> === 1
-
+            zipPlusFour:   <?php echo $block->getConfig('typeahead/fields/zipPlusFour'); ?> === 1,
+            customCountryDefaultID: '<?php echo $block->getConfig('general/account/id'); ?>',
+            customCountryDefaultToken: '<?php echo $block->getConfig('general/account/token'); ?>',
+            customCountryCredentials: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentials'); ?> === 1,
+            customCountryCredentialsUK: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUK'); ?> === 1,
+            customCountryCredentialsUS: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUS'); ?> === 1,
+            customCountryCredentialsIE: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsIE'); ?> === 1,
+            customCountryCredentialsUKID: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUKID'); ?>',
+            customCountryCredentialsUKToken: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUKToken'); ?>',
+            customCountryCredentialsUSID: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUSID'); ?>',
+            customCountryCredentialsUSToken: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUSToken'); ?>',
+            customCountryCredentialsIEID: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsIEID'); ?>',
+            customCountryCredentialsIEToken: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsIEToken'); ?>'
     },
     email: {
         emailEnabled: <?php echo $block->getConfig('email/enable/enable'); ?> ===

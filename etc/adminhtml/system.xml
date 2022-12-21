@@ -294,10 +294,100 @@
                         not need to support IE 11 or you are using your own polyfills.
                     </comment>
                 </field>
-                <field id="enterpriseEdition" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                <field id="enterpriseEdition" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enterprise Edition</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="customCountryCredentials" translate="label" type="select" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Use custom country based credentials in Admin</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>On some occasions you may wish to use different AFD credentials for different country address search.  For the front end this can be achieved using different credentials on a store view basis.  But in the admin panel address forms Magento only uses the default values.  If you need this functionality, you can set this to yes and override credentials on a country by country basis.</comment>
+                    <field>
+                        <field id="afd_general/account/method">id</field>
+                    </field>
+                </field>
+                <field id="customCountryCredentialsUK" translate="label" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Custom admin credentials for UK</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsUKID" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>UK AFD ID</label>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                        <field id="customCountryCredentialsUK">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsUKToken" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>UK AFD Token</label>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                        <field id="customCountryCredentialsUK">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsIE" translate="label" type="select" sortOrder="60" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Custom admin credentials for Eircode (Ireland)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsIEID" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Eircode ID</label>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                        <field id="customCountryCredentialsIE">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsIEToken" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Eircode Token</label>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                        <field id="customCountryCredentialsIE">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsUS" translate="label" type="select" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Custom admin credentials for ZipAddress (USA)</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsUSID" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>ZipAddress ID</label>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                        <field id="customCountryCredentialsUS">1</field>
+                    </depends>
+                </field>
+                <field id="customCountryCredentialsUSToken" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>ZipAddress Token</label>
+                    <depends>
+                        <field id="afd_general/account/method">id</field>
+                        <field id="customCountryCredentials">1</field>
+                        <field id="customCountryCredentialsUS">1</field>
+                    </depends>
                 </field>
             </group>
         </section>
