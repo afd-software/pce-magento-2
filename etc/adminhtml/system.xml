@@ -304,9 +304,9 @@
                     <label>Use custom country based credentials in Admin</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <comment>On some occasions you may wish to use different AFD credentials for different country address search.  For the front end this can be achieved using different credentials on a store view basis.  But in the admin panel address forms Magento only uses the default values.  If you need this functionality, you can set this to yes and override credentials on a country by country basis.</comment>
-                    <field>
+                    <depends>
                         <field id="afd_general/account/method">id</field>
-                    </field>
+                    </depends>
                 </field>
                 <field id="customCountryCredentialsUK" translate="label" type="select" sortOrder="30" showInDefault="1"
                        showInWebsite="1" showInStore="1">
