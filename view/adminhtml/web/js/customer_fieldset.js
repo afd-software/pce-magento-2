@@ -68,62 +68,6 @@ define([
 
                     }
 
-                    if (afdOptions.magentoOptions.typeahead.customCountryCredentials) {
-
-                        let overriddenCountries = [];
-
-                        if (afdOptions.magentoOptions.typeahead.customCountryCredentialsUK) {
-                            overriddenCountries.push('GB');
-                            $(document).on('afd:countryChanged', function (e, country) {
-                                window.setTimeout(function () {
-                                    if (country === 'GB') {
-                                        window.afdOptions.id = afdOptions.magentoOptions.typeahead.customCountryCredentialsUKID;
-                                        window.afdOptions.token = afdOptions.magentoOptions.typeahead.customCountryCredentialsUKToken;
-                                        $('[data-afd-control="typeahead"]').afd('typeahead');
-                                    }
-                                }, 500);
-
-                            });
-                        }
-
-                        if (afdOptions.magentoOptions.typeahead.customCountryCredentialsIE) {
-                            overriddenCountries.push('IE');
-                            $(document).on('afd:countryChanged', function (e, country) {
-                                window.setTimeout(function () {
-                                    if (country === 'IE') {
-                                        window.afdOptions.id = afdOptions.magentoOptions.typeahead.customCountryCredentialsIEID;
-                                        window.afdOptions.token = afdOptions.magentoOptions.typeahead.customCountryCredentialsIEToken;
-                                        $('[data-afd-control="typeahead"]').afd('typeahead');
-                                    }
-                                }, 500);
-                            });
-                        }
-
-                        if (afdOptions.magentoOptions.typeahead.customCountryCredentialsUS) {
-                            overriddenCountries.push('US')
-                            $(document).on('afd:countryChanged', function (e, country) {
-                                window.setTimeout(function () {
-                                    if (country === 'US') {
-                                        window.afdOptions.id = afdOptions.magentoOptions.typeahead.customCountryCredentialsUSID;
-                                        window.afdOptions.token = afdOptions.magentoOptions.typeahead.customCountryCredentialsUSToken;
-                                        $('[data-afd-control="typeahead"]').afd('typeahead');
-                                    }
-                                }, 500);
-                            });
-                        }
-
-                        $(document).on('afd:countryChanged', function (e, country) {
-                            window.setTimeout(function () {
-                                if (overriddenCountries.indexOf(country) < 0) {
-                                    window.afdOptions.id = afdOptions.magentoOptions.typeahead.customCountryDefaultID;
-                                    window.afdOptions.token = afdOptions.magentoOptions.typeahead.customCountryDefaultToken;
-                                    $('[data-afd-control="typeahead"]').afd('typeahead');
-                                }
-                            }, 500);
-                        });
-
-                    }
-
 
                 }, 1000)
             });
