@@ -7,16 +7,22 @@
  * @api
  */
 define([
-    'Magento_Ui/js/form/element/select',
+    'Magento_Ui/js/form/element/region',
     'mageUtils',
-    'uiLayout'
-], function (Select, utils, layout) {
+    'uiLayout',
+    'uiRegistry'
+], function (Region, utils, layout, registry) {
     'use strict';
 
-    return Select.extend({
+    return Region.extend({
 
         initialize: function () {
+
             this._super();
+
+            if (this.customEntry) {
+                registry.get(this.name, this.initInput.bind(this));
+            }
             return this;
         },
 
@@ -26,6 +32,7 @@ define([
          * @returns {Object} Chainable.
          */
         initInput: function () {
+            console.log(this);
             var inputNode = {
                 parent: '${ $.$data.parentName }',
                 component: 'Magento_Ui/js/form/element/abstract',

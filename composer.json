@@ -2,7 +2,7 @@
   "name": "afd/module-pce",
   "description": "PCE Integration for Magento 2",
   "type": "magento2-module",
-  "version": "1.6.5",
+  "version": "1.6.8",
   "autoload": {
     "files": [
       "registration.php"
