@@ -12,9 +12,6 @@ define([
         defaults: {
             exports : {
                 afdReady: '${ $.parentName }:afdReady'
-            },
-            imports: {
-                typeahead: '${$.name}.afd_typeahead:index'
             }
         },
 
@@ -24,11 +21,8 @@ define([
             'postcode',
             'street',
             'city',
-            'country_id',
-            'region',
-            'region_id'
+            'country_id'
         ],
-
 
         initialize: function () {
             this._super();
@@ -57,7 +51,6 @@ define([
             afdOptions.typeahead.containers = ['.form-shipping-address', '.billing-address-form'];
 
             let $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
-
             let $container = $typeahead.closest('form');
             let countrySelector = '[name="country_id"]';
 
@@ -67,62 +60,48 @@ define([
             $typeahead.afd('typeahead');
             $container.find('.reverse-geocode-button').afd('reverseGeocodeButton')
 
-            // initially hide region fields that shouldn't be visible
-            if(afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf($container.find(countrySelector).val()) > -1) {
-                $container.find('[data-afd-result="TraditionalCounty"]')
-                    .closest('.field')
-                    .hide()
-            } else {
-                this.hideRegions($container, $container.find(countrySelector).val());
-            }
-
             // events
-            $('.afd-manual-input-button').on('click', () => {
-                this.hideRegions($container, $container.find(countrySelector).val())
-            });
+            $(document).on('afd:pceRetrieveComplete', (e, result) => {
+                const hideRegions = function(){
+                    // not ideal
+                    setTimeout(function(){
 
-            $(document).on('afd:populateResultsComplete', (e) => {
-                this.hideRegions($container, $container.find(countrySelector).val());
+                        console.log($container.find(countrySelector).val())
+                        $container.find('[data-afd-result="TraditionalCounty"]').closest('.field').show();
+                        if(selectRegionCountries.indexOf($container.find(countrySelector).val()) > -1) {
 
-                //zip plus 4
+                            $container.find('[data-afd-result="TraditionalCounty"].input-text')
+                                .closest('.field')
+                                .hide()
+                        } else {
+
+                            $container.find('[data-afd-result="TraditionalCounty"].select')
+                                .closest('.field')
+                                .hide()
+                        }
+                        $('input[data-afd-result="TraditionalCounty"]').keyup();
+                        $('select[data-afd-result="TraditionalCounty"]').change();
+                    }, 20)
+
+
+                }
+                hideRegions();
+
+            })
+            // $('.afd-manual-input-button').on('click', this.hideRegions)
+            $(document).on('afd:populateResultsComplete', function(e){
                 if(!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
                     const originalVal = $('[data-afd-result="TraditionalCounty"]').val();
                     $('[data-afd-result="Postcode"]').val(originalVal.substr(0,5));
                 }
             });
 
-            $(document).on('afd:countryChanged', (e, country) => {
-                if(afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf($container.find(countrySelector).val()) > -1) {
-                    $container.find('[data-afd-result="TraditionalCounty"]')
-                        .closest('.field')
-                        .hide()
-                } else {
-                    this.hideRegions($container, $container.find(countrySelector).val());
-                }
-            });
         },
 
-        // set by observable on children
         fieldReady: function(field) {
             if(typeof this.resolvers[field.name] !== 'undefined') {
                 this.resolvers[field.name](field);
             }
-        },
-
-        hideRegions: function($container, country) {
-
-            $container.find('[data-afd-result="TraditionalCounty"]').closest('.field').show();
-            if(selectRegionCountries.indexOf(country) > -1) {
-                $container.find('[data-afd-result="TraditionalCounty"].input-text')
-                    .closest('.field')
-                    .hide()
-            } else {
-                $container.find('[data-afd-result="TraditionalCounty"].select')
-                    .closest('.field')
-                    .hide()
-            }
-            $('input[data-afd-result="TraditionalCounty"]').keyup();
-            $('select[data-afd-result="TraditionalCounty"]').change();
         }
 
     });

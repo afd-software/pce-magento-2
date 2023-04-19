@@ -27,6 +27,7 @@ define([
             return this;
         },
 
+
         afdInit: function (target) {
             this.fieldReady({name: this.index, element: target});
         },
