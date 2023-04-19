@@ -10,11 +10,20 @@ define([
     'Magento_Ui/js/form/element/region',
     'mageUtils',
     'uiLayout',
-    'uiRegistry'
-], function (Region, utils, layout, registry) {
+    'uiRegistry',
+    'ko'
+], function (Region, utils, layout, registry, ko) {
     'use strict';
 
     return Region.extend({
+
+        defaults: {
+            exports : {
+                fieldReady: '${ $.parentName }:fieldReady'
+            }
+        },
+
+        fieldReady: ko.observable(''),
 
         initialize: function () {
 
@@ -32,10 +41,9 @@ define([
          * @returns {Object} Chainable.
          */
         initInput: function () {
-            console.log(this);
             var inputNode = {
                 parent: '${ $.$data.parentName }',
-                component: 'Magento_Ui/js/form/element/abstract',
+                component: 'Afd_Pce/js/view/checkout/shipping-address/element/abstract',
                 template: '${ $.$data.template }',
                 elementTmpl:'Afd_Pce/form/element/region',
                 provider: '${ $.$data.provider }',
@@ -52,6 +60,11 @@ define([
 
             return this;
         },
+
+        afterRender: function(el) {
+            // notify parent that field is rendered and let it know name
+            this.fieldReady({name: this.index, element: el});
+        }
 
     });
 });
