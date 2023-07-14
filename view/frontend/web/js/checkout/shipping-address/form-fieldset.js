@@ -35,6 +35,7 @@ define([
 
             const promises = [];
 
+            // creates an array of promises and populates an object with resolve functions
             for(let i = 0; i < this.fieldsToBeLoaded.length; i++) {
                 const name = this.fieldsToBeLoaded[i];
                 promises.push(new Promise(resolve => {
@@ -53,14 +54,14 @@ define([
 
         initTypeahead: function(typeaheadContainer) {
 
-            // define the containers
+
+            const $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
+            const $container = $typeahead.closest('form');
+            const countrySelector = '[name="country_id"]';
+            const $countryControl = $container.find(countrySelector)
+            const initialCountry = $countryControl.val();
+
             afdOptions.typeahead.containers = ['.form-shipping-address', '.billing-address-form'];
-
-            let $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
-
-            let $container = $typeahead.closest('form');
-            let countrySelector = '[name="country_id"]';
-
             afdOptions.country.customCountryControl = countrySelector;
 
             // initialise controls
@@ -68,25 +69,25 @@ define([
             $container.find('.reverse-geocode-button').afd('reverseGeocodeButton')
 
             // initially hide region fields that shouldn't be visible
-            if(afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf($container.find(countrySelector).val()) > -1) {
+            if(afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf(initialCountry) > -1) {
                 $container.find('[data-afd-result="TraditionalCounty"]')
                     .closest('.field')
                     .hide()
             } else {
-                this.hideRegions($container, $container.find(countrySelector).val());
+                this.hideRegions($container, initialCountry);
             }
 
             // events
             $('.afd-manual-input-button').on('click', () => {
-                this.hideRegions($container, $container.find(countrySelector).val())
+                this.hideRegions($container, $countryControl.val())
             });
 
             $(document).on('afd:populateResultsComplete', (e) => {
-                this.hideRegions($container, $container.find(countrySelector).val());
+                this.hideRegions($container, $countryControl.val());
 
                 //zip plus 4
                 if(!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
-                    const originalVal = $('[data-afd-result="TraditionalCounty"]').val();
+                    const originalVal = $('[data-afd-result="Postcode"]').val();
                     $('[data-afd-result="Postcode"]').val(originalVal.substr(0,5));
                 }
             });
@@ -97,7 +98,7 @@ define([
                         .closest('.field')
                         .hide()
                 } else {
-                    this.hideRegions($container, $container.find(countrySelector).val());
+                    this.hideRegions($container, country);
                 }
             });
         },
@@ -110,7 +111,7 @@ define([
         },
 
         hideRegions: function($container, country) {
-
+            // todo use magento logic for hiding region fields - some countries never show it
             $container.find('[data-afd-result="TraditionalCounty"]').closest('.field').show();
             if(selectRegionCountries.indexOf(country) > -1) {
                 $container.find('[data-afd-result="TraditionalCounty"].input-text')

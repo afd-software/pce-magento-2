@@ -11,11 +11,7 @@ define([
 
         defaults: {
             skipValidation: true,
-            imports: {
-                countryOptions: '${ $.parentName }.country_id:indexedOptions'
-            },
             exports : {
-                typeaheadReady: '${ $.parentName }:typeaheadReady',
                 fieldReady: '${ $.parentName }:fieldReady'
             }
         },

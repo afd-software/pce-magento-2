@@ -98,7 +98,9 @@
             showForCountries: '<?php echo $block->getConfig('typeahead/countries/typeaheadCountries');?>'.split(','),
             containerOnlyContainsControl: false,
             regionMap: regionMap,
-            afterRetrieveHideResultsList: true
+            afterRetrieveHideResultsList: true,
+            requiredSelector: '.required-entry, ._required',
+            extraPCERetrieveParams: '<?php echo $block->getConfig('typeahead/fields/crownDependencies')?>' === '1' ? {crownCountry: '1'} : {}
         },
         country: {
             customCountryControl: '[name="country_id"], .form-address-edit #country, #order-billing_address_country_id, #order-shipping_address_country_id'

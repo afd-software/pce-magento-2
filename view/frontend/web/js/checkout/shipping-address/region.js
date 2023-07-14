@@ -43,9 +43,9 @@ define([
         initInput: function () {
             var inputNode = {
                 parent: '${ $.$data.parentName }',
-                component: 'Afd_Pce/js/view/checkout/shipping-address/element/abstract',
+                component: 'Afd_Pce/js/checkout/shipping-address/abstract',
                 template: '${ $.$data.template }',
-                elementTmpl:'Afd_Pce/form/element/region',
+                elementTmpl:'Afd_Pce/checkout/address/region',
                 provider: '${ $.$data.provider }',
                 name: '${ $.$data.index }_input',
                 dataScope: '${ $.$data.customEntry }',

@@ -56,7 +56,7 @@ define([
                 } else {
                     afdOptions.country.customCountryControl = countrySelector;
                     const $typeaheadControl = $(target).find('[data-afd-control="typeahead"]');
-                    $typeaheadControl.afd('typeahead');
+                    // $typeaheadControl.afd('typeahead');
                     $container.find('.reverse-geocode-button').afd('reverseGeocodeButton')
 
                     const hideRegions = function(){

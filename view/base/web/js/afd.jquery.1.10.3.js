@@ -488,7 +488,11 @@
             flatSubBuild: false,
             extraPCESearchParams: {},
             extraPCERetrieveParams: {},
-            bankLookup: false
+            bankLookup: false,
+            providerInfo: false,
+            wThreeWMode: 2,
+            wThreeWFormatList: false,
+            requiredSelector: null
         },
         lookup: {
             prefetch: true,
@@ -518,7 +522,8 @@
             flatSubBuild: false,
             extraPCESearchParams: {},
             extraPCERetrieveParams: {},
-            bankLookup: false
+            bankLookup: false,
+            requiredSelector: null
         },
         country: {
             containers: [],
@@ -14453,12 +14458,6 @@
 
     var entryNode = i18nIsoCountries;
 
-    var Countries = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        'default': entryNode,
-        __moduleExports: entryNode
-    });
-
     var $$1 = jQuery;
     var AfdControl = function AfdControl($el, options) {
         var _this = this;
@@ -16445,6 +16444,7 @@
                     $$2(document).trigger('afd:pceLookupStarted', [jqXHR, urlParams.get('lookup')]);
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "requestCallback", function (data, textStatus, jqXHR) {
+                    _this.wThreeW = typeof data.W3W !== 'undefined' || typeof data.Suggestion !== 'undefined' && data.Suggestion === 'What3Words';
                     $$2(document).trigger('afd:pceLookupComplete', [data, jqXHR, jqXHR.lookup]);
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "getUniqueID", function () {
@@ -16471,12 +16471,17 @@
                     // for country fields add change event listeners
                     var afdCountryFieldEventNamespace = typeof _this.originalControlType !== 'undefined' ? _this.originalControlType : controlType;
                     _this.$afdCountryField = $container.find('[data-afd-control="country"]').length > 0 ? $container.find('[data-afd-control="country"]').off('change.afd' + afdCountryFieldEventNamespace).on('change.afd' + afdCountryFieldEventNamespace, _this.onAfdCountryChange) : null;
-                    _this.$customCountryField = $container.find(_this.options.country.customCountryControl).length > 0 ? $container.find(_this.options.country.customCountryControl).off('change.afd').on('change.afd', _this.onCustomCountryChange) : null;
+                    _this.$customCountryField = $container.find(_this.options.country.customCountryControl).length > 0 ? $container.find(_this.options.country.customCountryControl).off('change.afd' + afdCountryFieldEventNamespace).on('change.afd' + afdCountryFieldEventNamespace, _this.onCustomCountryChange) : null;
                     _this.multiForms = $$2(_this.containers).length > 0;
+
                     // If a non-afd country control is supplied ensure that it is found
                     if (_this.$customCountryField && _this.$customCountryField.length === 0) {
                         throw 'Custom country field selector `' + _this.options.country.customCountryControl + '` supplied, but no matching control found.';
                     }
+
+                    // originally the parent class options was a string that we appended a '.' to
+                    // this function allows a standard selector to be used
+                    _this.parentSelector = !_this.options[controlType].parentClass ? null : _this.options[controlType].parentClass.charAt(0) === '.' ? _this.options[controlType].parentClass : '.' + _this.options[controlType].parentClass;
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "initFields", function () {
                     var controlType = _this.controlType;
@@ -16636,23 +16641,23 @@
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "populateResult", function (index) {
                     var $el = $$2(_this.$resultFields[index]);
                     var fieldName = $el.data('afd-result');
+                    $el.val('');
 
                     // this is for linking geoloaction with either lookup or typeahead
                     var controlType = _this.options[_this.controlType].linkedControl ? _this.options[_this.controlType].linkedControl : _this.controlType;
 
                     // If a region mapping function is supplied, deal with region fields as dropdown
                     var regionFields = ['Region', 'State', 'AbbreviatedOptionalCounty', 'AbbreviatedPostalCounty', 'AdministrativeCounty', 'PostalCounty', 'TraditionalCounty'];
-                    if (regionFields.indexOf(fieldName) > -1 && _this.options[controlType].regionMap) {
-                        if (!$el.is('select')) {
-                            _this.setResultValue($el, fieldName);
-                            return;
-                        }
+
+                    // if is region field and is a select and region map is set
+                    if (regionFields.indexOf(fieldName) > -1 && _this.options[controlType].regionMap && $el.is('select')) {
+                        // todo handle if regionMap is undefined or not a function
                         var regionAttribute = _this.options[controlType].regionAttribute;
                         var afdResult = _this.result[fieldName];
                         var mappedResult = _this.options[controlType].regionMap(_this.result);
                         var optionValue = $el.find('[' + regionAttribute + '="' + mappedResult + '"]').val();
                         $el.val(optionValue);
-                        $el.closest('.' + _this.options[controlType].parentClass).show();
+                        $el.closest(_this.parentSelector).show();
                         $el.show();
                         return;
                     }
@@ -16668,15 +16673,15 @@
                     }
 
                     // logic for hiding empty fields
-                    if (!_this.options[controlType].hideEmpties || $el.val() && $el.val().length > 0) {
-                        if (_this.options[controlType].parentClass) {
-                            $el.closest('.' + _this.options[controlType].parentClass).show();
+                    if (!_this.options[controlType].hideEmpties || $el.val() && $el.val().length > 0 || $el.is('[required]') || $el.is(_this.options[controlType].requiredSelector) || $el.closest(_this.parentSelector).is(_this.options[controlType].requiredSelector)) {
+                        if (_this.parentSelector) {
+                            $el.closest(_this.parentSelector).show();
                         } else {
                             $el.show();
                         }
                     } else {
-                        if (_this.options[controlType].parentClass) {
-                            $el.closest('.' + _this.options[controlType].parentClass).hide();
+                        if (_this.parentSelector) {
+                            $el.closest(_this.parentSelector).hide();
                         } else {
                             $el.hide();
                         }
@@ -16692,12 +16697,13 @@
                     $el.val('');
                     if (fieldName.indexOf(',') > -1) {
                         fieldName.split(',').forEach(function (field, index) {
-                            index !== 0 && $el.val().length > 0 && $el.val($el.val() + ', ');
+                            index !== 0 && _this.result[field].length > 0 && $el.val().length > 0 && $el.val($el.val() + ', ');
                             $el.val($el.val() + _this.result[field]);
                         });
                     } else {
                         $el.val(_this.result[fieldName]);
                     }
+                    $el.val();
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "populateResultsList", function () {
                     if (_this.results.length === 1) {
@@ -16772,11 +16778,11 @@
 
                     // only do this if the current control is visible - needed if both lookup and typeahead are on same form
                     var controlRestricted = _this.options[controlType].showForCountries.length > 0 || _this.options[controlType].hideForCountries.length > 0;
-                    var controlVisible = !controlRestricted || _this.options[controlType].showForCountries.length > 0 && _this.options[controlType].showForCountries.indexOf(country) > -1 || _this.options[controlType].hideForCountries.length > 0 && _this.options[controlType].hideForCountries.indexOf(country) === -1;
+                    var controlVisible = !controlRestricted || _this.options[controlType].showForCountries.length > 0 && _this.options[controlType].showForCountries.indexOf(country) > -1 || _this.options[controlType].length > 0 && _this.options[controlType].hideForCountries.indexOf(country) === -1;
                     if (controlVisible) {
-                        // parentClass is for input containers which may include labels/validation etc
-                        if (_this.options[controlType].parentClass) {
-                            _this.$resultFields.closest('.' + _this.options[controlType].parentClass).hide();
+                        // parentSelector is for input containers which may include labels/validation etc
+                        if (_this.parentSelector) {
+                            _this.$resultFields.closest(_this.parentSelector).hide();
                         } else {
                             _this.$resultFields.hide();
                         }
@@ -16785,8 +16791,8 @@
                         // only lookup
                         var showPostcode = get_1(_this.options, controlType + '.postcodeIsLookup', false);
                         if (showPostcode) {
-                            if (_this.options[controlType].parentClass) {
-                                $$2('[data-afd-result="Postcode"]').closest('.' + _this.options[controlType].parentClass).show();
+                            if (_this.parentSelector) {
+                                $$2('[data-afd-result="Postcode"]').closest(_this.parentSelector).show();
                             } else {
                                 $$2('[data-afd-result="Postcode"]').show();
                             }
@@ -16795,9 +16801,9 @@
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "showResultFields", function () {
                     var controlType = _this.controlType;
-                    // parentClass is for input containers whcih may include labels/validation etc
-                    if (_this.options[controlType].parentClass) {
-                        _this.$resultFields.closest('.' + _this.options[controlType].parentClass).show();
+                    // parentSelector is for input containers whcih may include labels/validation etc
+                    if (_this.parentSelector) {
+                        _this.$resultFields.closest(_this.parentSelector).show();
                     } else {
                         _this.$resultFields.show();
                     }
@@ -16944,9 +16950,6 @@
                     if (_this.options[controlType].hideForCountries.length === 0 && _this.options[controlType].showForCountries.length === 0) {
                         _this.showControls(controlType);
                     }
-                    if (_this.isReverseGeocode) {
-                        _this.checkVisibilityByCountry(country);
-                    }
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "showControls", function (controlType) {
                     if (_this.isReverseGeocode) {
@@ -16973,7 +16976,7 @@
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "getInitialCountry", function () {
                     var country = null;
-                    if (typeof _this.$customCountryField !== undefined) {
+                    if (_this.$customCountryField) {
                         country = _this.$customCountryField.val();
                         if (_this.options.country.customCountryConverter) {
                             if (typeof _this.options.country.customCountryConverter !== 'function') {
@@ -16989,7 +16992,6 @@
                         country = _this.options.defaultCountry;
                         _this.handleHideShowControls(_this.options.defaultCountry);
                     }
-                    _this.country = country;
                     return country;
                 });
                 defineProperty(assertThisInitialized(assertThisInitialized(_this)), "handlePushUp", function (fields, fieldName, $el) {
@@ -17163,22 +17165,16 @@
                 // disable lookup button if field is empty
                 _this.$lookupButton.attr('disabled', !e.target.value.length);
                 var keycode = e.keyCode ? e.keyCode : e.which;
-                var val = '';
-                _this.$lookupField.each(function (index, el) {
-                    var separator = index === 0 ? '' : ' ';
-                    val += separator + $$3(el).val();
-                });
                 if (keycode === 13) {
                     e.preventDefault();
                     _this.handleLookup();
                 } else if (_this.options.lookup.prefetch) {
-                    var request = _this.addressLookup(val);
+                    var request = _this.addressLookup(e.target.value);
                     _this.preFetchRequests.push(request);
                     request.then(function (data, status, jqXHR) {
                         // We are prefetching results in the background.
                         // We are only interested in results that match what is currently in the input
-                        _this.handlePCEError(data.Result, data.Other);
-                        if (jqXHR.lookup === val) {
+                        if (jqXHR.lookup === e.target.value) {
                             _this.results = typeof data.Item !== 'undefined' ? data.Item : [];
                             $$3(document).trigger('afd:pcePrefetchComplete', [data, jqXHR, jqXHR.lookup]);
                             _this.$element.trigger('afd:pcePrefetchComplete', [data, jqXHR, jqXHR.lookup]);
@@ -17202,11 +17198,7 @@
                 }
             });
             defineProperty(assertThisInitialized(assertThisInitialized(_this)), "handleLookup", function () {
-                var val = '';
-                _this.$lookupField.each(function (index, el) {
-                    var separator = index === 0 ? '' : ' ';
-                    val += separator + $$3(el).val();
-                });
+                var val = _this.options.postcodeIsLookup ? $$3('[data-afd-result="Postcode"]').val() : $$3('[data-afd-control="lookupField"]').val();
                 if (_this.options.lookup.prefetch) {
                     if (_this.preFetchRequests.length === 0) {
                         _this.$lookupField.trigger('keyup');
@@ -17348,6 +17340,27 @@
             lookup.init();
         });
     }
+
+    function _objectSpread(target) {
+        for (var i = 1; i < arguments.length; i++) {
+            var source = arguments[i] != null ? arguments[i] : {};
+            var ownKeys = Object.keys(source);
+
+            if (typeof Object.getOwnPropertySymbols === 'function') {
+                ownKeys = ownKeys.concat(Object.getOwnPropertySymbols(source).filter(function (sym) {
+                    return Object.getOwnPropertyDescriptor(source, sym).enumerable;
+                }));
+            }
+
+            ownKeys.forEach(function (key) {
+                defineProperty(target, key, source[key]);
+            });
+        }
+
+        return target;
+    }
+
+    var objectSpread = _objectSpread;
 
     // @@match logic
     _fixReWks('match', 1, function (defined, MATCH, $match) {
@@ -18192,7 +18205,6 @@
                         case "input":
                             scope.deferred = $.Deferred();
                             scope.assignQuery();
-
                             // #195 Trigger an onCancel event if the Typeahead is cleared
                             if (scope.rawQuery === "" && scope.query === "") {
                                 e.originalEvent = data || {};
@@ -18264,6 +18276,8 @@
             },
             generateSource: function generateSource(generateGroups) {
                 this.filterGenerateSource();
+                // TODO: MD hack hardcoding to only one group so second search can work after suggestions (W3W)
+                this.generateGroups = ['lookup'];
                 if (Array.isArray(generateGroups) && generateGroups.length) {
                     this.generateGroups = generateGroups;
                 } else if (!this.generateGroups.length) {
@@ -18571,7 +18585,8 @@
             populateSource: function populateSource(data, group, path) {
                 var scope = this,
                     groupSource = this.options.source[group],
-                    extraData = groupSource.ajax && groupSource.data;
+                    extraData = groupSource.ajax && groupSource.data,
+                    fullData = data;
                 if (path && typeof path === "string") {
                     data = this.helper.namespace.call(this, path, data);
                 }
@@ -18715,7 +18730,7 @@
                     }
                 }
                 if (this.options.callback.onPopulateSource) {
-                    data = this.helper.executeCallback.call(this, this.options.callback.onPopulateSource, [this.node, data, group, path]);
+                    data = this.helper.executeCallback.call(this, this.options.callback.onPopulateSource, [this.node, data, group, path, fullData, this.query]);
 
                     // {debug}
                     if (this.options.debug) {
@@ -18930,6 +18945,8 @@
             searchResult: function searchResult() {
                 this.resetLayout();
                 if (this.helper.executeCallback.call(this, this.options.callback.onSearch, [this.node, this.query]) === false) return;
+                // TODO: MD hack hardcoding to only one group so second search can work after suggestions (W3W)
+                this.searchGroups = ['lookup'];
                 if (this.searchGroups.length && !(this.options.multiselect && this.options.multiselect.limit && this.items.length >= this.options.multiselect.limit)) {
                     this.searchResultData();
                 }
@@ -20413,7 +20430,8 @@
                     allpc: '1',
                     matchPositions: _this.options.typeahead.matchPositions ? 1 : 0,
                     maxquantity: _this.options.typeahead.maxItems,
-                    uniqueid: _this.uniqueID
+                    uniqueid: _this.uniqueID,
+                    w3wmode: _this.options.typeahead.wThreeWMode
                 };
                 if (_this.options.typeahead.listEnv) {
                     params.listEnv = '1';
@@ -20450,10 +20468,12 @@
                         onShowLayout: _this.onShowLayout,
                         onHideLayout: _this.onHideLayout,
                         onLayoutBuiltBefore: _this.onLayoutBuiltBefore,
+                        onLayoutBuiltAfter: _this.onLayoutBuiltAfter,
                         onSearch: _this.onSearch,
                         onNavigateBefore: _this.onNavigateBefore,
                         onNavigateAfter: _this.onNavigateAfter,
-                        onClickAfter: _this.onClickAfter
+                        onClickAfter: _this.onClickAfter,
+                        onPopulateSource: _this.onPopulateSource
                     }
                 };
             });
@@ -20477,7 +20497,7 @@
                 _this.setFields();
                 _this.initFields();
             });
-            defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onResult", function (node, query, result, resultHtmlList) {
+            defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onResult", function (node, query, result) {
                 var $container = _this.containers.length > 0 ? $$4(_this.containers) : $$4(document);
                 $container.find('.afd-typeahead-status').html(result.length + ' results found');
 
@@ -20503,21 +20523,27 @@
                 _this.$manualInputButton.hide();
             });
             defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onHideLayout", function (node, query) {
-                var container = node.closest(_this.containers);
+                var $container = _this.containers.length > 0 ? $$4(_this.containers) : $$4(document);
+
                 /*let _$manualInputButton = !this.multiForms ?
 	          this.$manualInputButton :
 	          container.find('.afd-manual-input-button');
 	      */
                 // show the manual input button if enabled and not all visible
-                var allVisible = !_this.multiForms ? $$4('[data-afd-result]:hidden').length === 0 : container.find('[data-afd-result]:hidden').length === 0;
+                var allVisible = $container.find('[data-afd-result]:hidden').length === 0;
                 if (!allVisible && _this.options.typeahead.manualInputButton) {
                     _this.$manualInputButton.show();
                 }
+
+                // remove provider information prepended at the top of the list
+                $container.find('.provider').remove();
             });
             defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onLayoutBuiltBefore", function (node, query, result, resultHtmlList) {
                 if (result.length === 0) {
                     return resultHtmlList;
                 }
+
+                // handle unique ids if multiple forms on single page
                 var suffixPrefix = _this.containers.length > 0 ? '-' + _this.$element.closest(_this.containers.toString()).attr('id') : '';
                 resultHtmlList.attr('id', 'afd-results' + suffixPrefix).attr('role', 'listbox');
                 if (_this.options.typeahead.matchPositions && typeof result[0].matchPositions !== 'undefined') {
@@ -20559,6 +20585,15 @@
                 resultHtmlList.attr('aria-label', 'Results');
                 return resultHtmlList;
             });
+            defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onLayoutBuiltAfter", function (node) {
+                var resultContainer = node.closest('.afd-typeahead-field').siblings('.afd-typeahead-result');
+                _this.options.typeahead.providerInfo && resultContainer.prepend('<div class="provider"></div>');
+                if (_this.wThreeW) {
+                    resultContainer.find('.provider').html(_this.wThreeWLogo + '<strong> what3words</strong>');
+                } else {
+                    resultContainer.find('.provider').html(_this.afdLogo + '<strong> afd Software</strong>');
+                }
+            });
             defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onSearch", function (node, query) {
                 $$4('.' + _this.typeaheadOptions.selector.result).empty();
             });
@@ -20596,11 +20631,26 @@
                     _this.$typeaheadFieldandLabel.hide();
                     return;
                 }
-                _this.addressRetrieve(item.Key).then(function (data, textStatus, jqXHR) {
-                    _this.handleAddressRetrieve(data, jqXHR);
-                }).fail(function (err) {
-                    return console.error(err);
+                if (item.suggestion) {
+                    $$4(node).val(item.Key).trigger('input');
+                } else {
+                    _this.addressRetrieve(item.Key).then(function (data, textStatus, jqXHR) {
+                        _this.handleAddressRetrieve(data, jqXHR);
+                    }).fail(function (err) {
+                        return console.error(err);
+                    });
+                }
+            });
+            defineProperty(assertThisInitialized(assertThisInitialized(_this)), "onPopulateSource", function (node, data, group, path, fullData, query) {
+                var newData = data.map(function (item) {
+                    var newList = typeof fullData.Suggestion !== 'undefined' && fullData.Suggestion === 'What3Words' && _this.options.typeahead.wThreeWFormatList ? '///' + item.List : item.List;
+                    return objectSpread({}, item, {
+                        List: newList,
+                        suggestion: typeof fullData.Suggestion !== 'undefined',
+                        wThreeW: typeof fullData.W3W !== 'undefined'
+                    });
                 });
+                return newData;
             });
             defineProperty(assertThisInitialized(assertThisInitialized(_this)), "getTypeaheadSelectors", function (e) {
                 return {
@@ -20622,6 +20672,9 @@
                     cancelButton: 'afd-typeahead-cancelButton'
                 };
             });
+            defineProperty(assertThisInitialized(assertThisInitialized(_this)), "wThreeWLogo", '<svg viewBox="0 0 24 24" width="24px" height="24px"><path d="M24 0H0V24H24V0Z" fill="#E11F26"></path><path d="M10.5029 17.2564C10.3838 17.2563 10.2665 17.2278 10.1605 17.1735C10.0545 17.1191 9.96298 17.0404 9.89335 16.9438C9.82373 16.8472 9.77801 16.7354 9.75997 16.6177C9.74193 16.5 9.75207 16.3797 9.78957 16.2667L12.7971 7.24404C12.8283 7.15037 12.8777 7.06376 12.9424 6.98917C13.0071 6.91458 13.0859 6.85346 13.1742 6.80932C13.2626 6.76517 13.3587 6.73885 13.4572 6.73186C13.5557 6.72488 13.6547 6.73736 13.7483 6.76861C13.842 6.79985 13.9286 6.84923 14.0032 6.91394C14.0778 6.97865 14.1389 7.05742 14.1831 7.14575C14.2272 7.23408 14.2535 7.33024 14.2605 7.42874C14.2675 7.52725 14.255 7.62616 14.2238 7.71983L11.2162 16.7425C11.1663 16.8922 11.0705 17.0223 10.9425 17.1146C10.8145 17.2068 10.6607 17.2565 10.5029 17.2564Z" fill="white"></path><path d="M5.99161 17.2564C5.87252 17.2563 5.75518 17.2278 5.64921 17.1735C5.54325 17.1191 5.45169 17.0404 5.38206 16.9438C5.31243 16.8472 5.26672 16.7354 5.24868 16.6177C5.23064 16.5 5.24078 16.3797 5.27828 16.2667L8.28583 7.24404C8.31707 7.15037 8.36646 7.06376 8.43117 6.98917C8.49588 6.91458 8.57465 6.85346 8.66298 6.80932C8.75131 6.76517 8.84747 6.73885 8.94597 6.73186C9.04447 6.72488 9.14338 6.73736 9.23706 6.76861C9.33074 6.79985 9.41734 6.84923 9.49193 6.91394C9.56652 6.97865 9.62764 7.05742 9.67179 7.14575C9.71594 7.23408 9.74225 7.33024 9.74924 7.42874C9.75622 7.52725 9.74374 7.62616 9.7125 7.71983L6.70497 16.7425C6.65503 16.8922 6.55927 17.0223 6.43124 17.1146C6.30322 17.2068 6.14941 17.2565 5.99161 17.2564Z" fill="white"></path><path d="M15.0143 17.2564C14.8952 17.2563 14.7778 17.2278 14.6719 17.1735C14.5659 17.1191 14.4743 17.0404 14.4047 16.9438C14.3351 16.8472 14.2894 16.7354 14.2713 16.6177C14.2533 16.5 14.2634 16.3797 14.3009 16.2667L17.3084 7.24403C17.3724 7.05596 17.5082 6.90085 17.6862 6.81258C17.8641 6.7243 18.0698 6.71003 18.2583 6.77288C18.4467 6.83572 18.6026 6.97058 18.692 7.148C18.7813 7.32543 18.7968 7.53099 18.7351 7.71982L15.7276 16.7425C15.6777 16.8921 15.5819 17.0223 15.4539 17.1146C15.3258 17.2068 15.1721 17.2564 15.0143 17.2564Z" fill="white"></path><path d="M121.07 6.76392C119.841 6.76509 118.774 7.06461 118.08 7.7184V7.51503C118.079 7.31641 117.999 7.12633 117.858 6.9863C117.717 6.84628 117.527 6.76769 117.328 6.76769C117.129 6.76769 116.939 6.84628 116.798 6.9863C116.657 7.12633 116.577 7.31641 116.576 7.51503V16.5409C116.577 16.7395 116.657 16.9296 116.798 17.0696C116.939 17.2097 117.129 17.2883 117.328 17.2883C117.527 17.2883 117.717 17.2097 117.858 17.0696C117.999 16.9296 118.079 16.7395 118.08 16.5409V11.5631C118.08 9.33085 118.82 8.27054 121.05 8.26761C121.246 8.25942 121.432 8.17915 121.573 8.04217C121.713 7.90519 121.798 7.72114 121.812 7.52532C121.813 7.42648 121.795 7.32827 121.759 7.23637C121.723 7.14447 121.668 7.0607 121.599 6.9899C121.53 6.9191 121.448 6.86268 121.357 6.82389C121.266 6.7851 121.168 6.76472 121.07 6.76392Z" fill="white"></path><path d="M38.553 17.2928C38.3988 17.2928 38.2484 17.2453 38.1221 17.1569C37.9958 17.0686 37.8997 16.9435 37.8468 16.7987L35.2717 9.74276L32.7578 16.7935C32.7199 16.9482 32.6273 17.084 32.4972 17.1758C32.367 17.2676 32.208 17.3091 32.0496 17.2928C31.8954 17.2928 31.745 17.2453 31.6187 17.1569C31.4924 17.0686 31.3963 16.9435 31.3434 16.7987L28.0507 7.77647C28.0167 7.68367 28.0012 7.58506 28.0053 7.4863C28.0094 7.38753 28.033 7.29055 28.0746 7.20089C28.1162 7.11123 28.1751 7.03066 28.2479 6.96379C28.3207 6.89692 28.406 6.84505 28.4989 6.81117C28.5917 6.77729 28.6904 6.76205 28.7891 6.76633C28.8879 6.77061 28.9848 6.79432 29.0744 6.8361C29.164 6.87788 29.2444 6.93692 29.3112 7.00984C29.3779 7.08276 29.4296 7.16812 29.4634 7.26104L32.0416 14.3251L34.5265 7.35586C34.5539 7.23237 34.612 7.11778 34.6954 7.0227C34.7788 6.92762 34.8849 6.85513 35.0038 6.81194C35.1227 6.76875 35.2505 6.75626 35.3755 6.77561C35.5005 6.79497 35.6186 6.84556 35.7189 6.92269C35.8459 7.02055 35.9388 7.15593 35.9844 7.3096L38.545 14.3252L41.0606 7.27002C41.0938 7.17702 41.1449 7.09147 41.2112 7.01824C41.2774 6.94502 41.3574 6.88555 41.4466 6.84325C41.5358 6.80094 41.6325 6.77662 41.7311 6.77168C41.8297 6.76673 41.9283 6.78126 42.0213 6.81443C42.1143 6.84759 42.1999 6.89875 42.2731 6.96499C42.3463 7.03122 42.4058 7.11122 42.4481 7.20043C42.4904 7.28965 42.5147 7.38632 42.5197 7.48493C42.5246 7.58354 42.5101 7.68216 42.4769 7.77515L39.2614 16.7937C39.2187 16.9457 39.1249 17.0783 38.9959 17.1692C38.8669 17.2601 38.7105 17.3038 38.553 17.2928Z" fill="white"></path><path d="M49.4924 6.76319C48.442 6.72516 47.4125 7.064 46.59 7.7185V3.00393C46.5888 2.80531 46.5091 2.61523 46.3682 2.47521C46.2273 2.33519 46.0368 2.25659 45.8382 2.25659C45.6395 2.25659 45.449 2.33519 45.3081 2.47521C45.1672 2.61523 45.0875 2.80531 45.0863 3.00393V16.5409C45.0875 16.7396 45.1672 16.9296 45.3081 17.0697C45.449 17.2097 45.6395 17.2883 45.8382 17.2883C46.0368 17.2883 46.2273 17.2097 46.3682 17.0697C46.5091 16.9296 46.5888 16.7396 46.59 16.5409V10.9439C46.5922 10.67 46.694 8.26683 49.4924 8.26683C51.9804 8.26683 52.0758 10.6083 52.0784 10.8719V16.5408C52.0784 16.7402 52.1576 16.9314 52.2986 17.0724C52.4396 17.2134 52.6308 17.2926 52.8302 17.2926C53.0296 17.2926 53.2209 17.2134 53.3619 17.0724C53.5029 16.9314 53.5821 16.7402 53.5821 16.5408V10.8719C53.5821 9.45049 52.7275 6.76319 49.4924 6.76319Z" fill="white"></path><path d="M73.7634 15.7891C72.4936 15.7891 71.9987 15.2318 71.9987 13.8008V8.2669H73.7634C73.9628 8.2669 74.154 8.18769 74.295 8.04669C74.436 7.90569 74.5152 7.71446 74.5152 7.51505C74.5152 7.31565 74.436 7.12442 74.295 6.98342C74.154 6.84242 73.9628 6.76321 73.7634 6.76321H71.9987V5.12514C71.9987 4.92574 71.9195 4.7345 71.7785 4.5935C71.6375 4.45251 71.4462 4.37329 71.2468 4.37329C71.0474 4.37329 70.8562 4.45251 70.7152 4.5935C70.5742 4.7345 70.495 4.92574 70.495 5.12514V6.76321H69.3191C69.1197 6.76321 68.9285 6.84242 68.7875 6.98342C68.6465 7.12442 68.5673 7.31565 68.5673 7.51505C68.5673 7.71446 68.6465 7.90569 68.7875 8.04669C68.9285 8.18769 69.1197 8.2669 69.3191 8.2669H70.495V13.8008C70.495 16.8392 72.5427 17.2928 73.7633 17.2928C73.9627 17.2928 74.1539 17.2136 74.2949 17.0726C74.4359 16.9316 74.5151 16.7403 74.5151 16.5409C74.5151 16.3415 74.4359 16.1503 74.2949 16.0093C74.1539 15.8683 73.9627 15.7891 73.7633 15.7891H73.7634Z" fill="white"></path><path d="M81.0129 17.6474C80.0152 17.6444 79.0552 17.2655 78.3242 16.5864C77.5933 15.9072 77.1451 14.9776 77.069 13.9827C77.0555 13.7843 77.1211 13.5885 77.2515 13.4384C77.3819 13.2882 77.5665 13.1958 77.7649 13.1814C77.9633 13.1671 78.1593 13.2319 78.31 13.3617C78.4607 13.4915 78.5539 13.6757 78.569 13.8741C78.6042 14.3497 78.7775 14.8048 79.0675 15.1834C79.3576 15.5621 79.7518 15.8478 80.2019 16.0057C80.652 16.1635 81.1384 16.1866 81.6014 16.0721C82.0644 15.9575 82.4839 15.7104 82.8085 15.3609C83.1331 15.0114 83.3486 14.5748 83.4287 14.1046C83.5087 13.6344 83.4498 13.1511 83.2592 12.7138C83.0686 12.2766 82.7545 11.9045 82.3555 11.6432C81.9565 11.3819 81.4899 11.2427 81.0129 11.2427C80.9142 11.2427 80.8164 11.2232 80.7252 11.1855C80.634 11.1477 80.5511 11.0923 80.4813 11.0225C80.4115 10.9527 80.3561 10.8698 80.3183 10.7786C80.2805 10.6873 80.2611 10.5896 80.2611 10.4908C80.2611 10.3921 80.2805 10.2943 80.3183 10.2031C80.3561 10.1119 80.4115 10.029 80.4813 9.95921C80.5511 9.88939 80.634 9.83401 80.7252 9.79623C80.8164 9.75844 80.9142 9.739 81.0129 9.739C81.4056 9.73905 81.7898 9.62449 82.1184 9.40937C82.447 9.19426 82.7056 8.88793 82.8626 8.52796C83.0196 8.16799 83.0681 7.77002 83.0023 7.38287C82.9364 6.99572 82.759 6.6362 82.4917 6.34842C82.2245 6.06063 81.8791 5.85709 81.4979 5.76274C81.1167 5.6684 80.7162 5.68735 80.3456 5.81729C79.975 5.94722 79.6504 6.18248 79.4116 6.49423C79.1727 6.80597 79.03 7.18063 79.001 7.57228C78.9859 7.77066 78.8928 7.95496 78.7421 8.08482C78.5914 8.21469 78.3953 8.27953 78.1969 8.26516C77.9985 8.25078 77.8138 8.15836 77.6834 8.00812C77.5529 7.85789 77.4874 7.66209 77.501 7.46361C77.5433 6.88253 77.7291 6.32101 78.0417 5.82938C78.3543 5.33776 78.7841 4.93137 79.2924 4.64666C79.8007 4.36194 80.3717 4.20779 80.9542 4.19801C81.5368 4.18823 82.1126 4.32313 82.6302 4.59062C83.1478 4.85812 83.5909 5.24984 83.9199 5.7307C84.2488 6.21156 84.4533 6.76652 84.5151 7.34586C84.5769 7.92519 84.4939 8.5108 84.2737 9.05019C84.0535 9.58959 83.7029 10.0659 83.2533 10.4365C83.9486 10.9145 84.4727 11.6024 84.749 12.3996C85.0254 13.1968 85.0394 14.0614 84.789 14.8672C84.5387 15.6729 84.0371 16.3774 83.3577 16.8776C82.6782 17.3779 81.8566 17.6476 81.0128 17.6474L81.0129 17.6474Z" fill="white"></path><path d="M97.7745 17.2928C97.6203 17.2927 97.4699 17.2453 97.3436 17.1569C97.2173 17.0685 97.1212 16.9434 97.0683 16.7986L94.4929 9.74271L91.9792 16.7935C91.9272 16.9391 91.8316 17.0651 91.7054 17.1545C91.5792 17.2438 91.4286 17.2921 91.274 17.2928H91.2711C91.1169 17.2927 90.9665 17.2453 90.8402 17.1569C90.7138 17.0685 90.6177 16.9435 90.5648 16.7987L87.2719 7.77644C87.204 7.58921 87.2131 7.38267 87.2973 7.20216C87.3815 7.02165 87.5339 6.88193 87.721 6.81365C87.9081 6.74538 88.1146 6.75415 88.2953 6.83802C88.476 6.92189 88.6159 7.07402 88.6846 7.26101L91.2628 14.325L93.7476 7.3558C93.775 7.23232 93.8331 7.11773 93.9165 7.02266C94 6.92758 94.106 6.8551 94.2249 6.81191C94.3438 6.76872 94.4717 6.75622 94.5967 6.77558C94.7216 6.79493 94.8397 6.84551 94.94 6.92263C95.067 7.02049 95.1599 7.15587 95.2055 7.30955L97.7662 14.3252L100.282 7.26996C100.315 7.17697 100.366 7.09141 100.432 7.01819C100.499 6.94496 100.579 6.8855 100.668 6.84319C100.757 6.80089 100.854 6.77657 100.952 6.77162C101.051 6.76668 101.149 6.7812 101.242 6.81437C101.335 6.84754 101.421 6.8987 101.494 6.96493C101.567 7.03116 101.627 7.11117 101.669 7.20038C101.712 7.28959 101.736 7.38626 101.741 7.48487C101.746 7.58349 101.731 7.6821 101.698 7.7751L98.4828 16.7937C98.4308 16.9392 98.3352 17.0653 98.209 17.1546C98.0829 17.2439 97.9322 17.2922 97.7776 17.2929L97.7745 17.2928Z" fill="white"></path><path d="M108.707 17.2928C107.666 17.2928 106.648 16.9841 105.783 16.4058C104.917 15.8275 104.243 15.0055 103.844 14.0438C103.446 13.0822 103.342 12.024 103.545 11.003C103.748 9.98213 104.249 9.04436 104.985 8.30832C105.721 7.57229 106.659 7.07104 107.68 6.86797C108.701 6.6649 109.759 6.76913 110.721 7.16747C111.682 7.56581 112.504 8.24038 113.083 9.10587C113.661 9.97136 113.97 10.9889 113.97 12.0298C113.968 13.4251 113.413 14.7628 112.426 15.7495C111.44 16.7361 110.102 17.2911 108.707 17.2928ZM108.707 8.27054C107.963 8.27054 107.236 8.49102 106.618 8.90409C106 9.31717 105.518 9.90428 105.233 10.5912C104.949 11.2781 104.874 12.034 105.02 12.7632C105.165 13.4924 105.523 14.1623 106.048 14.688C106.574 15.2137 107.244 15.5718 107.973 15.7168C108.702 15.8619 109.458 15.7874 110.145 15.5029C110.832 15.2184 111.419 14.7365 111.832 14.1183C112.245 13.5001 112.466 12.7733 112.466 12.0298C112.465 11.0332 112.068 10.0777 111.363 9.37292C110.659 8.66818 109.703 8.27173 108.707 8.27054Z" fill="white"></path><path d="M132.54 2.25208C132.442 2.25205 132.344 2.27147 132.253 2.30925C132.161 2.34702 132.078 2.4024 132.009 2.47222C131.939 2.54204 131.883 2.62494 131.846 2.71617C131.808 2.8074 131.788 2.90518 131.788 3.00392V8.28185C131.335 7.80577 130.79 7.42616 130.187 7.16582C129.583 6.90548 128.933 6.76978 128.276 6.76685C125.51 6.76685 123.26 9.12814 123.26 12.0298C123.26 14.9315 125.51 17.2928 128.276 17.2928C128.933 17.2898 129.583 17.1541 130.187 16.8938C130.79 16.6335 131.335 16.2539 131.788 15.7778V16.5409C131.79 16.7395 131.869 16.9296 132.01 17.0696C132.151 17.2097 132.342 17.2883 132.54 17.2883C132.739 17.2883 132.929 17.2097 133.07 17.0696C133.211 16.9296 133.291 16.7395 133.292 16.5409V3.00392C133.292 2.90518 133.273 2.8074 133.235 2.71617C133.197 2.62494 133.142 2.54205 133.072 2.47223C133.002 2.40241 132.919 2.34703 132.828 2.30925C132.737 2.27148 132.639 2.25205 132.54 2.25208ZM128.276 15.7891C126.339 15.7891 124.763 14.1026 124.763 12.0298C124.763 9.95707 126.339 8.27055 128.276 8.27055C130.213 8.27055 131.788 9.95709 131.788 12.0298C131.788 14.1025 130.213 15.7891 128.276 15.7891Z" fill="white"></path><path d="M65.2198 6.76685C65.121 6.76682 65.0233 6.78625 64.932 6.82402C64.8408 6.86179 64.7579 6.91717 64.6881 6.98699C64.6183 7.05681 64.5629 7.13971 64.5251 7.23094C64.4873 7.32217 64.4679 7.41995 64.4679 7.51869V8.29195C64.0141 7.81274 63.4679 7.43053 62.8622 7.16841C62.2565 6.9063 61.6039 6.76973 60.944 6.76696C58.1782 6.76696 55.9277 9.12824 55.9277 12.0299C55.9277 14.9316 58.1782 17.2929 60.944 17.2929C61.6039 17.2901 62.2565 17.1535 62.8622 16.8914C63.4679 16.6293 64.0141 16.2471 64.4679 15.7679C64.4679 15.7679 64.5239 15.6286 64.4679 16.541C64.4691 16.7396 64.5489 16.9297 64.6897 17.0697C64.8306 17.2098 65.0212 17.2884 65.2198 17.2884C65.4184 17.2884 65.609 17.2098 65.7498 17.0697C65.8907 16.9297 65.9704 16.7396 65.9716 16.541V7.51869C65.9717 7.41995 65.9522 7.32217 65.9145 7.23095C65.8767 7.13972 65.8213 7.05682 65.7515 6.987C65.6817 6.91718 65.5988 6.8618 65.5075 6.82403C65.4163 6.78625 65.3185 6.76682 65.2198 6.76685ZM60.944 15.7891C59.0071 15.7891 57.4314 14.1026 57.4314 12.0298C57.4314 9.95706 59.0071 8.27054 60.944 8.27054C62.8809 8.27054 64.4562 9.95709 64.4562 12.0298C64.4562 14.1025 62.8805 15.7891 60.944 15.7891Z" fill="white"></path><path d="M139.541 17.2858C137.975 17.2858 136.683 16.6117 135.997 15.4362C135.899 15.2681 135.865 15.0699 135.902 14.8786C135.939 14.6873 136.044 14.516 136.198 14.3966C136.272 14.3435 136.357 14.307 136.447 14.2894C136.537 14.2719 136.629 14.2738 136.718 14.2949C136.807 14.3161 136.89 14.356 136.962 14.412C137.034 14.4681 137.093 14.5389 137.136 14.6198C137.402 15.016 137.762 15.3408 138.183 15.5657C138.604 15.7907 139.073 15.9089 139.551 15.91C140.807 15.91 141.607 15.3801 141.607 14.5342C141.607 13.6857 140.683 13.3306 139.283 12.6866C137.706 11.9612 136.174 11.4504 136.145 9.54096C136.126 8.26561 137.433 6.88909 139.427 6.76942C140.652 6.69378 141.855 7.17502 142.493 7.85828C142.626 8.00123 142.703 8.18668 142.711 8.38139C142.719 8.57609 142.658 8.7673 142.537 8.92072C142.482 8.99253 142.411 9.05147 142.33 9.09352C142.249 9.13557 142.161 9.15975 142.07 9.16443C141.979 9.1691 141.888 9.15416 141.803 9.12061C141.719 9.08706 141.642 9.03569 141.579 8.96999C140.026 7.51516 137.517 8.20199 137.517 9.54104C137.517 10.3547 138.663 10.8057 139.8 11.3159C140.909 11.8137 143 12.5979 143 14.5344C143 15.7842 141.91 17.2858 139.541 17.2858Z" fill="white"></path></svg>');
+            defineProperty(assertThisInitialized(assertThisInitialized(_this)), "royalMailLogo", '<svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 192.756 192.756"><g fill-rule="evenodd" clip-rule="evenodd"><path fill="#fff" d="M0 0h192.756v192.756H0V0z"/><path fill="#fff" stroke="#ee2722" stroke-width="1.289" stroke-miterlimit="2.613" d="M64.619 33.917h63.613v124.921H64.619V33.917z"/><path d="M94.822 46.76h3.153c-.133-.095-.244-.21-.373-.337-.547-.553-.457-1.183-.234-1.409s.846.038 1.393.59c.139.135.256.276.355.417V42.11a3.465 3.465 0 0 1-.336.393c-.547.553-1.17.815-1.395.59-.223-.226.037-.858.584-1.408.135-.136.262-.255.396-.354h-3.846c.126.093.258.209.381.335.547.549.807 1.182.584 1.408-.224.226-.847-.038-1.394-.59a3.34 3.34 0 0 1-.353-.41v3.896c.095-.13.208-.258.334-.385.547-.553 1.17-.815 1.394-.591.224.226.313.856-.233 1.409a3.122 3.122 0 0 1-.41.357zM93.223 51.035c.3 1.488 1.604 2.612 3.166 2.612 1.564 0 2.869-1.122 3.168-2.612h-6.334zM99.555 49.722a3.263 3.263 0 0 0-2.545-2.548v2.548h2.545zM95.734 47.183a3.248 3.248 0 0 0-2.511 2.539h2.511v-2.539zM95.413 55.044a.98.98 0 0 1 .976-.983c.539 0 .977.441.977.983a.982.982 0 0 1-.977.986.98.98 0 0 1-.976-.986zM95.413 57.515a.98.98 0 0 1 .976-.983c.539 0 .977.441.977.983a.98.98 0 0 1-.977.985.98.98 0 0 1-.976-.985zM95.413 59.989a.98.98 0 0 1 .976-.986c.539 0 .977.441.977.986a.981.981 0 0 1-.977.983.98.98 0 0 1-.976-.983zM95.413 62.46a.98.98 0 0 1 .976-.986c.539 0 .977.44.977.986a.98.98 0 0 1-.977.983.979.979 0 0 1-.976-.983zM95.313 67.959c0-.6.481-1.083 1.076-1.083s1.076.483 1.076 1.083c0 .601-.482 1.087-1.076 1.087s-1.076-.486-1.076-1.087zM112.602 71.102c.377.128.859-.292 1.074-.94.217-.646.084-1.276-.293-1.403-.379-.127-.861.292-1.076.938-.217.648-.084 1.275.295 1.405zM80.176 71.102c-.379.128-.859-.292-1.076-.94-.215-.646-.083-1.276.295-1.403.379-.127.86.292 1.075.938.217.648.085 1.275-.294 1.405zM100.012 52.539a1.44 1.44 0 0 1 1.432-1.445c.789 0 1.428.648 1.428 1.445s-.639 1.442-1.428 1.442a1.436 1.436 0 0 1-1.432-1.442zM103.352 51.083c0-.798.639-1.443 1.428-1.443s1.432.646 1.432 1.443c0 .799-.643 1.445-1.432 1.445s-1.428-.646-1.428-1.445zM106.781 49.847c0-.799.639-1.445 1.43-1.445.789 0 1.43.646 1.43 1.445 0 .797-.641 1.443-1.43 1.443a1.435 1.435 0 0 1-1.43-1.443zM110.395 49.722c0-.797.641-1.445 1.43-1.445s1.43.648 1.43 1.445c0 .798-.641 1.445-1.43 1.445s-1.43-.647-1.43-1.445zM113.703 51.146c0-.797.639-1.445 1.43-1.445.789 0 1.428.648 1.428 1.445s-.639 1.443-1.428 1.443c-.791 0-1.43-.645-1.43-1.443zM116.02 54c0-.8.639-1.445 1.428-1.445s1.432.646 1.432 1.445c0 .796-.643 1.443-1.432 1.443s-1.428-.646-1.428-1.443zM116.863 57.52c0-.797.639-1.445 1.428-1.445.793 0 1.43.648 1.43 1.445 0 .798-.637 1.443-1.43 1.443a1.435 1.435 0 0 1-1.428-1.443zM116.674 61.134c0-.797.639-1.442 1.428-1.442s1.432.646 1.432 1.442-.643 1.445-1.432 1.445-1.428-.648-1.428-1.445zM115.73 64.593c0-.797.639-1.442 1.43-1.442.789 0 1.428.645 1.428 1.442 0 .797-.639 1.445-1.428 1.445-.791 0-1.43-.648-1.43-1.445zM89.915 52.539c0-.797.639-1.445 1.428-1.445s1.43.648 1.43 1.445-.641 1.442-1.43 1.442-1.428-.645-1.428-1.442zM86.574 51.083c0-.798.642-1.443 1.431-1.443s1.428.646 1.428 1.443c0 .799-.639 1.445-1.428 1.445a1.438 1.438 0 0 1-1.431-1.445zM83.145 49.847c0-.799.639-1.445 1.428-1.445.792 0 1.431.646 1.431 1.445 0 .797-.639 1.443-1.431 1.443a1.435 1.435 0 0 1-1.428-1.443zM79.532 49.722c0-.797.639-1.445 1.428-1.445.789 0 1.43.648 1.43 1.445 0 .798-.642 1.445-1.43 1.445a1.436 1.436 0 0 1-1.428-1.445zM76.224 51.146c0-.797.639-1.445 1.428-1.445.789 0 1.43.648 1.43 1.445s-.642 1.443-1.43 1.443a1.435 1.435 0 0 1-1.428-1.443zM73.907 54c0-.8.642-1.445 1.43-1.445.79 0 1.429.646 1.429 1.445 0 .796-.639 1.443-1.429 1.443-.788 0-1.43-.646-1.43-1.443zM73.063 57.52c0-.797.639-1.445 1.427-1.445.792 0 1.431.648 1.431 1.445 0 .798-.639 1.443-1.431 1.443a1.434 1.434 0 0 1-1.427-1.443zM73.252 61.134c0-.797.639-1.442 1.431-1.442.789 0 1.428.646 1.428 1.442s-.639 1.445-1.428 1.445a1.438 1.438 0 0 1-1.431-1.445zM74.196 64.593c0-.797.639-1.442 1.428-1.442.792 0 1.431.645 1.431 1.442 0 .797-.639 1.445-1.431 1.445a1.437 1.437 0 0 1-1.428-1.445z" fill="#ee2722"/><path d="M83.921 65.791c-.427.292-.853 1.942.684 3.202.3-.696.644-.766.965-.696s.573.242.747.898l2.159-.167c.034-.568.287-.94.791-1.078.46-.085.873.138 1.218.672.316-.938.371-2.144.05-2.827l2.215-.003v4.676c1.052-1.802 2.545-2.009 2.682-.5.121 1.318-1.494 2.785-3.032 2.785s-2.595-.654-3.676-2.349l-2.16.167c-.389 1.299-2.411 2.574-4.294 1.903-.91-.325-1.548-.814-1.333-1.393.252-.671 1.094-.125 1.725.117 0 0-.896-2.994-1.333-4.272-.116.348-.645 1.626-1.333 1.23-.374-.212-.134-1.092.294-2.359l3.631-.006zm1.617 0c.129.327.284.659.468.996-.439-.536-.808-.839-1.117-.991l.649-.005zm3.169 0a3.236 3.236 0 0 0-.589.879c.066-.313.122-.605.166-.876l.423-.003zm6.232 0c.25.428.313.8.126.979-.3.284-1.134-.048-1.865-.744a5.004 5.004 0 0 1-.23-.234h1.969v-.001zm4.875 0a4.18 4.18 0 0 1-.23.234c-.73.696-1.564 1.028-1.865.744-.186-.179-.123-.551.127-.976l1.968-.002zm2.428 0c-.32.686-.266 1.892.051 2.83.344-.534.756-.757 1.217-.672.506.138.758.51.791 1.078l2.16.167c.172-.656.426-.829.746-.898s.666 0 .965.696c1.535-1.26 1.111-2.91.684-3.202h3.641c.428 1.272.668 2.152.295 2.365-.689.396-1.219-.882-1.334-1.23-.438 1.278-1.334 4.272-1.334 4.272.631-.242 1.471-.789 1.727-.117.215.579-.424 1.068-1.334 1.393-1.883.671-3.904-.604-4.297-1.903l-2.158-.167c-1.08 1.694-2.137 2.349-3.676 2.349-1.537 0-3.152-1.467-3.031-2.785.137-1.509 1.631-1.302 2.682.5v-4.676h2.205zm2.252 0c.045.274.1.566.164.879a3.176 3.176 0 0 0-.588-.876l.424-.003zm3.395 0c-.311.157-.68.46-1.117.996.184-.337.338-.669.467-.993l.65-.003z" fill="#ee2722"/><path d="M80.29 65.791c.092-.273.197-.571.303-.884l-2.31.706s-1.793-2.473-1.961-6.761c-.253-6.361 4.086-7.429 5.992-7.45 2.046-.024 2.988.51 4.871 1.254 1.885.741 3.193 1.854 6.913 2.274l-.252 1.854c-3.766 0-7.303-2.705-10.819-2.729-3.882-.026-4.41 3.89-4.362 5.096.044 1.206.113 2.484.917 4.18.16-.976.866-3.925 1.907-4.435 2.916-1.207 5.835-.186 5.835-.186 3.353-1.044 6.177-1.044 6.177-1.044l.013-3.853 1.31-.544v10.478h3.137V53.27l1.311.544.012 3.853s2.824 0 6.178 1.044c0 0 2.92-1.021 5.836.186 1.125.51 1.746 3.459 1.906 4.435.805-1.695.873-2.974.918-4.18.047-1.206-.482-5.122-4.363-5.096-3.516.024-7.053 2.729-10.818 2.729l-.252-1.854c3.721-.42 5.027-1.533 6.914-2.274 1.883-.744 2.822-1.278 4.867-1.254 1.908.021 6.248 1.089 5.994 7.45-.17 4.289-1.961 6.761-1.961 6.761l-2.309-.706c.105.313.207.611.303.89l-3.641-.005a.112.112 0 0 0-.039-.023c-.242-.117-.541-.163-.928.029l-.65-.005c.824-2.096.459-3.871-.996-5.037-1.799 1.671-2.164 2.572-1.748 5.04l-.424-.003c-.305-.31-.695-.56-1.137-.536-.318.018-.545.223-.691.539l-2.207-.003v-.265c-.068.09-.141.178-.221.265h-1.969c.152-.255.375-.536.652-.8.182-.172.35-.324.533-.446h-5.278c.184.122.353.273.534.446.276.264.5.542.652.803l-1.969-.003a3.83 3.83 0 0 1-.221-.265v.265h-2.215c-.147-.313-.374-.518-.692-.536-.441-.024-.831.226-1.136.539l-.423-.003c.416-2.465.051-3.366-1.748-5.037-1.455 1.166-1.82 2.94-.998 5.04l-.649-.003c-.387-.186-.684-.141-.928-.023a.164.164 0 0 0-.04.023h-3.63v-.003zM111.732 75.43l.277-2.702s-1 1.079-2.746 1.034c-1.746-.049-3.318-1.313-4.008-2.333-.139-.231-.334-.244-.484.011-1.057 1.44-1.998 2.495-4.57 2.495s-3.536-1.623-3.857-2.088c-.324.465-1.288 2.088-3.861 2.088-2.571 0-3.513-1.055-4.57-2.495-.15-.254-.345-.242-.484-.011-.688 1.021-2.262 2.285-4.007 2.333-1.747.045-2.746-1.034-2.746-1.034l.276 2.702h30.78zM81.504 82.952c-1.102 0-1.996-.851-1.996-1.899 0-1.05.895-1.899 1.996-1.899h29.675c1.105 0 2 .85 2 1.899s-.895 1.899-2 1.899H81.504zM83.595 78.39v-2.16h-2.643l-.917 1.068.917 1.092h2.643zM85.999 77.312c0-.651 1.042-1.18 2.322-1.18 1.283 0 2.324.529 2.324 1.18 0 .65-1.042 1.177-2.324 1.177-1.281 0-2.322-.527-2.322-1.177zM109.09 78.39v-2.16h2.642l.918 1.068-.918 1.092h-2.642zM102.043 77.312c0-.651 1.037-1.18 2.322-1.18 1.281 0 2.322.529 2.322 1.18 0 .65-1.041 1.177-2.322 1.177-1.285 0-2.322-.527-2.322-1.177zM93.424 76.23h5.836v2.158h-5.836V76.23zM2.834 91.552h187.088v46.37H2.834v-46.37z" fill="#ee2722"/><path d="M168.279 99.246c-1.213 0-2.195.994-2.195 2.221 0 1.225.982 2.223 2.195 2.223 1.215 0 2.199-.998 2.199-2.223a2.209 2.209 0 0 0-2.199-2.221zm0 2.9a.678.678 0 0 1-.674-.68c0-.377.303-.68.674-.68.373 0 .676.303.676.68 0 .376-.303.68-.676.68zM49.792 108.154a9.78 9.78 0 0 0-7-2.93c-5.457 0-9.896 4.486-9.896 10a9.99 9.99 0 0 0 2.898 7.07 9.779 9.779 0 0 0 6.997 2.93 9.78 9.78 0 0 0 7-2.93c1.87-1.891 2.898-4.4 2.898-7.07s-1.026-5.181-2.897-7.07zm-1.209 12.92a8.094 8.094 0 0 1-5.791 2.42 8.088 8.088 0 0 1-5.788-2.42 8.262 8.262 0 0 1-2.399-5.85c0-4.562 3.674-8.271 8.187-8.271 2.188 0 4.244.859 5.791 2.424a8.257 8.257 0 0 1 2.398 5.848 8.258 8.258 0 0 1-2.398 5.849z" fill="#fff"/><path d="M48.121 109.844a7.442 7.442 0 0 0-5.328-2.229 7.441 7.441 0 0 0-5.325 2.229 7.6 7.6 0 0 0-2.207 5.381c0 2.031.784 3.941 2.207 5.379a7.44 7.44 0 0 0 5.325 2.23c4.155 0 7.535-3.414 7.535-7.609a7.605 7.605 0 0 0-2.207-5.381zm-5.329 11.263a5.75 5.75 0 0 1-4.116-1.723c-1.099-1.113-1.706-2.59-1.706-4.16s.607-3.047 1.706-4.16a5.755 5.755 0 0 1 4.116-1.723c1.557 0 3.019.611 4.118 1.723a5.882 5.882 0 0 1 1.707 4.16c0 3.245-2.613 5.883-5.825 5.883zM69.382 105.801v17.469a6.492 6.492 0 0 1-1.886 4.596 6.35 6.35 0 0 1-4.549 1.906 6.369 6.369 0 0 1-4.55-1.906 6.483 6.483 0 0 1-1.72-3.154h-1.743a8.212 8.212 0 0 0 2.256 4.377 8.043 8.043 0 0 0 5.757 2.41c2.177 0 4.22-.855 5.759-2.41s2.385-3.619 2.385-5.818v-17.469h-1.709v-.001z" fill="#fff"/><path d="M62.947 123.631a7.733 7.733 0 0 0 4.068-1.17v.809c0 2.266-1.825 4.109-4.068 4.109a4.024 4.024 0 0 1-2.877-1.203 4.112 4.112 0 0 1-.923-1.465h-1.793a5.803 5.803 0 0 0 1.51 2.688 5.708 5.708 0 0 0 4.083 1.711c3.188 0 5.78-2.621 5.78-5.84v-5.223a6.965 6.965 0 0 1-1.352 1.957c-1.212 1.225-2.785 1.9-4.428 1.9a6.373 6.373 0 0 1-4.55-1.902 6.498 6.498 0 0 1-1.883-4.598V105.8h-1.709v9.604a8.21 8.21 0 0 0 2.385 5.816 8.044 8.044 0 0 0 5.757 2.411z" fill="#fff"/><path d="M58.863 119.531a5.7 5.7 0 0 0 4.083 1.711c3.132 0 5.78-2.787 5.78-6.084v-9.357h-1.711v9.357c0 2.322-1.898 4.357-4.068 4.357a4.025 4.025 0 0 1-2.877-1.205 4.108 4.108 0 0 1-1.191-2.906V105.8H57.17v9.604a5.823 5.823 0 0 0 1.693 4.127zM98.674 99.699h1.709v25.01h-1.709v-25.01zM96.307 99.699h1.709v25.01h-1.709v-25.01zM168.598 105.781h1.709v18.93h-1.709v-18.93zM166.23 105.781h1.709v18.93h-1.709v-18.93zM176.342 99.699h1.709v25.01h-1.709v-25.01zM173.979 99.699h1.709v25.01h-1.709v-25.01zM78.22 110.248c-1.378 1.393-2.138 3.244-2.138 5.213s.759 3.82 2.138 5.213a7.199 7.199 0 0 0 5.159 2.16c4.024 0 7.298-3.309 7.298-7.373v-7.373h-7.298a7.206 7.206 0 0 0-5.159 2.16zm10.748 5.213c0 3.113-2.506 5.646-5.588 5.646a5.522 5.522 0 0 1-3.95-1.654c-1.054-1.066-1.638-2.482-1.638-3.992s.584-2.926 1.638-3.994a5.53 5.53 0 0 1 3.95-1.652h5.588v5.646z" fill="#fff"/><path d="M83.379 105.697c-5.328 0-9.662 4.381-9.662 9.764a9.743 9.743 0 0 0 2.83 6.902 9.552 9.552 0 0 0 6.832 2.861 9.536 9.536 0 0 0 5.588-1.807v1.293h1.709v-6.059a8.01 8.01 0 0 1-1.673 2.492 7.869 7.869 0 0 1-5.625 2.35 7.862 7.862 0 0 1-5.622-2.35 8.035 8.035 0 0 1-2.33-5.684c0-4.432 3.568-8.035 7.952-8.035h7.952v17.285h1.712v-19.014h-9.663v.002zM147.996 110.248c-1.377 1.393-2.137 3.244-2.137 5.213s.76 3.82 2.137 5.213a7.204 7.204 0 0 0 5.16 2.16c4.023 0 7.297-3.309 7.297-7.373v-7.373h-7.297a7.208 7.208 0 0 0-5.16 2.16zm10.748 5.213c0 3.113-2.506 5.646-5.588 5.646a5.516 5.516 0 0 1-3.949-1.654c-1.059-1.066-1.639-2.482-1.639-3.992s.58-2.926 1.639-3.994a5.522 5.522 0 0 1 3.949-1.652h5.588v5.646z" fill="#fff"/><path d="M153.156 105.697c-5.328 0-9.662 4.381-9.662 9.764a9.739 9.739 0 0 0 2.83 6.902 9.55 9.55 0 0 0 6.832 2.861 9.536 9.536 0 0 0 5.588-1.807v1.293h1.709v-6.059a8.02 8.02 0 0 1-1.676 2.492 7.856 7.856 0 0 1-5.621 2.35 7.864 7.864 0 0 1-5.623-2.35 8.035 8.035 0 0 1-2.33-5.684c0-4.432 3.568-8.035 7.953-8.035h7.951v17.285h1.709v-19.014h-9.66v.002zM26.638 115.785a7.822 7.822 0 0 0 2.522-1.719c1.626-1.643 2.596-3.986 2.596-6.268a8.372 8.372 0 0 0-2.407-5.84c-1.503-1.518-3.463-2.322-5.667-2.322h-8.667v25.037h1.709v-23.309h6.958c1.741 0 3.282.629 4.458 1.816 1.194 1.205 1.906 2.932 1.906 4.617 0 1.807-.805 3.74-2.095 5.045-1.149 1.16-2.604 1.777-4.21 1.793l7.023 10.029h2.096l-6.222-8.879z" fill="#fff"/><path d="M22.478 113.979h1.205c3.724 0 5.709-3.59 5.709-6.18 0-1.516-.642-3.066-1.715-4.15-1.049-1.061-2.432-1.621-3.995-1.621h-6.303v22.646h1.712v-20.918h4.591c1.115 0 2.054.373 2.785 1.115a4.252 4.252 0 0 1 1.212 2.928c0 1.867-1.388 4.453-3.997 4.453h-4.509l8.693 12.414h2.096l-7.484-10.687zM138.021 99.705h-1.732l4.412 25.043h1.737l-4.417-25.043zM126.723 114.627l-6.84-14.922h-1.879l8.719 19.033 8.718-19.033h-1.879l-6.839 14.922zM111.008 124.748h1.738l4.412-25.043h-1.744l-4.406 25.043z" fill="#fff"/><path fill="#fff" d="M126.723 120.314l-9.049-19.759-4.264 24.193h1.736l3.258-18.482 8.319 18.162 8.32-18.162 3.254 18.482h1.74l-4.264-24.193-9.05 19.759z"/></g></svg>');
+            defineProperty(assertThisInitialized(assertThisInitialized(_this)), "afdLogo", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841 438" width="24px" height="24px" x="0px" y="0px" style="enable-background:new 0 0 841.9 438.9;" xml:space="preserve"><style type="text/css">.st0{fill:#2273B9;}.st1{fill:#10437C;}.st2{fill:#03A29A;}.st3{fill:#878787;}</style><g><path class="st0" d="M652,199.7c7.1,6.7,18.2,6.7,25.3-0.1L765,115c-0.8-4.6-4.8-8.1-9.6-8.1H574.2c-5,0-9.1,3.8-9.7,8.7L652,199.7z"/><g><path class="st1" d="M567.9,249.8l56.7-56.9l-60.1-57.8v107.3C564.4,245.4,565.8,248,567.9,249.8z"/><path class="st1" d="M762,249.6c1.9-1.8,3.2-4.3,3.2-7.2V134.5l-60.2,58.2L762,249.6z"/></g><path class="st2" d="M755.4,252.2c2.6,0,4.9-1,6.6-2.6l-57-56.8l-17.8,17.2c-6.3,6-14.4,9-22.5,9c-8.1,0-16.1-3-22.4-9l-17.7-17l-56.7,56.9c1.7,1.5,3.9,2.4,6.3,2.4L755.4,252.2L755.4,252.2z"/><g><path class="st0" d="M670.1,344.5l-170.9-0.7V172.3c0-94.2,76.7-170.9,170.9-170.9c94.2,0,170.9,76.7,170.9,170.9C840.9,267.2,764.3,344.5,670.1,344.5z M513.2,329.9l156.9,0.6c86.5,0,156.8-71,156.8-158.2c0-86.5-70.4-156.9-156.9-156.9c-86.5,0-156.9,70.4-156.9,156.9L513.2,329.9L513.2,329.9z"/></g><g><path class="st0" d="M127.8,211.9c-13.4-11.1-30.6-17.8-49.3-17.8C35.7,194.1,1,228.8,1,271.6s34.8,77.5,77.5,77.5c18.7,0,35.9-6.7,49.3-17.8v13.3H156V192.2h-28.1V211.9z M78.5,320.9c-27.2,0-49.3-22.1-49.3-49.3s22.1-49.4,49.3-49.4s49.4,22.1,49.4,49.4S105.7,320.9,78.5,320.9z"/><path class="st0" d="M275.7,166.7l1.5-28.3c-28.6-1.5-51,5.3-66.6,20c-14.4,13.7-22.5,33.7-23.8,59.6l0,0v126.6h28.1v-98.5H277V218h-61.7c1.1-17.6,6.1-30.7,14.8-39C239.8,169.7,255.1,165.6,275.7,166.7z"/><path class="st0" d="M444,138.6v-0.7h-28.1v74c-13.4-11.1-30.6-17.8-49.4-17.8c-42.7,0-77.5,34.8-77.5,77.5s34.8,77.5,77.5,77.5c18.9,0,36.1-6.8,49.6-18v13.5h28L444,138.6L444,138.6z M366.5,320.9c-27.2,0-49.4-22.1-49.4-49.3s22.1-49.4,49.4-49.4c27.2,0,49.4,22.1,49.4,49.4C415.8,298.8,393.7,320.9,366.5,320.9z"/></g><g><path class="st3" d="M37,437.5c-10.3,0-17.6-5.8-17.8-14.2h7.2c0.4,4.3,3.5,8.6,10.6,8.6c6.5,0,10.3-3.7,10.3-8.6c0-13.9-27.8-5-27.8-24.1c0-8.5,6.9-14.2,17-14.2c9.8,0,16.2,5.4,17,13.2h-7.4c-0.4-3.5-3.7-7.4-10-7.4c-5.5-0.1-9.9,2.7-9.9,8.3c0,13.3,27.7,5,27.7,24C54.1,430.3,48.1,437.5,37,437.5z"/><path class="st3" d="M94.6,437.5c-14.5,0-25.8-10.8-25.8-26.2c0-15.4,11.4-26.2,25.8-26.2c14.5,0,25.8,10.8,25.8,26.2C120.4,426.7,109.1,437.5,94.6,437.5z M94.6,431.7c10.8,0,19-7.9,19-20.4c0-12.6-8.1-20.4-19-20.4s-19,7.8-19,20.4C75.7,423.8,83.8,431.7,94.6,431.7z"/><path class="st3" d="M136.7,385.6h29.1v5.5h-22.3v17.3h18.1v5.5h-18.1V437h-6.7L136.7,385.6L136.7,385.6z"/><path class="st3" d="M178,385.6h34.8v5.5h-14V437h-6.7v-45.9H178L178,385.6L178,385.6z"/><path class="st3" d="M224.5,385.6h7.2l11.2,43.6l12.4-43.6h7.5l11.8,43.4l11.3-43.4h7.2L278.2,437h-7.5l-11.9-41.4L246.3,437l-7.4,0.1L224.5,385.6z"/><path class="st3" d="M338.2,425.6h-22.4l-4.1,11.4h-7.1l18.6-51.1h7.7l18.5,51.1h-7.1L338.2,425.6z M327,394.2l-9.3,26h18.6L327,394.2z"/><path class="st3" d="M381.4,385.6c12.1,0,17.9,6.7,17.9,15.1c0,6.6-3.6,12.8-12.2,14.7L400,437h-8l-12.2-21h-8.1v21h-6.7v-51.4L381.4,385.6L381.4,385.6z M381.4,391.1h-9.9v19.5h9.9c7.6,0,10.9-4.1,10.9-9.9C392.4,394.9,389.1,391.1,381.4,391.1z"/><path class="st3" d="M444.7,391.1h-20.9v17.2h18.7v5.5h-18.7v17.7h20.9v5.5h-27.6v-51.5h27.6V391.1z"/></g></g></svg>');
             _this.controlType = 'typeahead';
             _this.$reverseGeocodeButton = $element.siblings('.afd-typeahead-reverse-geocode-button');
             _this.setFields();
@@ -25439,7 +25492,7 @@
 
     var intlTelInput = createCommonjsModule(function (module) {
         /*
-	 * International Telephone Input v17.0.0
+	 * International Telephone Input v17.0.21
 	 * https://github.com/jackocnr/intl-tel-input.git
 	 * Licensed under the MIT license
 	 */
@@ -25463,7 +25516,7 @@
                 //    Order (if >1 country with same dial code),
                 //    Area codes
                 // ]
-                var allCountries = [ [ "Afghanistan (‫افغانستان‬‎)", "af", "93" ], [ "Albania (Shqipëri)", "al", "355" ], [ "Algeria (‫الجزائر‬‎)", "dz", "213" ], [ "American Samoa", "as", "1", 5, [ "684" ] ], [ "Andorra", "ad", "376" ], [ "Angola", "ao", "244" ], [ "Anguilla", "ai", "1", 6, [ "264" ] ], [ "Antigua and Barbuda", "ag", "1", 7, [ "268" ] ], [ "Argentina", "ar", "54" ], [ "Armenia (Հայաստան)", "am", "374" ], [ "Aruba", "aw", "297" ], [ "Australia", "au", "61", 0 ], [ "Austria (Österreich)", "at", "43" ], [ "Azerbaijan (Azərbaycan)", "az", "994" ], [ "Bahamas", "bs", "1", 8, [ "242" ] ], [ "Bahrain (‫البحرين‬‎)", "bh", "973" ], [ "Bangladesh (বাংলাদেশ)", "bd", "880" ], [ "Barbados", "bb", "1", 9, [ "246" ] ], [ "Belarus (Беларусь)", "by", "375" ], [ "Belgium (België)", "be", "32" ], [ "Belize", "bz", "501" ], [ "Benin (Bénin)", "bj", "229" ], [ "Bermuda", "bm", "1", 10, [ "441" ] ], [ "Bhutan (འབྲུག)", "bt", "975" ], [ "Bolivia", "bo", "591" ], [ "Bosnia and Herzegovina (Босна и Херцеговина)", "ba", "387" ], [ "Botswana", "bw", "267" ], [ "Brazil (Brasil)", "br", "55" ], [ "British Indian Ocean Territory", "io", "246" ], [ "British Virgin Islands", "vg", "1", 11, [ "284" ] ], [ "Brunei", "bn", "673" ], [ "Bulgaria (България)", "bg", "359" ], [ "Burkina Faso", "bf", "226" ], [ "Burundi (Uburundi)", "bi", "257" ], [ "Cambodia (កម្ពុជា)", "kh", "855" ], [ "Cameroon (Cameroun)", "cm", "237" ], [ "Canada", "ca", "1", 1, [ "204", "226", "236", "249", "250", "289", "306", "343", "365", "387", "403", "416", "418", "431", "437", "438", "450", "506", "514", "519", "548", "579", "581", "587", "604", "613", "639", "647", "672", "705", "709", "742", "778", "780", "782", "807", "819", "825", "867", "873", "902", "905" ] ], [ "Cape Verde (Kabu Verdi)", "cv", "238" ], [ "Caribbean Netherlands", "bq", "599", 1, [ "3", "4", "7" ] ], [ "Cayman Islands", "ky", "1", 12, [ "345" ] ], [ "Central African Republic (République centrafricaine)", "cf", "236" ], [ "Chad (Tchad)", "td", "235" ], [ "Chile", "cl", "56" ], [ "China (中国)", "cn", "86" ], [ "Christmas Island", "cx", "61", 2 ], [ "Cocos (Keeling) Islands", "cc", "61", 1 ], [ "Colombia", "co", "57" ], [ "Comoros (‫جزر القمر‬‎)", "km", "269" ], [ "Congo (DRC) (Jamhuri ya Kidemokrasia ya Kongo)", "cd", "243" ], [ "Congo (Republic) (Congo-Brazzaville)", "cg", "242" ], [ "Cook Islands", "ck", "682" ], [ "Costa Rica", "cr", "506" ], [ "Côte d’Ivoire", "ci", "225" ], [ "Croatia (Hrvatska)", "hr", "385" ], [ "Cuba", "cu", "53" ], [ "Curaçao", "cw", "599", 0 ], [ "Cyprus (Κύπρος)", "cy", "357" ], [ "Czech Republic (Česká republika)", "cz", "420" ], [ "Denmark (Danmark)", "dk", "45" ], [ "Djibouti", "dj", "253" ], [ "Dominica", "dm", "1", 13, [ "767" ] ], [ "Dominican Republic (República Dominicana)", "do", "1", 2, [ "809", "829", "849" ] ], [ "Ecuador", "ec", "593" ], [ "Egypt (‫مصر‬‎)", "eg", "20" ], [ "El Salvador", "sv", "503" ], [ "Equatorial Guinea (Guinea Ecuatorial)", "gq", "240" ], [ "Eritrea", "er", "291" ], [ "Estonia (Eesti)", "ee", "372" ], [ "Ethiopia", "et", "251" ], [ "Falkland Islands (Islas Malvinas)", "fk", "500" ], [ "Faroe Islands (Føroyar)", "fo", "298" ], [ "Fiji", "fj", "679" ], [ "Finland (Suomi)", "fi", "358", 0 ], [ "France", "fr", "33" ], [ "French Guiana (Guyane française)", "gf", "594" ], [ "French Polynesia (Polynésie française)", "pf", "689" ], [ "Gabon", "ga", "241" ], [ "Gambia", "gm", "220" ], [ "Georgia (საქართველო)", "ge", "995" ], [ "Germany (Deutschland)", "de", "49" ], [ "Ghana (Gaana)", "gh", "233" ], [ "Gibraltar", "gi", "350" ], [ "Greece (Ελλάδα)", "gr", "30" ], [ "Greenland (Kalaallit Nunaat)", "gl", "299" ], [ "Grenada", "gd", "1", 14, [ "473" ] ], [ "Guadeloupe", "gp", "590", 0 ], [ "Guam", "gu", "1", 15, [ "671" ] ], [ "Guatemala", "gt", "502" ], [ "Guernsey", "gg", "44", 1, [ "1481", "7781", "7839", "7911" ] ], [ "Guinea (Guinée)", "gn", "224" ], [ "Guinea-Bissau (Guiné Bissau)", "gw", "245" ], [ "Guyana", "gy", "592" ], [ "Haiti", "ht", "509" ], [ "Honduras", "hn", "504" ], [ "Hong Kong (香港)", "hk", "852" ], [ "Hungary (Magyarország)", "hu", "36" ], [ "Iceland (Ísland)", "is", "354" ], [ "India (भारत)", "in", "91" ], [ "Indonesia", "id", "62" ], [ "Iran (‫ایران‬‎)", "ir", "98" ], [ "Iraq (‫العراق‬‎)", "iq", "964" ], [ "Ireland", "ie", "353" ], [ "Isle of Man", "im", "44", 2, [ "1624", "74576", "7524", "7924", "7624" ] ], [ "Israel (‫ישראל‬‎)", "il", "972" ], [ "Italy (Italia)", "it", "39", 0 ], [ "Jamaica", "jm", "1", 4, [ "876", "658" ] ], [ "Japan (日本)", "jp", "81" ], [ "Jersey", "je", "44", 3, [ "1534", "7509", "7700", "7797", "7829", "7937" ] ], [ "Jordan (‫الأردن‬‎)", "jo", "962" ], [ "Kazakhstan (Казахстан)", "kz", "7", 1, [ "33", "7" ] ], [ "Kenya", "ke", "254" ], [ "Kiribati", "ki", "686" ], [ "Kosovo", "xk", "383" ], [ "Kuwait (‫الكويت‬‎)", "kw", "965" ], [ "Kyrgyzstan (Кыргызстан)", "kg", "996" ], [ "Laos (ລາວ)", "la", "856" ], [ "Latvia (Latvija)", "lv", "371" ], [ "Lebanon (‫لبنان‬‎)", "lb", "961" ], [ "Lesotho", "ls", "266" ], [ "Liberia", "lr", "231" ], [ "Libya (‫ليبيا‬‎)", "ly", "218" ], [ "Liechtenstein", "li", "423" ], [ "Lithuania (Lietuva)", "lt", "370" ], [ "Luxembourg", "lu", "352" ], [ "Macau (澳門)", "mo", "853" ], [ "Macedonia (FYROM) (Македонија)", "mk", "389" ], [ "Madagascar (Madagasikara)", "mg", "261" ], [ "Malawi", "mw", "265" ], [ "Malaysia", "my", "60" ], [ "Maldives", "mv", "960" ], [ "Mali", "ml", "223" ], [ "Malta", "mt", "356" ], [ "Marshall Islands", "mh", "692" ], [ "Martinique", "mq", "596" ], [ "Mauritania (‫موريتانيا‬‎)", "mr", "222" ], [ "Mauritius (Moris)", "mu", "230" ], [ "Mayotte", "yt", "262", 1, [ "269", "639" ] ], [ "Mexico (México)", "mx", "52" ], [ "Micronesia", "fm", "691" ], [ "Moldova (Republica Moldova)", "md", "373" ], [ "Monaco", "mc", "377" ], [ "Mongolia (Монгол)", "mn", "976" ], [ "Montenegro (Crna Gora)", "me", "382" ], [ "Montserrat", "ms", "1", 16, [ "664" ] ], [ "Morocco (‫المغرب‬‎)", "ma", "212", 0 ], [ "Mozambique (Moçambique)", "mz", "258" ], [ "Myanmar (Burma) (မြန်မာ)", "mm", "95" ], [ "Namibia (Namibië)", "na", "264" ], [ "Nauru", "nr", "674" ], [ "Nepal (नेपाल)", "np", "977" ], [ "Netherlands (Nederland)", "nl", "31" ], [ "New Caledonia (Nouvelle-Calédonie)", "nc", "687" ], [ "New Zealand", "nz", "64" ], [ "Nicaragua", "ni", "505" ], [ "Niger (Nijar)", "ne", "227" ], [ "Nigeria", "ng", "234" ], [ "Niue", "nu", "683" ], [ "Norfolk Island", "nf", "672" ], [ "North Korea (조선 민주주의 인민 공화국)", "kp", "850" ], [ "Northern Mariana Islands", "mp", "1", 17, [ "670" ] ], [ "Norway (Norge)", "no", "47", 0 ], [ "Oman (‫عُمان‬‎)", "om", "968" ], [ "Pakistan (‫پاکستان‬‎)", "pk", "92" ], [ "Palau", "pw", "680" ], [ "Palestine (‫فلسطين‬‎)", "ps", "970" ], [ "Panama (Panamá)", "pa", "507" ], [ "Papua New Guinea", "pg", "675" ], [ "Paraguay", "py", "595" ], [ "Peru (Perú)", "pe", "51" ], [ "Philippines", "ph", "63" ], [ "Poland (Polska)", "pl", "48" ], [ "Portugal", "pt", "351" ], [ "Puerto Rico", "pr", "1", 3, [ "787", "939" ] ], [ "Qatar (‫قطر‬‎)", "qa", "974" ], [ "Réunion (La Réunion)", "re", "262", 0 ], [ "Romania (România)", "ro", "40" ], [ "Russia (Россия)", "ru", "7", 0 ], [ "Rwanda", "rw", "250" ], [ "Saint Barthélemy", "bl", "590", 1 ], [ "Saint Helena", "sh", "290" ], [ "Saint Kitts and Nevis", "kn", "1", 18, [ "869" ] ], [ "Saint Lucia", "lc", "1", 19, [ "758" ] ], [ "Saint Martin (Saint-Martin (partie française))", "mf", "590", 2 ], [ "Saint Pierre and Miquelon (Saint-Pierre-et-Miquelon)", "pm", "508" ], [ "Saint Vincent and the Grenadines", "vc", "1", 20, [ "784" ] ], [ "Samoa", "ws", "685" ], [ "San Marino", "sm", "378" ], [ "São Tomé and Príncipe (São Tomé e Príncipe)", "st", "239" ], [ "Saudi Arabia (‫المملكة العربية السعودية‬‎)", "sa", "966" ], [ "Senegal (Sénégal)", "sn", "221" ], [ "Serbia (Србија)", "rs", "381" ], [ "Seychelles", "sc", "248" ], [ "Sierra Leone", "sl", "232" ], [ "Singapore", "sg", "65" ], [ "Sint Maarten", "sx", "1", 21, [ "721" ] ], [ "Slovakia (Slovensko)", "sk", "421" ], [ "Slovenia (Slovenija)", "si", "386" ], [ "Solomon Islands", "sb", "677" ], [ "Somalia (Soomaaliya)", "so", "252" ], [ "South Africa", "za", "27" ], [ "South Korea (대한민국)", "kr", "82" ], [ "South Sudan (‫جنوب السودان‬‎)", "ss", "211" ], [ "Spain (España)", "es", "34" ], [ "Sri Lanka (ශ්‍රී ලංකාව)", "lk", "94" ], [ "Sudan (‫السودان‬‎)", "sd", "249" ], [ "Suriname", "sr", "597" ], [ "Svalbard and Jan Mayen", "sj", "47", 1, [ "79" ] ], [ "Swaziland", "sz", "268" ], [ "Sweden (Sverige)", "se", "46" ], [ "Switzerland (Schweiz)", "ch", "41" ], [ "Syria (‫سوريا‬‎)", "sy", "963" ], [ "Taiwan (台灣)", "tw", "886" ], [ "Tajikistan", "tj", "992" ], [ "Tanzania", "tz", "255" ], [ "Thailand (ไทย)", "th", "66" ], [ "Timor-Leste", "tl", "670" ], [ "Togo", "tg", "228" ], [ "Tokelau", "tk", "690" ], [ "Tonga", "to", "676" ], [ "Trinidad and Tobago", "tt", "1", 22, [ "868" ] ], [ "Tunisia (‫تونس‬‎)", "tn", "216" ], [ "Turkey (Türkiye)", "tr", "90" ], [ "Turkmenistan", "tm", "993" ], [ "Turks and Caicos Islands", "tc", "1", 23, [ "649" ] ], [ "Tuvalu", "tv", "688" ], [ "U.S. Virgin Islands", "vi", "1", 24, [ "340" ] ], [ "Uganda", "ug", "256" ], [ "Ukraine (Україна)", "ua", "380" ], [ "United Arab Emirates (‫الإمارات العربية المتحدة‬‎)", "ae", "971" ], [ "United Kingdom", "gb", "44", 0 ], [ "United States", "us", "1", 0 ], [ "Uruguay", "uy", "598" ], [ "Uzbekistan (Oʻzbekiston)", "uz", "998" ], [ "Vanuatu", "vu", "678" ], [ "Vatican City (Città del Vaticano)", "va", "39", 1, [ "06698" ] ], [ "Venezuela", "ve", "58" ], [ "Vietnam (Việt Nam)", "vn", "84" ], [ "Wallis and Futuna (Wallis-et-Futuna)", "wf", "681" ], [ "Western Sahara (‫الصحراء الغربية‬‎)", "eh", "212", 1, [ "5288", "5289" ] ], [ "Yemen (‫اليمن‬‎)", "ye", "967" ], [ "Zambia", "zm", "260" ], [ "Zimbabwe", "zw", "263" ], [ "Åland Islands", "ax", "358", 1, [ "18" ] ] ];
+                var allCountries = [ [ "Afghanistan (‫افغانستان‬‎)", "af", "93" ], [ "Albania (Shqipëri)", "al", "355" ], [ "Algeria (‫الجزائر‬‎)", "dz", "213" ], [ "American Samoa", "as", "1", 5, [ "684" ] ], [ "Andorra", "ad", "376" ], [ "Angola", "ao", "244" ], [ "Anguilla", "ai", "1", 6, [ "264" ] ], [ "Antigua and Barbuda", "ag", "1", 7, [ "268" ] ], [ "Argentina", "ar", "54" ], [ "Armenia (Հայաստան)", "am", "374" ], [ "Aruba", "aw", "297" ], [ "Ascension Island", "ac", "247" ], [ "Australia", "au", "61", 0 ], [ "Austria (Österreich)", "at", "43" ], [ "Azerbaijan (Azərbaycan)", "az", "994" ], [ "Bahamas", "bs", "1", 8, [ "242" ] ], [ "Bahrain (‫البحرين‬‎)", "bh", "973" ], [ "Bangladesh (বাংলাদেশ)", "bd", "880" ], [ "Barbados", "bb", "1", 9, [ "246" ] ], [ "Belarus (Беларусь)", "by", "375" ], [ "Belgium (België)", "be", "32" ], [ "Belize", "bz", "501" ], [ "Benin (Bénin)", "bj", "229" ], [ "Bermuda", "bm", "1", 10, [ "441" ] ], [ "Bhutan (འབྲུག)", "bt", "975" ], [ "Bolivia", "bo", "591" ], [ "Bosnia and Herzegovina (Босна и Херцеговина)", "ba", "387" ], [ "Botswana", "bw", "267" ], [ "Brazil (Brasil)", "br", "55" ], [ "British Indian Ocean Territory", "io", "246" ], [ "British Virgin Islands", "vg", "1", 11, [ "284" ] ], [ "Brunei", "bn", "673" ], [ "Bulgaria (България)", "bg", "359" ], [ "Burkina Faso", "bf", "226" ], [ "Burundi (Uburundi)", "bi", "257" ], [ "Cambodia (កម្ពុជា)", "kh", "855" ], [ "Cameroon (Cameroun)", "cm", "237" ], [ "Canada", "ca", "1", 1, [ "204", "226", "236", "249", "250", "289", "306", "343", "365", "387", "403", "416", "418", "431", "437", "438", "450", "506", "514", "519", "548", "579", "581", "587", "604", "613", "639", "647", "672", "705", "709", "742", "778", "780", "782", "807", "819", "825", "867", "873", "902", "905" ] ], [ "Cape Verde (Kabu Verdi)", "cv", "238" ], [ "Caribbean Netherlands", "bq", "599", 1, [ "3", "4", "7" ] ], [ "Cayman Islands", "ky", "1", 12, [ "345" ] ], [ "Central African Republic (République centrafricaine)", "cf", "236" ], [ "Chad (Tchad)", "td", "235" ], [ "Chile", "cl", "56" ], [ "China (中国)", "cn", "86" ], [ "Christmas Island", "cx", "61", 2, [ "89164" ] ], [ "Cocos (Keeling) Islands", "cc", "61", 1, [ "89162" ] ], [ "Colombia", "co", "57" ], [ "Comoros (‫جزر القمر‬‎)", "km", "269" ], [ "Congo (DRC) (Jamhuri ya Kidemokrasia ya Kongo)", "cd", "243" ], [ "Congo (Republic) (Congo-Brazzaville)", "cg", "242" ], [ "Cook Islands", "ck", "682" ], [ "Costa Rica", "cr", "506" ], [ "Côte d’Ivoire", "ci", "225" ], [ "Croatia (Hrvatska)", "hr", "385" ], [ "Cuba", "cu", "53" ], [ "Curaçao", "cw", "599", 0 ], [ "Cyprus (Κύπρος)", "cy", "357" ], [ "Czech Republic (Česká republika)", "cz", "420" ], [ "Denmark (Danmark)", "dk", "45" ], [ "Djibouti", "dj", "253" ], [ "Dominica", "dm", "1", 13, [ "767" ] ], [ "Dominican Republic (República Dominicana)", "do", "1", 2, [ "809", "829", "849" ] ], [ "Ecuador", "ec", "593" ], [ "Egypt (‫مصر‬‎)", "eg", "20" ], [ "El Salvador", "sv", "503" ], [ "Equatorial Guinea (Guinea Ecuatorial)", "gq", "240" ], [ "Eritrea", "er", "291" ], [ "Estonia (Eesti)", "ee", "372" ], [ "Eswatini", "sz", "268" ], [ "Ethiopia", "et", "251" ], [ "Falkland Islands (Islas Malvinas)", "fk", "500" ], [ "Faroe Islands (Føroyar)", "fo", "298" ], [ "Fiji", "fj", "679" ], [ "Finland (Suomi)", "fi", "358", 0 ], [ "France", "fr", "33" ], [ "French Guiana (Guyane française)", "gf", "594" ], [ "French Polynesia (Polynésie française)", "pf", "689" ], [ "Gabon", "ga", "241" ], [ "Gambia", "gm", "220" ], [ "Georgia (საქართველო)", "ge", "995" ], [ "Germany (Deutschland)", "de", "49" ], [ "Ghana (Gaana)", "gh", "233" ], [ "Gibraltar", "gi", "350" ], [ "Greece (Ελλάδα)", "gr", "30" ], [ "Greenland (Kalaallit Nunaat)", "gl", "299" ], [ "Grenada", "gd", "1", 14, [ "473" ] ], [ "Guadeloupe", "gp", "590", 0 ], [ "Guam", "gu", "1", 15, [ "671" ] ], [ "Guatemala", "gt", "502" ], [ "Guernsey", "gg", "44", 1, [ "1481", "7781", "7839", "7911" ] ], [ "Guinea (Guinée)", "gn", "224" ], [ "Guinea-Bissau (Guiné Bissau)", "gw", "245" ], [ "Guyana", "gy", "592" ], [ "Haiti", "ht", "509" ], [ "Honduras", "hn", "504" ], [ "Hong Kong (香港)", "hk", "852" ], [ "Hungary (Magyarország)", "hu", "36" ], [ "Iceland (Ísland)", "is", "354" ], [ "India (भारत)", "in", "91" ], [ "Indonesia", "id", "62" ], [ "Iran (‫ایران‬‎)", "ir", "98" ], [ "Iraq (‫العراق‬‎)", "iq", "964" ], [ "Ireland", "ie", "353" ], [ "Isle of Man", "im", "44", 2, [ "1624", "74576", "7524", "7924", "7624" ] ], [ "Israel (‫ישראל‬‎)", "il", "972" ], [ "Italy (Italia)", "it", "39", 0 ], [ "Jamaica", "jm", "1", 4, [ "876", "658" ] ], [ "Japan (日本)", "jp", "81" ], [ "Jersey", "je", "44", 3, [ "1534", "7509", "7700", "7797", "7829", "7937" ] ], [ "Jordan (‫الأردن‬‎)", "jo", "962" ], [ "Kazakhstan (Казахстан)", "kz", "7", 1, [ "33", "7" ] ], [ "Kenya", "ke", "254" ], [ "Kiribati", "ki", "686" ], [ "Kosovo", "xk", "383" ], [ "Kuwait (‫الكويت‬‎)", "kw", "965" ], [ "Kyrgyzstan (Кыргызстан)", "kg", "996" ], [ "Laos (ລາວ)", "la", "856" ], [ "Latvia (Latvija)", "lv", "371" ], [ "Lebanon (‫لبنان‬‎)", "lb", "961" ], [ "Lesotho", "ls", "266" ], [ "Liberia", "lr", "231" ], [ "Libya (‫ليبيا‬‎)", "ly", "218" ], [ "Liechtenstein", "li", "423" ], [ "Lithuania (Lietuva)", "lt", "370" ], [ "Luxembourg", "lu", "352" ], [ "Macau (澳門)", "mo", "853" ], [ "Madagascar (Madagasikara)", "mg", "261" ], [ "Malawi", "mw", "265" ], [ "Malaysia", "my", "60" ], [ "Maldives", "mv", "960" ], [ "Mali", "ml", "223" ], [ "Malta", "mt", "356" ], [ "Marshall Islands", "mh", "692" ], [ "Martinique", "mq", "596" ], [ "Mauritania (‫موريتانيا‬‎)", "mr", "222" ], [ "Mauritius (Moris)", "mu", "230" ], [ "Mayotte", "yt", "262", 1, [ "269", "639" ] ], [ "Mexico (México)", "mx", "52" ], [ "Micronesia", "fm", "691" ], [ "Moldova (Republica Moldova)", "md", "373" ], [ "Monaco", "mc", "377" ], [ "Mongolia (Монгол)", "mn", "976" ], [ "Montenegro (Crna Gora)", "me", "382" ], [ "Montserrat", "ms", "1", 16, [ "664" ] ], [ "Morocco (‫المغرب‬‎)", "ma", "212", 0 ], [ "Mozambique (Moçambique)", "mz", "258" ], [ "Myanmar (Burma) (မြန်မာ)", "mm", "95" ], [ "Namibia (Namibië)", "na", "264" ], [ "Nauru", "nr", "674" ], [ "Nepal (नेपाल)", "np", "977" ], [ "Netherlands (Nederland)", "nl", "31" ], [ "New Caledonia (Nouvelle-Calédonie)", "nc", "687" ], [ "New Zealand", "nz", "64" ], [ "Nicaragua", "ni", "505" ], [ "Niger (Nijar)", "ne", "227" ], [ "Nigeria", "ng", "234" ], [ "Niue", "nu", "683" ], [ "Norfolk Island", "nf", "672" ], [ "North Korea (조선 민주주의 인민 공화국)", "kp", "850" ], [ "North Macedonia (Северна Македонија)", "mk", "389" ], [ "Northern Mariana Islands", "mp", "1", 17, [ "670" ] ], [ "Norway (Norge)", "no", "47", 0 ], [ "Oman (‫عُمان‬‎)", "om", "968" ], [ "Pakistan (‫پاکستان‬‎)", "pk", "92" ], [ "Palau", "pw", "680" ], [ "Palestine (‫فلسطين‬‎)", "ps", "970" ], [ "Panama (Panamá)", "pa", "507" ], [ "Papua New Guinea", "pg", "675" ], [ "Paraguay", "py", "595" ], [ "Peru (Perú)", "pe", "51" ], [ "Philippines", "ph", "63" ], [ "Poland (Polska)", "pl", "48" ], [ "Portugal", "pt", "351" ], [ "Puerto Rico", "pr", "1", 3, [ "787", "939" ] ], [ "Qatar (‫قطر‬‎)", "qa", "974" ], [ "Réunion (La Réunion)", "re", "262", 0 ], [ "Romania (România)", "ro", "40" ], [ "Russia (Россия)", "ru", "7", 0 ], [ "Rwanda", "rw", "250" ], [ "Saint Barthélemy", "bl", "590", 1 ], [ "Saint Helena", "sh", "290" ], [ "Saint Kitts and Nevis", "kn", "1", 18, [ "869" ] ], [ "Saint Lucia", "lc", "1", 19, [ "758" ] ], [ "Saint Martin (Saint-Martin (partie française))", "mf", "590", 2 ], [ "Saint Pierre and Miquelon (Saint-Pierre-et-Miquelon)", "pm", "508" ], [ "Saint Vincent and the Grenadines", "vc", "1", 20, [ "784" ] ], [ "Samoa", "ws", "685" ], [ "San Marino", "sm", "378" ], [ "São Tomé and Príncipe (São Tomé e Príncipe)", "st", "239" ], [ "Saudi Arabia (‫المملكة العربية السعودية‬‎)", "sa", "966" ], [ "Senegal (Sénégal)", "sn", "221" ], [ "Serbia (Србија)", "rs", "381" ], [ "Seychelles", "sc", "248" ], [ "Sierra Leone", "sl", "232" ], [ "Singapore", "sg", "65" ], [ "Sint Maarten", "sx", "1", 21, [ "721" ] ], [ "Slovakia (Slovensko)", "sk", "421" ], [ "Slovenia (Slovenija)", "si", "386" ], [ "Solomon Islands", "sb", "677" ], [ "Somalia (Soomaaliya)", "so", "252" ], [ "South Africa", "za", "27" ], [ "South Korea (대한민국)", "kr", "82" ], [ "South Sudan (‫جنوب السودان‬‎)", "ss", "211" ], [ "Spain (España)", "es", "34" ], [ "Sri Lanka (ශ්‍රී ලංකාව)", "lk", "94" ], [ "Sudan (‫السودان‬‎)", "sd", "249" ], [ "Suriname", "sr", "597" ], [ "Svalbard and Jan Mayen", "sj", "47", 1, [ "79" ] ], [ "Sweden (Sverige)", "se", "46" ], [ "Switzerland (Schweiz)", "ch", "41" ], [ "Syria (‫سوريا‬‎)", "sy", "963" ], [ "Taiwan (台灣)", "tw", "886" ], [ "Tajikistan", "tj", "992" ], [ "Tanzania", "tz", "255" ], [ "Thailand (ไทย)", "th", "66" ], [ "Timor-Leste", "tl", "670" ], [ "Togo", "tg", "228" ], [ "Tokelau", "tk", "690" ], [ "Tonga", "to", "676" ], [ "Trinidad and Tobago", "tt", "1", 22, [ "868" ] ], [ "Tunisia (‫تونس‬‎)", "tn", "216" ], [ "Turkey (Türkiye)", "tr", "90" ], [ "Turkmenistan", "tm", "993" ], [ "Turks and Caicos Islands", "tc", "1", 23, [ "649" ] ], [ "Tuvalu", "tv", "688" ], [ "U.S. Virgin Islands", "vi", "1", 24, [ "340" ] ], [ "Uganda", "ug", "256" ], [ "Ukraine (Україна)", "ua", "380" ], [ "United Arab Emirates (‫الإمارات العربية المتحدة‬‎)", "ae", "971" ], [ "United Kingdom", "gb", "44", 0 ], [ "United States", "us", "1", 0 ], [ "Uruguay", "uy", "598" ], [ "Uzbekistan (Oʻzbekiston)", "uz", "998" ], [ "Vanuatu", "vu", "678" ], [ "Vatican City (Città del Vaticano)", "va", "39", 1, [ "06698" ] ], [ "Venezuela", "ve", "58" ], [ "Vietnam (Việt Nam)", "vn", "84" ], [ "Wallis and Futuna (Wallis-et-Futuna)", "wf", "681" ], [ "Western Sahara (‫الصحراء الغربية‬‎)", "eh", "212", 1, [ "5288", "5289" ] ], [ "Yemen (‫اليمن‬‎)", "ye", "967" ], [ "Zambia", "zm", "260" ], [ "Zimbabwe", "zw", "263" ], [ "Åland Islands", "ax", "358", 1, [ "18" ] ] ];
                 // loop over all of the countries above, restructuring the data to be objects with named keys
                 for (var i = 0; i < allCountries.length; i++) {
                     var c = allCountries[i];
@@ -25499,7 +25552,11 @@
                         var id = input.getAttribute("data-intl-tel-input-id");
                         return window.intlTelInputGlobals.instances[id];
                     },
-                    instances: {}
+                    instances: {},
+                    // using a global like this allows us to mock it in the tests
+                    documentReady: function documentReady() {
+                        return document.readyState === "complete";
+                    }
                 };
                 if (typeof window === "object") window.intlTelInputGlobals = intlTelInputGlobals;
                 // these vars persist through all instances of the plugin
@@ -25544,13 +25601,6 @@
                 };
                 // https://en.wikipedia.org/wiki/List_of_North_American_Numbering_Plan_area_codes#Non-geographic_area_codes
                 var regionlessNanpNumbers = [ "800", "822", "833", "844", "855", "866", "877", "880", "881", "882", "883", "884", "885", "886", "887", "888", "889" ];
-                if (typeof window === "object") {
-                    // keep track of if the window.load event has fired as impossible to check after the fact
-                    window.addEventListener("load", function() {
-                        // UPDATE: use a public static field so we can fudge it in the tests
-                        window.intlTelInputGlobals.windowLoaded = true;
-                    });
-                }
                 // utility function to iterate over an object. can't use Object.entries or native forEach because
                 // of IE11
                 var forEachProp = function forEachProp(obj, callback) {
@@ -25659,20 +25709,20 @@
                             }
                         }, {
                             key: "_addCountryCode",
-                            value: function _addCountryCode(iso2, dialCode, priority) {
-                                if (dialCode.length > this.dialCodeMaxLen) {
-                                    this.dialCodeMaxLen = dialCode.length;
+                            value: function _addCountryCode(iso2, countryCode, priority) {
+                                if (countryCode.length > this.countryCodeMaxLen) {
+                                    this.countryCodeMaxLen = countryCode.length;
                                 }
-                                if (!this.countryCodes.hasOwnProperty(dialCode)) {
-                                    this.countryCodes[dialCode] = [];
+                                if (!this.countryCodes.hasOwnProperty(countryCode)) {
+                                    this.countryCodes[countryCode] = [];
                                 }
-                                // bail if we already have this country for this dialCode
-                                for (var i = 0; i < this.countryCodes[dialCode].length; i++) {
-                                    if (this.countryCodes[dialCode][i] === iso2) return;
+                                // bail if we already have this country for this countryCode
+                                for (var i = 0; i < this.countryCodes[countryCode].length; i++) {
+                                    if (this.countryCodes[countryCode][i] === iso2) return;
                                 }
                                 // check for undefined as 0 is falsy
-                                var index = priority !== undefined$1 ? priority : this.countryCodes[dialCode].length;
-                                this.countryCodes[dialCode][index] = iso2;
+                                var index = priority !== undefined$1 ? priority : this.countryCodes[countryCode].length;
+                                this.countryCodes[countryCode][index] = iso2;
                             }
                         }, {
                             key: "_processAllCountries",
@@ -25713,11 +25763,15 @@
                         }, {
                             key: "_processCountryCodes",
                             value: function _processCountryCodes() {
-                                this.dialCodeMaxLen = 0;
+                                this.countryCodeMaxLen = 0;
+                                // here we store just dial codes
+                                this.dialCodes = {};
+                                // here we store "country codes" (both dial codes and their area codes)
                                 this.countryCodes = {};
                                 // first: add dial codes
                                 for (var i = 0; i < this.countries.length; i++) {
                                     var c = this.countries[i];
+                                    if (!this.dialCodes[c.dialCode]) this.dialCodes[c.dialCode] = true;
                                     this._addCountryCode(c.iso2, c.dialCode, c.priority);
                                 }
                                 // next: add area codes
@@ -25795,6 +25849,7 @@
                                 this.selectedFlag = this._createEl("div", {
                                     "class": "iti__selected-flag",
                                     role: "combobox",
+                                    "aria-controls": "iti-".concat(this.id, "__country-listbox"),
                                     "aria-owns": "iti-".concat(this.id, "__country-listbox"),
                                     "aria-expanded": "false"
                                 }, this.flagsContainer);
@@ -25816,7 +25871,8 @@
                                     this.countryList = this._createEl("ul", {
                                         "class": "iti__country-list iti__hide",
                                         id: "iti-".concat(this.id, "__country-listbox"),
-                                        role: "listbox"
+                                        role: "listbox",
+                                        "aria-label": "List of countries"
                                     });
                                     if (this.preferredCountries.length) {
                                         this._appendListItems(this.preferredCountries, "iti__preferred", true);
@@ -25864,7 +25920,7 @@
                                     var c = countries[i];
                                     var idSuffix = preferred ? "-preferred" : "";
                                     // open the list item
-                                    tmp += "<li class='iti__country ".concat(className, "' tabIndex='-1' id='iti-").concat(this.id, "__item-").concat(c.iso2).concat(idSuffix, "' role='option' data-dial-code='").concat(c.dialCode, "' data-country-code='").concat(c.iso2, "'>");
+                                    tmp += "<li class='iti__country ".concat(className, "' tabIndex='-1' id='iti-").concat(this.id, "__item-").concat(c.iso2).concat(idSuffix, "' role='option' data-dial-code='").concat(c.dialCode, "' data-country-code='").concat(c.iso2, "' aria-selected='false'>");
                                     // add the flag
                                     tmp += "<div class='iti__flag-box'><div class='iti__flag iti__".concat(c.iso2, "'></div></div>");
                                     // and the country name and dial code
@@ -25878,7 +25934,13 @@
                         }, {
                             key: "_setInitialState",
                             value: function _setInitialState() {
-                                var val = this.telInput.value;
+                                // fix firefox bug: when first load page (with input with value set to number with intl dial
+                                // code) and initialising plugin removes the dial code from the input, then refresh page,
+                                // and we try to init plugin again but this time on number without dial code so get grey flag
+                                var attributeValue = this.telInput.getAttribute("value");
+                                var inputValue = this.telInput.value;
+                                var useAttribute = attributeValue && attributeValue.charAt(0) === "+" && (!inputValue || inputValue.charAt(0) !== "+");
+                                var val = useAttribute ? attributeValue : inputValue;
                                 var dialCode = this._getDialCode(val);
                                 var isRegionlessNanp = this._isRegionlessNanp(val);
                                 var _this$options = this.options, initialCountry = _this$options.initialCountry, nationalMode = _this$options.nationalMode, autoHideDialCode = _this$options.autoHideDialCode, separateDialCode = _this$options.separateDialCode;
@@ -25982,7 +26044,7 @@
                                 // if the user has specified the path to the utils script, fetch it on window.load, else resolve
                                 if (this.options.utilsScript && !window.intlTelInputUtils) {
                                     // if the plugin is being initialised after the window.load event has already been fired
-                                    if (window.intlTelInputGlobals.windowLoaded) {
+                                    if (window.intlTelInputGlobals.documentReady()) {
                                         window.intlTelInputGlobals.loadUtils(this.options.utilsScript);
                                     } else {
                                         // wait until the load event so we don't block any other requests e.g. the flags image
@@ -26270,7 +26332,7 @@
                                     number = "+".concat(selectedDialCode).concat(number);
                                 }
                                 // try and extract valid dial code from input
-                                var dialCode = this._getDialCode(number);
+                                var dialCode = this._getDialCode(number, true);
                                 var numeric = this._getNumeric(number);
                                 var countryCode = null;
                                 if (dialCode) {
@@ -26393,8 +26455,10 @@
                                 var containerClone = this.telInput.parentNode.cloneNode();
                                 containerClone.style.visibility = "hidden";
                                 document.body.appendChild(containerClone);
+                                var flagsContainerClone = this.flagsContainer.cloneNode();
+                                containerClone.appendChild(flagsContainerClone);
                                 var selectedFlagClone = this.selectedFlag.cloneNode(true);
-                                containerClone.appendChild(selectedFlagClone);
+                                flagsContainerClone.appendChild(selectedFlagClone);
                                 var width = selectedFlagClone.offsetWidth;
                                 containerClone.parentNode.removeChild(containerClone);
                                 return width;
@@ -26512,7 +26576,7 @@
                             }
                         }, {
                             key: "_getDialCode",
-                            value: function _getDialCode(number) {
+                            value: function _getDialCode(number, includeAreaCode) {
                                 var dialCode = "";
                                 // only interested in international numbers (starting with a plus)
                                 if (number.charAt(0) === "+") {
@@ -26524,11 +26588,20 @@
                                         if (!isNaN(parseInt(c, 10))) {
                                             numericChars += c;
                                             // if current numericChars make a valid dial code
-                                            if (this.countryCodes[numericChars]) {
-                                                // store the actual raw string (useful for matching later)
-                                                dialCode = number.substr(0, i + 1);
+                                            if (includeAreaCode) {
+                                                if (this.countryCodes[numericChars]) {
+                                                    // store the actual raw string (useful for matching later)
+                                                    dialCode = number.substr(0, i + 1);
+                                                }
+                                            } else {
+                                                if (this.dialCodes[numericChars]) {
+                                                    dialCode = number.substr(0, i + 1);
+                                                    // if we're just looking for a dial code, we can break as soon as we find one
+                                                    break;
+                                                }
                                             }
-                                            if (numericChars.length === this.dialCodeMaxLen) {
+                                            // stop searching as soon as we can - in this case when we hit max len
+                                            if (numericChars.length === this.countryCodeMaxLen) {
                                                 break;
                                             }
                                         }
@@ -26758,7 +26831,7 @@
                 // default options
                 intlTelInputGlobals.defaults = defaults;
                 // version
-                intlTelInputGlobals.version = "17.0.0";
+                intlTelInputGlobals.version = "17.0.21";
                 // convenience wrapper
                 return function(input, options) {
                     var iti = new Iti(input, options);
@@ -26922,7 +26995,6 @@
         createClass(AfdPhone, [{
             key: "init",
             value: function init() {
-                var _this2 = this;
                 this.$element.data('phone-is-afd-valid', false);
 
                 // in this file countryControl refers to an external country control that may be in the form, not the one in the phone input control
@@ -26937,18 +27009,14 @@
                 event(this.$element, 'countrychange', this.onCountryChange);
                 var initValue = this.$element.val();
                 this.iti = intlTelInput$1(this.element, {
-                    utilsScript: 'https://cdn.afd.co.uk/plugins/shared/utils.js',
+                    utilsScript: 'https://cdn.afd.co.uk/plugins/shared/phone/17.0.21/utils.js',
                     separateDialCode: true
                 });
-                this.iti.promise.then(function () {
-                    // set default country
-                    if (initValue.length > 0) {
-                        _this2.iti.setNumber(initValue);
-                    } else {
-                        _this2.iti.setNumber(_this2.options.phone.defaultDialingCode);
-                    }
-                    _this2.countryData = _this2.iti.getSelectedCountryData();
-                });
+                this.$element.val(initValue);
+
+                // set default country
+                this.iti.setNumber(this.options.phone.defaultDialingCode);
+                this.countryData = this.iti.getSelectedCountryData();
             } // check for validation on each keystroke
         }, {
             key: "validatePhone",
@@ -30088,7 +30156,7 @@
         }
 
         // Data API definitions
-        $(function () {
+        $(document).ready(function () {
             if (!window.afdDataInit) {
                 window.afdDataInit = true;
                 $(document).trigger('afd::page_ready');
@@ -30186,7 +30254,8 @@
 
         // If this is post render version
         if (typeof postRender !== 'undefined') {
-            $(function () {
+            $(document).ready(function () {
+                if (afdOptions.postRender.preventAutoInit) return;
                 $(document).trigger('afd::initPostRender');
             });
             $(document).on('afd::initPostRender', function () {
@@ -30219,4 +30288,3 @@
     })($$b);
 
 })));
-//# sourceMappingURL=afd.jquery.1.10.2.js.map
