@@ -22,27 +22,24 @@ class TypeAheadProcessor
      */
     public function afterProcess(\Magento\Checkout\Block\Checkout\LayoutProcessor $processor, $jsLayout)
     {
-        // config for shipping address, later we will set the components and templates for each field in this form
         $shippingConfiguration = &$jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
         ['children']['shippingAddress']['children']['shipping-address-fieldset']['children'];
 
-        // set the parent shipping component of the individual form fields
-        $jsLayout['components']['checkout']['children']['steps']['children']['shipping-step']
-        ['children']['shippingAddress']['children']['shipping-address-fieldset']['component'] = 'Afd_Pce/js/checkout/shipping-address/form-fieldset';
-
-        // there are two types of billing address forms each with their own path to the form config,
-        // which one is used is set in magento admin 'Stores -> Configuration -> Sales -> Checkout -> Display Billing Address On
-        $billingFormType =
-            $this->_scopeConfig->getValue('checkout/options/display_billing_address_on', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 0
-                ? 'payments-list' : 'afterMethods';
-        // config for billing address same as shipping above
         $billingConfiguration = &$jsLayout['components']['checkout']['children']['steps']['children']['billing-step']
-        ['children']['payment']['children'][$billingFormType]['children'];
+        ['children']['payment']['children']['payments-list']['children'];
 
         //Checks if shipping step available.
         if (isset($shippingConfiguration)) {
-            // invoke processAddress function that sets the templates and components for shipping fields
-            $shippingConfiguration = $this->processAddress($shippingConfiguration,'shipping-address');
+            $shippingConfiguration = $this->processAddress(
+                $shippingConfiguration,
+                'shippingAddress',
+                [
+                    'checkoutProvider',
+                    'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.street',
+                    'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.city',
+                    'checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.country_id'
+                ]
+            );
         }
 
         //Checks if billing step available.
@@ -54,12 +51,16 @@ class TypeAheadProcessor
                     continue;
                 }
 
-                // set the parent shipping component of the individual form fields
-                $billingForm['children']['form-fields']['component'] = 'Afd_Pce/js/checkout/billing-address/form-fieldset';
-
-                // invoke processAddress function that sets the templates and components for shipping fields
                 $billingForm['children']['form-fields']['children'] = $this->processAddress(
-                    $billingForm['children']['form-fields']['children'], 'billing-address');
+                    $billingForm['children']['form-fields']['children'],
+                    $billingForm['dataScopePrefix'],
+                    [
+                        'checkoutProvider',
+                        'checkout.steps.billing-step.payment.payments-list.' . $key . '.form-fields.street',
+                        'checkout.steps.billing-step.payment.payments-list.' . $key . '.form-fields.city',
+                        'checkout.steps.billing-step.payment.payments-list.' . $key . '.form-fields.country_id'
+                    ]
+                );
             }
         }
 
@@ -74,16 +75,19 @@ class TypeAheadProcessor
      * @param $deps - list of dependencies
      * @return array
      */
-    private function processAddress($addressFieldset, $addressType)
+    private function processAddress($addressFieldset, $dataScope, $deps)
     {
 
         if($this->_scopeConfig->getValue('afd_typeahead/forms/checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
             //Creates typeahead field.
             $addressFieldset['afd_typeahead'] = [
-                'component' => 'Afd_Pce/js/checkout/' . $addressType . '/typeahead',
+                'component' => 'Afd_Pce/js/form/element/typeahead',
                 'config' => [
-                    'template' => 'Afd_Pce/checkout/address/typeahead'
+                    'customScope' => $dataScope,
+                    'template' => 'Afd_Pce/form/element/typeahead'
                 ],
+                'dataScope' => $dataScope . '.typeahead',
+                'deps' => $deps,
                 'label' => __('Search for Address'),
                 'provider' => 'checkoutProvider',
                 'visible' => true,
@@ -91,30 +95,20 @@ class TypeAheadProcessor
             ];
 
             // Sets template for address fields - see view/frontend/web/template/form/element
-            $addressFieldset['street']['config']['template'] = 'Afd_Pce/checkout/address/group';
-            $addressFieldset['street']['children'][0]['config']['elementTmpl'] = 'Afd_Pce/checkout/address/property';
-            $addressFieldset['street']['children'][1]['config']['elementTmpl'] = 'Afd_Pce/checkout/address/locality';
-            $addressFieldset['city']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/city';
-            $addressFieldset['company']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/company';
-            $addressFieldset['postcode']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/postcode';
-            $addressFieldset['region_id']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/region-id';
+            $addressFieldset['street']['children'][0]['config']['elementTmpl'] = 'Afd_Pce/form/element/property';
+            $addressFieldset['street']['children'][1]['config']['elementTmpl'] = 'Afd_Pce/form/element/street';
+            $addressFieldset['street']['children'][2]['config']['elementTmpl'] = 'Afd_Pce/form/element/locality';
+            $addressFieldset['city']['config']['elementTmpl'] = 'Afd_Pce/form/element/city';
+            $addressFieldset['company']['config']['elementTmpl'] = 'Afd_Pce/form/element/company';
+            $addressFieldset['postcode']['config']['elementTmpl'] = 'Afd_Pce/form/element/postcode';
+            $addressFieldset['region_id']['component'] = 'Afd_Pce/js/form/element/region';
+            $addressFieldset['region_id']['config']['elementTmpl'] = 'Afd_Pce/form/element/region-id';
 
-            // sets component for address fields
-            $addressFieldset['street']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/group';
-            $addressFieldset['street']['children'][0]['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/abstract';
-            $addressFieldset['street']['children'][1]['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/abstract';
-            $addressFieldset['city']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/abstract';
-            $addressFieldset['postcode']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/postcode';
-            $addressFieldset['region_id']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/region';
-
-            // set country component
-            $addressFieldset['country_id']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/select';
-            $addressFieldset['country_id']['config']['template'] = 'Afd_Pce/checkout/address/field';
 
         }
         if($this->_scopeConfig->getValue('afd_phone/forms/checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
-            $addressFieldset['telephone']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/telephone';
-            $addressFieldset['telephone']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/telephone';
+            $addressFieldset['telephone']['component'] = 'Afd_Pce/js/form/element/telephone';
+            $addressFieldset['telephone']['config']['elementTmpl'] = 'Afd_Pce/form/element/telephone';
         }
 
         $addressFieldset['country_id']['config']['sortOrder'] = 65;
