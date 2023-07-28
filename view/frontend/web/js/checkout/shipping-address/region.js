@@ -7,16 +7,31 @@
  * @api
  */
 define([
-    'Magento_Ui/js/form/element/select',
+    'Magento_Ui/js/form/element/region',
     'mageUtils',
-    'uiLayout'
-], function (Select, utils, layout) {
+    'uiLayout',
+    'uiRegistry',
+    'ko'
+], function (Region, utils, layout, registry, ko) {
     'use strict';
 
-    return Select.extend({
+    return Region.extend({
+
+        defaults: {
+            exports : {
+                fieldReady: '${ $.parentName }:fieldReady'
+            }
+        },
+
+        fieldReady: ko.observable(''),
 
         initialize: function () {
+
             this._super();
+
+            if (this.customEntry) {
+                registry.get(this.name, this.initInput.bind(this));
+            }
             return this;
         },
 
@@ -28,9 +43,9 @@ define([
         initInput: function () {
             var inputNode = {
                 parent: '${ $.$data.parentName }',
-                component: 'Magento_Ui/js/form/element/abstract',
+                component: 'Afd_Pce/js/checkout/shipping-address/abstract',
                 template: '${ $.$data.template }',
-                elementTmpl:'Afd_Pce/form/element/region',
+                elementTmpl:'Afd_Pce/checkout/address/region',
                 provider: '${ $.$data.provider }',
                 name: '${ $.$data.index }_input',
                 dataScope: '${ $.$data.customEntry }',
@@ -45,6 +60,11 @@ define([
 
             return this;
         },
+
+        afterRender: function(el) {
+            // notify parent that field is rendered and let it know name
+            this.fieldReady({name: this.index, element: el});
+        }
 
     });
 });

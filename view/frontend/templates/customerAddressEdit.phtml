@@ -58,7 +58,7 @@ $version = $productMetadata->getVersion();
                     <div class="control">
                         <input type="text" name="company" id="company" title="<?= $block->escapeHtml(__('Company')) ?>"
                                value="<?= $block->escapeHtml($block->getAddress()->getCompany()) ?>"
-                               class="input-text <?= $block->escapeHtmlAttr($addressHelper->getAttributeValidationClass('company')) ?>" <?php afdResultFieldAttribute('Company', $typeaheadActive); ?> />
+                               class="input-text <?= $block->escapeHtmlAttr($addressHelper->getAttributeValidationClass('company')) ?>" <?php afdResultFieldAttribute('Organisation', $typeaheadActive); ?> />
                     </div>
                 </div>
             <?php endif; ?>
@@ -171,11 +171,11 @@ $version = $productMetadata->getVersion();
                             id="street_1"
                             class="input-text <?= /* @noEscape */
                             $_streetValidationClass ?>"
-                        <?php afdResultFieldAttribute('Property', $typeaheadActive); ?>
+                        <?php afdResultFieldAttribute('Property,Street', $typeaheadActive); ?>
                     />
                     <div class="nested">
                         <?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
-                        <?php $streetFields = ['Property', 'Street', 'Locality'] ?>
+                        <?php $streetFields = ['Property,Street', 'Locality'] ?>
                         <?php for ($_i = 2, $_n = $addressHelper->getStreetLines(); $_i <= $_n; $_i++) : ?>
                             <div class="field additional">
                                 <label class="label" for="street_<?= /* @noEscape */
@@ -360,11 +360,15 @@ $version = $productMetadata->getVersion();
             });
 
             $(document).on('afd:populateResultsComplete', function(e){
-                console.log(!afdOptions.magentoOptions.typeahead.zipPlusFour)
+
+                // zip plus 4
                 if(!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
                     const originalVal = $('[data-afd-result="Postcode"]').val()
                     $('[data-afd-result="Postcode"]').val(originalVal.substr(0,5))
                 }
+
+                //show requiored fields
+
             });
         })
 

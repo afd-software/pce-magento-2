@@ -74,6 +74,10 @@
             <advanced>
                 <polyfill>1</polyfill>
                 <enterpriseEdition>1</enterpriseEdition>
+                <customCountryCredentials>0</customCountryCredentials>
+                <customCountryCredentialsUK>0</customCountryCredentialsUK>
+                <customCountryCredentialsIE>0</customCountryCredentialsIE>
+                <customCountryCredentialsUS>0</customCountryCredentialsUS>
             </advanced>
         </afd_typeahead>
         <afd_email>
