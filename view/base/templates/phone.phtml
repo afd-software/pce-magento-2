@@ -1,4 +1,4 @@
-<?php if ($block->getConfig('phone/enable/enable') == 1): ?>
+<?php if ($block->getConfig('afd_phone/enable/enable') == 1): ?>
 
     <script type="text/javascript">
 
@@ -6,19 +6,19 @@
 
             window.afdPhoneOptions = {};
 
-            <?php if($block->getConfig('phone/account/useDefaultCredentials') == 0): ?>
+            <?php if($block->getConfig('afd_phone/account/useDefaultCredentials') == 0): ?>
 
 
-            <?php if($block->getConfig('phone/account/authMethod') == "id"): ?>
-                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('phone/account/idPceUrl'); ?>';
-                afdPhoneOptions.id = '<?php echo $block->getConfig('phone/account/id'); ?>';
-                afdPhoneOptions.token = '<?php echo $block->getConfig('phone/account/token'); ?>';
+            <?php if($block->getConfig('afd_phone/account/authMethod') == "id"): ?>
+                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('afd_phone/account/idPceUrl'); ?>';
+                afdPhoneOptions.id = '<?php echo $block->getConfig('afd_phone/account/id'); ?>';
+                afdPhoneOptions.token = '<?php echo $block->getConfig('afd_phone/account/token'); ?>';
                 afdPhoneOptions.serial = null;
                 afdPhoneOptions.password = null;
             <?php else: ?>
-                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('phone/account/serialPceUrl'); ?>';
-                afdPhoneOptions.serial = '<?php echo $block->getConfig('phone/account/serial'); ?>';
-                afdPhoneOptions.password = '<?php echo $block->getConfig('phone/account/password'); ?>';
+                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('afd_phone/account/serialPceUrl'); ?>';
+                afdPhoneOptions.serial = '<?php echo $block->getConfig('afd_phone/account/serial'); ?>';
+                afdPhoneOptions.password = '<?php echo $block->getConfig('afd_phone/account/password'); ?>';
                 afdPhoneOptions.id = null;
                 afdPhoneOptions.token = null;
             <?php endif; ?>

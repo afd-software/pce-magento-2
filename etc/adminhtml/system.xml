@@ -82,7 +82,7 @@
                 <comment>Select which forms typeahead should be activated on</comment>
                 <field id="account" translate="label" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>My Account - Add/Edit Adrress</label>
+                    <label>My Account - Add/Edit Address</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="checkout" translate="label" type="select" sortOrder="1" showInDefault="1"
@@ -203,6 +203,11 @@
                        showInWebsite="1" showInStore="1">
                     <label>Countries for which the region field should be hidden</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
+                <field id="afdCounty" translate="label" type="select" sortOrder="165" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>AFD County Field</label>
+                    <source_model>Afd\Pce\Model\Config\Source\County</source_model>
                 </field>
                 <field id="zipPlusFour" translate="label" type="select" sortOrder="170" showInDefault="1"
                        showInWebsite="1" showInStore="1">
@@ -485,7 +490,7 @@
                 <comment>Select which forms email validation should be activated on</comment>
                 <field id="account" translate="label" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>My Account - Change Email Adrress</label>
+                    <label>My Account - Change Email Address</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="register" translate="label" type="select" sortOrder="1" showInDefault="1"
@@ -622,7 +627,7 @@
                 <comment>Select which forms phone validation should be activated on</comment>
                 <field id="account" translate="label" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>My Account - Add/Edit Adrress</label>
+                    <label>My Account - Add/Edit Address</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
                 <field id="checkout" translate="label" type="select" sortOrder="1" showInDefault="1"

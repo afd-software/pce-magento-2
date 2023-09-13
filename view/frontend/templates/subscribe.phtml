@@ -10,7 +10,7 @@
 
 <?php
 
-$emailAcive = $block->getConfig('email/enable/enable') == 1 && $block->getConfig('email/forms/newsletter') == 1;
+$emailAcive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getConfig('afd_email/forms/newsletter') == 1;
 
 ?>
 
@@ -35,7 +35,7 @@ $emailAcive = $block->getConfig('email/enable/enable') == 1 && $block->getConfig
                                data-validate="{required:true, 'validate-email':true}"
                                <?php echo $emailAcive ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ; ?>
                         />
-                        <div for="newsletter" generated="true" class="mage-error afd-error" ><?php echo $block->getConfig('email/fields/msg'); ?></div>
+                        <div for="newsletter" generated="true" class="mage-error afd-error" ><?php echo $block->getConfig('afd_email/fields/msg'); ?></div>
                     </label>
                 </div>
             </div>
@@ -50,10 +50,19 @@ $emailAcive = $block->getConfig('email/enable/enable') == 1 && $block->getConfig
         </form>
     </div>
 </div>
-<?php if($block->getConfig('email/forms/newsletter') == 1) : ?>
+<?php if($block->getConfig('afd_email/forms/newsletter') == 1) : ?>
 <script type="text/javascript">
     require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
         $('#newsletter').afd('email');
     })
 </script>
+
+<style>
+    .block.newsletter .afd-loading > div.control:before,
+    .block.newsletter .afd-loading > div.control:after .afd-loading > div.control:before,
+    .block.newsletter .afd-loading > div.control:after{
+        top: 10px !important;
+        right: 12px;
+    }
+</style>
 <?php endif ?>

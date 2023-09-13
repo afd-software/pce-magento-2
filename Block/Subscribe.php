@@ -16,7 +16,7 @@ class Subscribe extends \Magento\Newsletter\Block\Subscribe
     }
 
     public function getConfig($code){
-        return $this->helperData->getConfigValue('afd_' . $code);
+        return $this->helperData->getConfigValue($code);
     }
 
 

@@ -150,14 +150,16 @@ $version = $productMetadata->getVersion();
 
                 </div>
             <?php endif; ?>
-            <?php if ($block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?>
+            <?php if ($block->getConfig('afd_typeahead/forms/account') == 1 && $block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?>
                 <div class="afd-form-control">
                     <ul data-afd-control="reverseGeocodeResultsList"></ul>
                 </div>
             <?php endif; ?>
             <!--/AFD Typeahead-->
 
-
+            <?php
+                $afdStreetFields = $addressHelper->getStreetLines() == 2 ? ['Property,Street', 'Locality'] : ['Property', 'Street', 'Locality'];
+             ?>
             <?php $_streetValidationClass = $addressHelper->getAttributeValidationClass('street'); ?>
             <div class="field street required">
                 <label for="street_1" class="label"><span><?= /* @noEscape */
@@ -171,11 +173,10 @@ $version = $productMetadata->getVersion();
                             id="street_1"
                             class="input-text <?= /* @noEscape */
                             $_streetValidationClass ?>"
-                        <?php afdResultFieldAttribute('Property,Street', $typeaheadActive); ?>
+                        <?php afdResultFieldAttribute($afdStreetFields[0], $typeaheadActive); ?>
                     />
                     <div class="nested">
                         <?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
-                        <?php $streetFields = ['Property,Street', 'Locality'] ?>
                         <?php for ($_i = 2, $_n = $addressHelper->getStreetLines(); $_i <= $_n; $_i++) : ?>
                             <div class="field additional">
                                 <label class="label" for="street_<?= /* @noEscape */
@@ -184,7 +185,7 @@ $version = $productMetadata->getVersion();
                                 </label>
                                 <div class="control">
                                     <input type="text"
-                                        <?php afdResultFieldAttribute($streetFields[$_i - 1], $typeaheadActive); ?>
+                                        <?php afdResultFieldAttribute($afdStreetFields[$_i - 1], $typeaheadActive); ?>
                                            name="street[]"
                                            value="<?= $block->escapeHtml($block->getStreetLine($_i)) ?>"
                                            title="<?= $block->escapeHtmlAttr(__('Street Address %1', $_i)) ?>"
@@ -228,19 +229,19 @@ $version = $productMetadata->getVersion();
                 </div>
             </div>
 
-            <div class="field region required">
+            <div class="field region required"> 
                 <label class="label" for="region_id"><span><?= /* @noEscape */
                         $block->getAttributeData()->getFrontendLabel('region') ?></span></label>
                 <div class="control">
                     <select id="region_id" name="region_id" title="<?= /* @noEscape */
                     $block->getAttributeData()->getFrontendLabel('region') ?>" class="validate-select region_id"
-                        <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?> data-afd-result="TraditionalCounty">
+                        <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?> data-afd-result="<?= $block->getConfig('afd_typeahead/fields/afdCounty') ?>">
                         <option value=""><?= $block->escapeHtml(__('Please select a region, state or province.')) ?></option>
                     </select>
 
                     <input type="text" id="region" name="region" value="<?= $block->escapeHtml($block->getRegion()) ?>"
                            title="<?= /* @noEscape */ $block->getAttributeData()->getFrontendLabel('region') ?>"
-                           class="input-text <?= /* @noEscape */ $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('region') ?>" data-afd-result="TraditionalCounty"
+                           class="input-text <?= /* @noEscape */ $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('region') ?>" data-afd-result="<?= $block->getConfig('afd_typeahead/fields/afdCounty') ?>"
                         <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?>/>
                 </div>
             </div>
@@ -262,7 +263,7 @@ $version = $productMetadata->getVersion();
                 </div>
             </div>
 
-            <?php if ($block->getConfig('afd_typeahead/forms/account') == 1 && $block->getConfig('afd_typeahead/fields/countryAboveStreet') != 1): ?>
+            <?php if ($block->getConfig('afd_typeahead/forms/account') == 0 || ($block->getConfig('afd_typeahead/forms/account') == 1 && $block->getConfig('afd_typeahead/fields/countryAboveStreet') != 1)): ?>
                 <div class="field country required">
                     <label class="label" for="country"><span><?= /* @noEscape */
                             $block->getAttributeData()->getFrontendLabel('country_id') ?></span></label>
@@ -378,6 +379,9 @@ $version = $productMetadata->getVersion();
     <?php if ($phoneActive): ?>
         <script type="text/javascript">
             require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+                $(document).on('afd:populateResultsComplete', showHideRegion);
+
                 // todo fix this
                 if (typeof window.intlTelInputUtils === 'undefined') {
                      window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')

@@ -1,4 +1,4 @@
-<?php if ($block->getConfig('typeahead/advanced/polyfill') == 1) { ?>
+<?php if ($block->getConfig('afd_typeahead/advanced/polyfill') == 1) { ?>
     <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=Promise"></script>
 <?php } ?>
 <script>
@@ -67,7 +67,7 @@
                 val = regionIndex;
                 break;
             }
-            if(mappedCountry === 'CN' && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
+            if(['CN','BG'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
                 val = regionIndex;
             }
         }
@@ -77,111 +77,142 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010610',
+        platformVersion: 'mag010611',
         typeahead: {
-            maxItems: '<?php echo $block->getConfig('typeahead/quantity/maxItems');?>',
+            maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
             pushUp: true,
-            afterHideTypeahead: '<?php echo $block->getConfig('typeahead/fields/afterHideTypeahead');?>' === '1',
-            searchAgain: '<?php echo $block->getConfig('typeahead/fields/enableSearchAgainButton');?>' === '1',
-            afterClearTypeahead: '<?php echo $block->getConfig('typeahead/fields/afterClearTypeahead');?>' === '1',
-            beforeHideResults: '<?php echo $block->getConfig('typeahead/fields/beforeHideResults');?>' === '1',
-            fewResultsManualInput: '<?php echo $block->getConfig('typeahead/quantity/enableFewItemsText');?>' === '1',
-            fewResultsManualInputText: '<?php echo $block->escapeHtml($block->getConfig('typeahead/quantity/fewItemsText'));?>',
+            afterHideTypeahead: '<?php echo $block->getConfig('afd_typeahead/fields/afterHideTypeahead');?>' === '1',
+            searchAgain: '<?php echo $block->getConfig('afd_typeahead/fields/enableSearchAgainButton');?>' === '1',
+            afterClearTypeahead: '<?php echo $block->getConfig('afd_typeahead/fields/afterClearTypeahead');?>' === '1',
+            beforeHideResults: '<?php echo $block->getConfig('afd_typeahead/fields/beforeHideResults');?>' === '1',
+            fewResultsManualInput: '<?php echo $block->getConfig('afd_typeahead/quantity/enableFewItemsText');?>' === '1',
+            fewResultsManualInputText: '<?php echo $block->escapeHtml($block->getConfig('afd_typeahead/quantity/fewItemsText'));?>',
             notEmptyShowResults: true,
             parentClass: 'field',
             fieldSets: ['fieldset.street', 'fieldset [data-index="street"], .admin__field.field-street'],
-            hideEmpties: '<?php echo $block->getConfig('typeahead/fields/hideEmpties');?>' === '1',
-            manualInputButton: '<?php echo $block->getConfig('typeahead/fields/enableManualEntryButton');?>' === '1',
+            hideEmpties: '<?php echo $block->getConfig('afd_typeahead/fields/hideEmpties');?>' === '1',
+            manualInputButton: '<?php echo $block->getConfig('afd_typeahead/fields/enableManualEntryButton');?>' === '1',
             containers: ['#order-billing_address', '#order-shipping_address', '.customer_form_areas_address_address_customer_address_update_modal', '.form-address-edit'],
-            matchPositions: '<?php echo $block->getConfig('typeahead/fields/highlightMatches');?>' === '1',
-            postcodeFirst: '<?php echo $block->getConfig('typeahead/fields/postcodeFirst');?>' === '1',
-            showForCountries: '<?php echo $block->getConfig('typeahead/countries/typeaheadCountries');?>'.split(','),
+            matchPositions: '<?php echo $block->getConfig('afd_typeahead/fields/highlightMatches');?>' === '1',
+            postcodeFirst: '<?php echo $block->getConfig('afd_typeahead/fields/postcodeFirst');?>' === '1',
+            showForCountries: '<?php echo $block->getConfig('afd_typeahead/countries/typeaheadCountries');?>'.split(','),
             containerOnlyContainsControl: false,
             regionMap: regionMap,
             afterRetrieveHideResultsList: true,
             requiredSelector: '.required-entry, ._required',
-            extraPCERetrieveParams: '<?php echo $block->getConfig('typeahead/fields/crownDependencies')?>' === '1' ? {crownCountry: '1'} : {}
+            extraPCERetrieveParams: '<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies')?>' === '1' ? {crownCountry: '1'} : {}
         },
         country: {
             customCountryControl: '[name="country_id"], .form-address-edit #country, #order-billing_address_country_id, #order-shipping_address_country_id'
         },
         phone: {
-            defaultDialingCode: '<?php echo $block->getConfig('phone/fields/dialingCode');?>',
+            defaultDialingCode: '<?php echo $block->getConfig('afd_phone/fields/dialingCode');?>',
             loadingSpinner: '.control',
             countryControl: '[name="country_id"]'
         },
         email: {
             loadingSpinner: '.field',
-            task: '<?php echo $block->getConfig('email/fields/emailTask');?>'
+            task: '<?php echo $block->getConfig('afd_email/fields/emailTask');?>'
         },
         reverseGeocode: {
             containers: ['.form-shipping-address', '.billing-address-form', '.form-address-edit']
         }
     };
 
-    <?php if($block->getConfig('general/account/method') == "id"){; ?>
-    afdOptions.pceUrl = '<?php echo $block->getConfig('general/account/idPceUrl'); ?>';
-    afdOptions.id = '<?php echo $block->getConfig('general/account/id'); ?>';
-    afdOptions.token = '<?php echo $block->getConfig('general/account/token'); ?>';
+    <?php if($block->getConfig('afd_general/account/method') == "id"){; ?>
+    afdOptions.pceUrl = '<?php echo $block->getConfig('afd_general/account/idPceUrl'); ?>';
+    afdOptions.id = '<?php echo $block->getConfig('afd_general/account/id'); ?>';
+    afdOptions.token = '<?php echo $block->getConfig('afd_general/account/token'); ?>';
     <?php } else { ?>
-    afdOptions.pceUrl = '<?php echo $block->getConfig('general/account/serialPceUrl'); ?>';
-    afdOptions.serial = '<?php echo $block->getConfig('general/account/serial'); ?>';
-    afdOptions.password = '<?php echo $block->getConfig('general/account/password'); ?>';
+    afdOptions.pceUrl = '<?php echo $block->getConfig('afd_general/account/serialPceUrl'); ?>';
+    afdOptions.serial = '<?php echo $block->getConfig('afd_general/account/serial'); ?>';
+    afdOptions.password = '<?php echo $block->getConfig('afd_general/account/password'); ?>';
     <?php } ?>
-    var hideStateCountries = '<?php echo $block->getConfig('typeahead/fields/hideRegion');?>'.split(',');
+    var hideStateCountries = '<?php echo $block->getConfig('afd_typeahead/fields/hideRegion');?>'.split(',');
     // custom options that are needed in some parts of the application where templates cannot access back end config
     afdOptions.magentoOptions = {
         typeahead: {
-            adminEditCustomerEnabled:   <?php echo $block->getConfig('typeahead/forms/adminCustomer'); ?> === 1,
-            adminCreateOrderEnabled:   <?php echo $block->getConfig('typeahead/forms/adminOrder'); ?> === 1,
-            zipPlusFour:   <?php echo $block->getConfig('typeahead/fields/zipPlusFour'); ?> === 1,
-            customCountryDefaultID: '<?php echo $block->getConfig('general/account/id'); ?>',
-            customCountryDefaultToken: '<?php echo $block->getConfig('general/account/token'); ?>',
-            customCountryCredentials: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentials'); ?> === 1,
-            customCountryCredentialsUK: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUK'); ?> === 1,
-            customCountryCredentialsUS: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUS'); ?> === 1,
-            customCountryCredentialsIE: <?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsIE'); ?> === 1,
-            customCountryCredentialsUKID: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUKID'); ?>',
-            customCountryCredentialsUKToken: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUKToken'); ?>',
-            customCountryCredentialsUSID: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUSID'); ?>',
-            customCountryCredentialsUSToken: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsUSToken'); ?>',
-            customCountryCredentialsIEID: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsIEID'); ?>',
-            customCountryCredentialsIEToken: '<?php echo $block->getConfig('typeahead/advanced/customCountryCredentialsIEToken'); ?>'
+            adminEditCustomerEnabled:   <?php echo $block->getConfig('afd_typeahead/forms/adminCustomer'); ?> === 1,
+            adminCreateOrderEnabled:   <?php echo $block->getConfig('afd_typeahead/forms/adminOrder'); ?> === 1,
+            zipPlusFour:   <?php echo $block->getConfig('afd_typeahead/fields/zipPlusFour'); ?> === 1,
+            afdCounty: '<?php echo $block->getConfig('afd_typeahead/fields/afdCounty'); ?>',
+            customCountryDefaultID: '<?php echo $block->getConfig('afd_general/account/id'); ?>',
+            customCountryDefaultToken: '<?php echo $block->getConfig('afd_general/account/token'); ?>',
+            customCountryCredentials: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentials'); ?> === 1,
+            customCountryCredentialsUK: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUK'); ?> === 1,
+            customCountryCredentialsUS: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUS'); ?> === 1,
+            customCountryCredentialsIE: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIE'); ?> === 1,
+            customCountryCredentialsUKID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUKID'); ?>',
+            customCountryCredentialsUKToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUKToken'); ?>',
+            customCountryCredentialsUSID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSID'); ?>',
+            customCountryCredentialsUSToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSToken'); ?>',
+            customCountryCredentialsIEID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEID'); ?>',
+            customCountryCredentialsIEToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEToken'); ?>',
     },
     email: {
-        emailEnabled: <?php echo $block->getConfig('email/enable/enable'); ?> ===
+        emailEnabled: <?php echo $block->getConfig('afd_email/enable/enable'); ?> ===
         1,
             accountChangeEmailEnabled
-    : <?php echo $block->getConfig('email/forms/account'); ?> ===
+    : <?php echo $block->getConfig('afd_email/forms/account'); ?> ===
         1,
             loggedOutCheckoutEnabled
-    : <?php echo $block->getConfig('email/forms/checkout'); ?> ===
+    : <?php echo $block->getConfig('afd_email/forms/checkout'); ?> ===
         1,
             adminEditCustomerEnabled
-    :   <?php echo $block->getConfig('email/forms/adminCustomer'); ?> ===
+    :   <?php echo $block->getConfig('afd_email/forms/adminCustomer'); ?> ===
         1
     }
     ,
     phone: {
-        phoneEnabled: <?php echo $block->getConfig('phone/enable/enable'); ?> ===
+        phoneEnabled: <?php echo $block->getConfig('afd_phone/enable/enable'); ?> ===
         1,
             loggedOutCheckoutEnabled
-    : <?php echo $block->getConfig('phone/forms/checkout'); ?> ===
+    : <?php echo $block->getConfig('afd_phone/forms/checkout'); ?> ===
         1,
             invalidMessage
     :
         '<?php echo $block->getConfig("phone/fields/msg"); ?>',
             adminEditCustomerEnabled
-    :   <?php echo $block->getConfig('phone/forms/adminCustomer'); ?> ===
+    :   <?php echo $block->getConfig('afd_phone/forms/adminCustomer'); ?> ===
         1,
             adminCreateOrderEnabled
-    :   <?php echo $block->getConfig('phone/forms/adminOrder'); ?> ===
+    :   <?php echo $block->getConfig('afd_phone/forms/adminOrder'); ?> ===
         1
     }
     ,
     version: '<?php echo $block->getMageVersion() ?>'
 
     }
+
+    //logic for which region field should be shown after results populate
+    function showHideRegion(e, $element, $container, result) {
+
+        const $region_id = $container.find('#region_id, [name="region_id"], #order-billing_address_region_id');
+        const $region = $container.find('#region, [name="region"], #order-billing_address_region');
+        const country = $container.find(afdOptions.country.customCountryControl).val()
+        const requireRegionCountries = '<?php print_r($block->getConfig('general/region/state_required')); ?>'.split(',');
+        const regionHiddenIfOptional =  '<?php echo $block->getConfig('general/region/display_all') ?>' !== '1';
+
+        // Magento gives the option to hide non required region fields
+        if (requireRegionCountries.indexOf(country) < 0 && regionHiddenIfOptional) {
+            $region_id.closest('.' + afdOptions.typeahead.parentClass).hide();
+            $region.closest('.' + afdOptions.typeahead.parentClass).hide();
+        } else {
+            // if the correct field is region_id
+            if (selectRegionCountries.indexOf(country) > 0) {
+                $region.closest('.' + afdOptions.typeahead.parentClass).hide();
+                $region_id.closest('.' + afdOptions.typeahead.parentClass).show();
+                $region.hide();
+            } else {
+                console.log(2)
+                $region_id.closest('.' + afdOptions.typeahead.parentClass).hide();
+                $region.closest('.' + afdOptions.typeahead.parentClass).show();
+                $region_id.hide();
+            }
+        }
+
+    }
+
 </script>
 
 <style>

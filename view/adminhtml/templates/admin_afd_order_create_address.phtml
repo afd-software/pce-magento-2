@@ -155,6 +155,8 @@ endif; ?>
             window.setTimeout(function(){
                 $('.afd-manual-input-button').triggerHandler('click');
             }, 1000);
+            console.log(22)
+            $(document).on('afd:populateResultsComplete', showHideRegion);
 
         }
 

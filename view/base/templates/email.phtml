@@ -1,4 +1,4 @@
-<?php if ($block->getConfig('email/enable/enable') == 1): ?>
+<?php if ($block->getConfig('afd_email/enable/enable') == 1): ?>
 
     <script type="text/javascript">
 
@@ -6,19 +6,19 @@
 
             window.afdEmailOptions = {};
 
-            <?php if($block->getConfig('email/account/useDefaultCredentials') == 0): ?>
+            <?php if($block->getConfig('afd_email/account/useDefaultCredentials') == 0): ?>
 
 
-            <?php if($block->getConfig('email/account/authMethod') == "id"): ?>
-            afdEmailOptions.pceUrl = '<?php echo $block->getConfig('email/account/idPceUrl'); ?>';
-            afdEmailOptions.id = '<?php echo $block->getConfig('email/account/id'); ?>';
-            afdEmailOptions.token = '<?php echo $block->getConfig('email/account/token'); ?>';
+            <?php if($block->getConfig('afd_email/account/authMethod') == "id"): ?>
+            afdEmailOptions.pceUrl = '<?php echo $block->getConfig('afd_email/account/idPceUrl'); ?>';
+            afdEmailOptions.id = '<?php echo $block->getConfig('afd_email/account/id'); ?>';
+            afdEmailOptions.token = '<?php echo $block->getConfig('afd_email/account/token'); ?>';
             afdEmailOptions.serial = null;
             afdEmailOptions.password = null;
             <?php else: ?>
-            afdEmailOptions.pceUrl = '<?php echo $block->getConfig('email/account/serialPceUrl'); ?>';
-            afdEmailOptions.serial = '<?php echo $block->getConfig('email/account/serial'); ?>';
-            afdEmailOptions.password = '<?php echo $block->getConfig('email/account/password'); ?>';
+            afdEmailOptions.pceUrl = '<?php echo $block->getConfig('afd_email/account/serialPceUrl'); ?>';
+            afdEmailOptions.serial = '<?php echo $block->getConfig('afd_email/account/serial'); ?>';
+            afdEmailOptions.password = '<?php echo $block->getConfig('afd_email/account/password'); ?>';
             afdEmailOptions.id = null;
             afdEmailOptions.token = null;
             <?php endif; ?>

@@ -18,7 +18,7 @@ class Afd extends \Magento\Framework\View\Element\Template
     }
 
     public function getConfig($code){
-        return $this->helperData->getConfigValue('afd_' . $code);
+        return $this->helperData->getConfigValue($code);
     }
 
     public function getMageVersion(){

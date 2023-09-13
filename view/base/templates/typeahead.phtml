@@ -18,11 +18,11 @@
         } else if ($(".sales-order_create-index").length > 0) {
             formCount = 2;
             afdOptions.typeahead.containers = ["#order-billing_address_fields", "#order-shipping_address_fields"];
-            $(".sales-order_create-index .afd-manual-input-button").html("<?php echo $block->getConfig('typeahead/fields/manualEntryMarkup');?>");
-            $(".sales-order_create-index .afd-manual-input-search-button").html("<?php echo $block->getConfig('typeahead/fields/manualEntrySearchMarkup');?>");
-            $(".sales-order_create-index .afd-search-again").html("<?php echo $block->getConfig('typeahead/fields/manualEntrySearchMarkup');?>");
-            <?php $manualInputCss = preg_replace("/\r|\n/", "", $block->getConfig('typeahead/fields/manualEntryCss'));?>
-            <?php $searchAgainCss = preg_replace("/\r|\n/", "", $block->getConfig('typeahead/fields/searchAgainCss'));?>
+            $(".sales-order_create-index .afd-manual-input-button").html("<?php echo $block->getConfig('afd_typeahead/fields/manualEntryMarkup');?>");
+            $(".sales-order_create-index .afd-manual-input-search-button").html("<?php echo $block->getConfig('afd_typeahead/fields/manualEntrySearchMarkup');?>");
+            $(".sales-order_create-index .afd-search-again").html("<?php echo $block->getConfig('afd_typeahead/fields/manualEntrySearchMarkup');?>");
+            <?php $manualInputCss = preg_replace("/\r|\n/", "", $block->getConfig('afd_typeahead/fields/manualEntryCss'));?>
+            <?php $searchAgainCss = preg_replace("/\r|\n/", "", $block->getConfig('afd_typeahead/fields/searchAgainCss'));?>
             $(".sales-order_create-index .afd-manual-input-style").html('<?php echo $manualInputCss ?>');
             $(".sales-order_create-index .afd-search-again-style").html('<?php echo $searchAgainCss ?>');
         } else {
@@ -54,7 +54,7 @@
         $(document).on("afd:pceRetrieveComplete", function (e, result) {
 
             // crown dependency setting
-            if ('<?php echo $block->getConfig('typeahead/fields/crownDependencies');?>' === '1') {
+            if ('<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies');?>' === '1') {
 
                 var country;
 

@@ -107,6 +107,8 @@ script;
             $('#order-billing_address_street2').attr('data-afd-result', 'Locality');
             $('#order-billing_address_city').attr('data-afd-result', 'Town');
             $('#order-billing_address_postcode').attr('data-afd-result', 'Postcode');
+            $('#order-billing_address_region').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
+            $('#order-billing_address_region_id').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
             $('#afd-billing-typeahead').afd('typeahead');
 
             $('#order-shipping_address_fields .field-country_id').detach().insertAfter("#order-shipping_address_fields .field-company");
@@ -118,8 +120,13 @@ script;
             $('#order-shipping_address_street2').attr('data-afd-result', 'Locality');
             $('#order-shipping_address_city').attr('data-afd-result', 'Town');
             $('#order-shipping_address_postcode').attr('data-afd-result', 'Postcode');
+            $('#order-shipping_address_region').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
+            $('#order-shipping_address_region_id').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
             $('#afd-shipping-typeahead').afd('typeahead');
             $('.afd-manual-input-button').triggerHandler('click');
+
+            $(document).on('afd:populateResultsComplete', showHideRegion);
+
 
         }
 

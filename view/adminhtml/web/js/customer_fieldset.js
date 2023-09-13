@@ -46,8 +46,11 @@ define([
                         $('#customer-new-adddress [name="street[2]"]').attr('data-afd-result', 'Locality');
                         $('#customer-new-adddress [name="city"]').attr('data-afd-result', 'Town');
                         $('#customer-new-adddress [name="postcode"]').attr('data-afd-result', 'Postcode');
-                        $('#customer-new-adddress [name="region"]').attr('data-afd-result', 'TraditionalCounty');
+                        $('#customer-new-adddress [name="region"]').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
+                        $('#customer-new-adddress [name="region_id"]').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
                         $('#afd-typeahead input').afd('typeahead');
+
+                        $(document).on('afd:populateResultsComplete', showHideRegion);
 
 
                     }

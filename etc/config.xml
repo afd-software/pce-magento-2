@@ -55,6 +55,7 @@
                 <highlightResults>0</highlightResults>
                 <postcodeFirst>0</postcodeFirst>
                 <hideRegion>GG,IM,JE,GB</hideRegion>
+                <afdCounty>PostalCounty</afdCounty>
                 <zipPlusFour>1</zipPlusFour>
                 <crownDependencies>0</crownDependencies>
             </fields>

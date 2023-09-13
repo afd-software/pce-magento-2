@@ -101,6 +101,8 @@ define([
                     this.hideRegions($container, country);
                 }
             });
+
+            $(document).on('afd:populateResultsComplete', showHideRegion);
         },
 
         // set by observable on children
