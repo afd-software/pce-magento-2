@@ -1,8 +1,9 @@
 define([
     'uiComponent',
     'uiRegistry',
+    'underscore',
     'jquery'
-],function (Component, registry, $) {
+],function (Component, registry, _, $) {
     'use strict';
 
     //  extends base UIComponent /vendor/magento/module-ui/view/base/web/js/lib/core/collection
@@ -29,6 +30,9 @@ define([
             'region_id'
         ],
 
+        regionComponent: null,
+        regionIDElement:null,
+        countryComponent: null,
 
         initialize: function () {
             this._super();
@@ -45,6 +49,7 @@ define([
 
             // when all afd dependencies have been loaded
             Promise.all(promises).then((res) => {
+                this.regionIDElement = res.find(element => element.name === 'region_id').element;
                 const typeahead = res.find(element => element.name === 'afd_typeahead')
                 this.initTypeahead(typeahead.element);
             });
@@ -53,7 +58,6 @@ define([
         },
 
         initTypeahead: function(typeaheadContainer) {
-
 
             const $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
             const $container = $typeahead.closest('form');
@@ -69,21 +73,15 @@ define([
             $container.find('.reverse-geocode-button').afd('reverseGeocodeButton')
 
             // initially hide region fields that shouldn't be visible
-            if(afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf(initialCountry) > -1) {
-                $container.find('[data-afd-result="TraditionalCounty"]')
-                    .closest('.field')
-                    .hide()
-            } else {
-                this.hideRegions($container, initialCountry);
-            }
+            this.regionVisibility();
 
             // events
             $('.afd-manual-input-button').on('click', () => {
-                this.hideRegions($container, $countryControl.val())
+                this.regionVisibility();
             });
 
             $(document).on('afd:populateResultsComplete', (e) => {
-                this.hideRegions($container, $countryControl.val());
+                this.regionVisibility($container, $countryControl.val());
 
                 //zip plus 4
                 if(!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
@@ -98,34 +96,35 @@ define([
                         .closest('.field')
                         .hide()
                 } else {
-                    this.hideRegions($container, country);
+                    this.regionVisibility($container, country);
                 }
             });
 
-            $(document).on('afd:populateResultsComplete', showHideRegion);
+            // $(document).on('afd:populateResultsComplete', showHideRegion);
         },
 
         // set by observable on children
         fieldReady: function(field) {
             if(typeof this.resolvers[field.name] !== 'undefined') {
                 this.resolvers[field.name](field);
+                if (field.name === 'region_id') {
+                    this.regionComponent = field.koComponent
+                } else if (field.name === 'country_id') {
+                    this.countryComponent = field.koComponent
+                }
             }
         },
 
-        hideRegions: function($container, country) {
-            // todo use magento logic for hiding region fields - some countries never show it
-            $container.find('[data-afd-result="TraditionalCounty"]').closest('.field').show();
-            if(selectRegionCountries.indexOf(country) > -1) {
-                $container.find('[data-afd-result="TraditionalCounty"].input-text')
-                    .closest('.field')
-                    .hide()
-            } else {
-                $container.find('[data-afd-result="TraditionalCounty"].select')
-                    .closest('.field')
-                    .hide()
-            }
-            $('input[data-afd-result="TraditionalCounty"]').keyup();
-            $('select[data-afd-result="TraditionalCounty"]').change();
+        regionVisibility: function() {
+
+            const valStore = $(this.regionIDElement).val();
+           this.regionComponent.setOptions(this.regionComponent.options());
+           this.regionComponent.visible.valueHasMutated(); // manually force an update of the select component
+            $(this.regionIDElement).val(valStore);
+            registry.get(this.regionComponent.customName, function (input) {
+                input.visible.valueHasMutated(); //manually force an update of the input component
+            });
+
         }
 
     });

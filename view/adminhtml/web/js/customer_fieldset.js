@@ -50,7 +50,9 @@ define([
                         $('#customer-new-adddress [name="region_id"]').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
                         $('#afd-typeahead input').afd('typeahead');
 
-                        $(document).on('afd:populateResultsComplete', showHideRegion);
+                        $(document).on('afd:populateResultsComplete', (e) => {
+                            showHideRegion(e, null,  $('#customer-new-adddress'));
+                        });
 
 
                     }

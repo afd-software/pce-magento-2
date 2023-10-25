@@ -125,7 +125,9 @@ script;
             $('#afd-shipping-typeahead').afd('typeahead');
             $('.afd-manual-input-button').triggerHandler('click');
 
-            $(document).on('afd:populateResultsComplete', showHideRegion);
+            $(document).on('afd:populateResultsComplete', (e) => {
+                showHideRegion(e, null, $('#afd-shipping-typeahead'));
+            });
 
 
         }

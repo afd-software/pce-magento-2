@@ -155,8 +155,10 @@ endif; ?>
             window.setTimeout(function(){
                 $('.afd-manual-input-button').triggerHandler('click');
             }, 1000);
-            console.log(22)
-            $(document).on('afd:populateResultsComplete', showHideRegion);
+
+            $(document).on('afd:populateResultsComplete', (e) => {
+                showHideRegion(e, null, $('#order-shipping_address_postcode'))
+            });
 
         }
 

@@ -12,7 +12,8 @@
         'aria-describedby': getDescriptionId(),
         'aria-required': required,
         'aria-invalid': error() ? true : 'false',
-        placeholder: placeholder
+        placeholder: placeholder,
+        'data-afd-result': afdOptions.magentoOptions.typeahead.afdCounty
     },
     hasFocus: focused,
     optgroup: options,
@@ -25,5 +26,4 @@
             ko.applyBindingsToNode(option, {attr: {disabled: true}}, item);
         }
     }, afterRender: afterRender"
-        data-afd-result="TraditionalCounty"
 />

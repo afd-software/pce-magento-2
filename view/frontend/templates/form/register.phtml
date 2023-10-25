@@ -179,7 +179,7 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
                        value="<?= $block->escapeHtmlAttr($block->getFormData()->getEmail()) ?>"
                        title="<?= $block->escapeHtmlAttr(__('Email')) ?>" class="input-text"
                        data-mage-init='{"mage/trim-input":{}}'
-                       data-validate="{required:true, 'validate-email':true} " <?php echo $emailActive ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ?>>
+                       data-validate="{required:true, 'validate-email':true<?php echo $emailActive ? ", 'afdEmailCheck': true" : "" ?>} " <?php echo $emailActive ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ?>>
                 <div for="email" generated="true" class="mage-error afd-error" >Please enter a valid email address.</div>
             </div>
         </div>
@@ -293,8 +293,17 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
 </script>
 <?php if($emailActive): ?>
 <script type="text/javascript">
-    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
-        $('#email_address').afd('email');
+    require(['jquery', 'mage/validation', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+        $.validator.addMethod("afdEmailCheck", function(value, element) {
+            return $(element).data('afd-email-valid');
+        }, afdOptions.email.invalidEmailMessage);
+        $('#email_address').afd('email').on('afd:emailValidationUpdatedFocusOut',function(e, $el) {
+           $el.data('afd-email-valid',
+                $el.data('email-is-afd-valid')
+                && $el.data('email-is-syntax-valid')
+            ).valid();
+        });
+
     })
 </script>
 <?php endif; ?>

@@ -11,8 +11,9 @@ define([
     'mageUtils',
     'uiLayout',
     'uiRegistry',
-    'ko'
-], function (Region, utils, layout, registry, ko) {
+    'ko',
+    'jquery'
+], function (Region, utils, layout, registry, ko, $) {
     'use strict';
 
     return Region.extend({
@@ -63,7 +64,7 @@ define([
 
         afterRender: function(el) {
             // notify parent that field is rendered and let it know name
-            this.fieldReady({name: this.index, element: el});
+            this.fieldReady({name: this.index, element: el, koComponent: this});
         }
 
     });

@@ -25,5 +25,10 @@
                 <value id="afd" type="host">*.afd.co.uk</value>
             </values>
         </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="afd" type="host">pce.afd.co.uk</value>
+            </values>
+        </policy>
     </policies>
 </csp_whitelist>

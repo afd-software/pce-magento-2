@@ -60,14 +60,13 @@
         }
 
         var mappedCountry = countryMap[result.CountryISO];
-
         var val = '';
         for (var regionIndex in regions[mappedCountry]) {
             if (regions[mappedCountry][regionIndex].code === result.TraditionalCounty) {
                 val = regionIndex;
                 break;
             }
-            if(['CN','BG'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
+            if(['CN','BG', 'IT', 'FR', 'DE', 'GR'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
                 val = regionIndex;
             }
         }
@@ -112,7 +111,8 @@
         },
         email: {
             loadingSpinner: '.field',
-            task: '<?php echo $block->getConfig('afd_email/fields/emailTask');?>'
+            task: '<?php echo $block->getConfig('afd_email/fields/emailTask');?>',
+            invalidEmailMessage: '<?php echo $block->getConfig('afd_email/fields/msg');?>'
         },
         reverseGeocode: {
             containers: ['.form-shipping-address', '.billing-address-form', '.form-address-edit']
@@ -204,7 +204,6 @@
                 $region_id.closest('.' + afdOptions.typeahead.parentClass).show();
                 $region.hide();
             } else {
-                console.log(2)
                 $region_id.closest('.' + afdOptions.typeahead.parentClass).hide();
                 $region.closest('.' + afdOptions.typeahead.parentClass).show();
                 $region_id.hide();

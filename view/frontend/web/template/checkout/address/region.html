@@ -4,7 +4,7 @@
  * See COPYING.txt for license details.
  */
 -->
-<input class="input-text" type="text" data-afd-result="TraditionalCounty" autocomplete="off" data-bind="
+<input class="input-text" type="text" autocomplete="off" data-bind="
     value: value,
     valueUpdate: 'keyup',
     hasFocus: focused,
@@ -15,5 +15,6 @@
         'aria-required': required,
         'aria-invalid': error() ? true : 'false',
         id: uid,
-        disabled: disabled
+        disabled: disabled,
+        'data-afd-result': afdOptions.magentoOptions.typeahead.afdCounty
     }, afterRender: afterRender" />

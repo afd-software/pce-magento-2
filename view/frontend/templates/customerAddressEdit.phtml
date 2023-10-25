@@ -380,7 +380,9 @@ $version = $productMetadata->getVersion();
         <script type="text/javascript">
             require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
 
-                $(document).on('afd:populateResultsComplete', showHideRegion);
+                $(document).on('afd:populateResultsComplete', (e) => {
+                        showHideRegion(e, null, $('#form-validate') )
+                });
 
                 // todo fix this
                 if (typeof window.intlTelInputUtils === 'undefined') {
