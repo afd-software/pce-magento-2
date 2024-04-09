@@ -76,10 +76,10 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010611',
+        platformVersion: 'mag010613',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
-            pushUp: true,
+            pushUp: false,
             afterHideTypeahead: '<?php echo $block->getConfig('afd_typeahead/fields/afterHideTypeahead');?>' === '1',
             searchAgain: '<?php echo $block->getConfig('afd_typeahead/fields/enableSearchAgainButton');?>' === '1',
             afterClearTypeahead: '<?php echo $block->getConfig('afd_typeahead/fields/afterClearTypeahead');?>' === '1',
