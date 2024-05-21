@@ -2,6 +2,9 @@
       layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="head.components">
+            <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"
+                   before="customer_address_edit"
+            />
             <block class="Afd\Pce\Block\Afd" name="afd.typeahead" template="Afd_Pce::typeahead.phtml"
                    after="afd.config"
                    ifconfig="afd_typeahead/forms/checkout"/>

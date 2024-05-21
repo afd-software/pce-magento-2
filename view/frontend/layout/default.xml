@@ -7,10 +7,9 @@
         <css src="Afd_Pce::css/jquery.spinner.afd.css"/>
         <css src="Afd_Pce::css/jquery.result.list.afd.css"/>
         <css src="Afd_Pce::css/afd.styles.css"/>
+
     </head>
     <referenceBlock name="head.components">
-        <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml"
-               />
         <block class="Afd\Pce\Block\Afd" name="afd.email.newsletter" template="Afd_Pce::email.phtml"
                 ifconfig="afd_email/enable/enable"/>
     </referenceBlock>

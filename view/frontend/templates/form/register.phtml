@@ -294,10 +294,10 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
 <?php if($emailActive): ?>
 <script type="text/javascript">
     require(['jquery', 'mage/validation', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
-        $.validator.addMethod("afdEmailCheck", function(value, element) {
-            return $(element).data('afd-email-valid');
-        }, afdOptions.email.invalidEmailMessage);
-        $('#email_address').afd('email').on('afd:emailValidationUpdatedFocusOut',function(e, $el) {
+        // $.validator.addMethod("afdEmailCheck", function(value, element) {
+        //     return $(element).data('afd-email-valid');
+        // }, afdOptions.email.invalidEmailMessage);
+       / $('#email_address').afd('email').on('afd:emailValidationUpdatedFocusOut',function(e, $el) {
            $el.data('afd-email-valid',
                 $el.data('email-is-afd-valid')
                 && $el.data('email-is-syntax-valid')

@@ -16,7 +16,7 @@
         'CHE': 'CH',
         'CHL': 'CL',
         'CHN': 'CN',
-        'COL' :'CO',
+        'COL': 'CO',
         'DEU': 'DE',
         'DNK': 'DK',
         'ECU': 'EC',
@@ -47,26 +47,25 @@
 
     var regions = <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>;
 
-    const selectRegionCountries = Object.entries(regions).filter(function(region){
+    const selectRegionCountries = Object.entries(regions).filter(function (region) {
         return region[0] !== 'config'
-    }).map(function(region){
+    }).map(function (region) {
         return region[0]
     })
-
     var regionMap = function (result) {
-
         if (typeof countryMap[result.CountryISO] === 'undefined') {
             return null;
         }
 
         var mappedCountry = countryMap[result.CountryISO];
         var val = '';
+        console.log(mappedCountry)
         for (var regionIndex in regions[mappedCountry]) {
             if (regions[mappedCountry][regionIndex].code === result.TraditionalCounty) {
                 val = regionIndex;
                 break;
             }
-            if(['CN','BG', 'IT', 'FR', 'DE', 'GR'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
+            if (['CN', 'BG', 'IT', 'FR', 'DE', 'GR'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
                 val = regionIndex;
             }
         }
@@ -76,7 +75,7 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010614',
+        platformVersion: 'mag010701',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
             pushUp: false,
@@ -133,21 +132,49 @@
     afdOptions.magentoOptions = {
         typeahead: {
             adminEditCustomerEnabled:   <?php echo $block->getConfig('afd_typeahead/forms/adminCustomer'); ?> === 1,
-            adminCreateOrderEnabled:   <?php echo $block->getConfig('afd_typeahead/forms/adminOrder'); ?> === 1,
-            zipPlusFour:   <?php echo $block->getConfig('afd_typeahead/fields/zipPlusFour'); ?> === 1,
-            afdCounty: '<?php echo $block->getConfig('afd_typeahead/fields/afdCounty'); ?>',
-            customCountryDefaultID: '<?php echo $block->getConfig('afd_general/account/id'); ?>',
-            customCountryDefaultToken: '<?php echo $block->getConfig('afd_general/account/token'); ?>',
-            customCountryCredentials: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentials'); ?> === 1,
-            customCountryCredentialsUK: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUK'); ?> === 1,
-            customCountryCredentialsUS: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUS'); ?> === 1,
-            customCountryCredentialsIE: <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIE'); ?> === 1,
-            customCountryCredentialsUKID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUKID'); ?>',
-            customCountryCredentialsUKToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUKToken'); ?>',
-            customCountryCredentialsUSID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSID'); ?>',
-            customCountryCredentialsUSToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSToken'); ?>',
-            customCountryCredentialsIEID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEID'); ?>',
-            customCountryCredentialsIEToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEToken'); ?>',
+        adminCreateOrderEnabled:   <?php echo $block->getConfig('afd_typeahead/forms/adminOrder'); ?> === 1,
+        zipPlusFour
+    :   <?php echo $block->getConfig('afd_typeahead/fields/zipPlusFour'); ?> ===
+    1,
+        afdCounty
+    :
+    '<?php echo $block->getConfig('afd_typeahead/fields/afdCounty'); ?>',
+        customCountryDefaultID
+    :
+    '<?php echo $block->getConfig('afd_general/account/id'); ?>',
+        customCountryDefaultToken
+    :
+    '<?php echo $block->getConfig('afd_general/account/token'); ?>',
+        customCountryCredentials
+    : <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentials'); ?> ===
+    1,
+        customCountryCredentialsUK
+    : <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUK'); ?> ===
+    1,
+        customCountryCredentialsUS
+    : <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUS'); ?> ===
+    1,
+        customCountryCredentialsIE
+    : <?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIE'); ?> ===
+    1,
+        customCountryCredentialsUKID
+    :
+    '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUKID'); ?>',
+        customCountryCredentialsUKToken
+    :
+    '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUKToken'); ?>',
+        customCountryCredentialsUSID
+    :
+    '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSID'); ?>',
+        customCountryCredentialsUSToken
+    :
+    '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSToken'); ?>',
+        customCountryCredentialsIEID
+    :
+    '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEID'); ?>',
+        customCountryCredentialsIEToken
+    :
+    '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEToken'); ?>',
     },
     email: {
         emailEnabled: <?php echo $block->getConfig('afd_email/enable/enable'); ?> ===
@@ -191,7 +218,7 @@
         const $region = $container.find('#region, [name="region"], #order-billing_address_region');
         const country = $container.find(afdOptions.country.customCountryControl).val()
         const requireRegionCountries = '<?php print_r($block->getConfig('general/region/state_required')); ?>'.split(',');
-        const regionHiddenIfOptional =  '<?php echo $block->getConfig('general/region/display_all') ?>' !== '1';
+        const regionHiddenIfOptional = '<?php echo $block->getConfig('general/region/display_all') ?>' !== '1';
 
         // Magento gives the option to hide non required region fields
         if (requireRegionCountries.indexOf(country) < 0 && regionHiddenIfOptional) {

@@ -3,7 +3,7 @@ define([
     'uiRegistry',
     'underscore',
     'jquery'
-],function (Component, registry, _, $) {
+], function (Component, registry, _, $) {
     'use strict';
 
     //  extends base UIComponent /vendor/magento/module-ui/view/base/web/js/lib/core/collection
@@ -11,56 +11,58 @@ define([
     return Component.extend({
 
         defaults: {
-            exports : {
-                afdReady: '${ $.parentName }:afdReady'
-            },
             imports: {
                 typeahead: '${$.name}.afd_typeahead:index'
             }
         },
 
-        resolvers: {},
-        fieldsToBeLoaded: [
-            'afd_typeahead',
-            'postcode',
-            'street',
-            'city',
-            'country_id',
-            'region',
-            'region_id'
-        ],
-
+        resolvers: null,
+        fieldsToBeLoaded: null,
         regionComponent: null,
-        regionIDElement:null,
+        regionIDElement: null,
         countryComponent: null,
 
-        initialize: function () {
+        initialize: function (config) {
             this._super();
 
-            const promises = [];
+            this.parentName = config.name;
 
-            for(let i = 0; i < this.fieldsToBeLoaded.length; i++) {
-                const name = this.fieldsToBeLoaded[i];
-                promises.push(new Promise(resolve => {
+            this.resolvers = {}
+            this.fieldsToBeLoaded = [
+                'afd_typeahead',
+                'postcode',
+                'street',
+                'city',
+                'country_id',
+                'region',
+                'region_id'
+            ]
+
+            const promises = this.fieldsToBeLoaded.map(name => {
+                return new Promise(resolve => {
                     this.resolvers[name] = resolve;
-                }));
-            }
+                });
+            });
+
 
             // when all afd dependencies have been loaded
             Promise.all(promises).then((res) => {
-                this.regionIDElement = res.find(element => element.name === 'region_id').element;
-                const typeahead = res.find(element => element.name === 'afd_typeahead')
-                this.initTypeahead(typeahead.element);
+                this.handleDependenciesLoaded(res);
             });
 
             return this;
         },
 
-        initTypeahead: function(typeaheadContainer) {
+        handleDependenciesLoaded: function (res) {
+            this.regionIDElement = res.find(element => element.name === 'region_id').element;
+            const typeahead = res.find(element => element.name === 'afd_typeahead');
+            this.initTypeahead(typeahead.element);
+        },
+
+        initTypeahead: function (typeaheadContainer) {
 
             // define the containers
             afdOptions.typeahead.containers = ['.form-shipping-address', '.billing-address-form'];
-
             let $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
 
             let $container = $typeahead.closest('form');
@@ -84,14 +86,14 @@ define([
                 this.regionVisibility();
 
                 //zip plus 4
-                if(!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
+                if (!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
                     const originalVal = $('[data-afd-result="TraditionalCounty"]').val();
-                    $('[data-afd-result="Postcode"]').val(originalVal.substr(0,5));
+                    $('[data-afd-result="Postcode"]').val(originalVal.substr(0, 5));
                 }
             });
 
             $(document).on('afd:countryChanged', (e, country) => {
-                if(afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf($container.find(countrySelector).val()) > -1) {
+                if (afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf($container.find(countrySelector).val()) > -1) {
                     $container.find('[data-afd-result="TraditionalCounty"]')
                         .closest('.field')
                         .hide()
@@ -101,9 +103,10 @@ define([
             });
         },
 
+
         // set by observable on children
-        fieldReady: function(field) {
-            if(typeof this.resolvers[field.name] !== 'undefined') {
+        fieldReady: function (field) {
+            if (typeof this.resolvers[field.name] !== 'undefined' && this.name === field.parentName) {
                 this.resolvers[field.name](field);
                 if (field.name === 'region_id') {
                     this.regionComponent = field.koComponent
@@ -111,9 +114,10 @@ define([
                     this.countryComponent = field.koComponent
                 }
             }
+
         },
 
-        regionVisibility: function() {
+        regionVisibility: function () {
 
             const valStore = $(this.regionIDElement).val();
             this.regionComponent.setOptions(this.regionComponent.options());

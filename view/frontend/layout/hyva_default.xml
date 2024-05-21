@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_layout.xsd">
+    <head>
+        <remove src="Afd_Pce::css/jquery.typeahead.afd.css"/>
+        <remove src="Afd_Pce::css/jquery.phone.afd.css"/>
+        <remove src="Afd_Pce::css/jquery.spinner.afd.css"/>
+        <remove src="Afd_Pce::css/jquery.result.list.afd.css"/>
+    </head>
+    <referenceBlock name="afd.email.newsletter" remove="true"/>
+    <referenceContainer name="footer-content">
+        <block class="Magento\Newsletter\Block\Subscribe" name="form.subscribe" as="subscribe" before="-"
+               template="Magento_Newsletter::subscribe.phtml" ifconfig="newsletter/general/active"/>
+    </referenceContainer>
+</page>

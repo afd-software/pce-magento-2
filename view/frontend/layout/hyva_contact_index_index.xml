@@ -9,12 +9,10 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceContainer name="content">
-            <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
-                   before="contactForm" ifconfig="afd_phone/forms/contact"
-                   />
+            <referenceBlock name="afd.phone" remove="true"></referenceBlock>
             <referenceBlock name="contactForm">
                 <action method="setTemplate">
-                    <argument name="template" xsi:type="string">Afd_Pce::contactForm.phtml</argument>
+                    <argument name="template" xsi:type="string">Magento_Contact::form.phtml</argument>
                 </action>
             </referenceBlock>
         </referenceContainer>

@@ -8,4 +8,6 @@
         <plugin name="Afd_Pce_Checkout_Geodemographics" type="Afd\Pce\Block\Checkout\GeodemographicsProcessor" sortOrder="1"
                 disabled="false"/>
     </type>
+
+
 </config>

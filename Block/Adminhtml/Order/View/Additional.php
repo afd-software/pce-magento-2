@@ -43,13 +43,18 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
 
         // $logger->info($cus->getId());
 
+        $address = null;
+
         if ($addressType == 'billing') {
-            return $cus->getAddressById($_order->getBillingAddress()->getCustomerAddressId());
+            $address = $_order->getBillingAddress();
         } elseif ($addressType == 'shipping') {
-            return $cus->getAddressById($_order->getShippingAddress()->getCustomerAddressId());
+            $address = $_order->getShippingAddress();
         }
 
-
+        if(!$address){
+            return null;
+        }
+        return $cus->getAddressById($address->getCustomerAddressId());
 
     }
 
@@ -62,6 +67,10 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
         // $logger->info(print_r( ['Geodemoraphics'], true));
 
         $address = $this->loadOrderAddress($addressType);
+
+        if(!$address){
+            return [];
+        }
 
         $customAttributes = $address->getCustomAttributes();
 
