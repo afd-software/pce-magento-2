@@ -64,8 +64,7 @@ define([
 
         afterRender: function(el) {
             // notify parent that field is rendered and let it know name
-            this.fieldReady({name: this.index, element: el, koComponent: this, parentName : this.parentName});
-
+            this.fieldReady({name: this.index, element: el, koComponent: this});
         }
 
     });

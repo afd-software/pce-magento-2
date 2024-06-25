@@ -8,11 +8,10 @@ class ConfigProvider implements ConfigProviderInterface
 {
 
     protected \Afd\Pce\Helper\Data $helperData;
-
+    
     public function __construct(
         \Afd\Pce\Helper\Data $helperData
-    )
-    {
+    ){
         $this->helperData = $helperData;
     }
 

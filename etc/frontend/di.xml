@@ -4,9 +4,8 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="afd_pce_config_provider" xsi:type="object">Afd\Pce\Model\ConfigProvider</item>
+                <item name="afd_pce_config_rovider" xsi:type="object">Afd\Pce\Model\ConfigProvider</item>
             </argument>
         </arguments>
     </type>
-
 </config>

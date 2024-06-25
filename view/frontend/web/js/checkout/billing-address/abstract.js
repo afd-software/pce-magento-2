@@ -15,22 +15,21 @@ define([
     return Abstract.extend({
 
         defaults: {
-            exports: {
+            exports : {
                 fieldReady: '${ $.parentName }:fieldReady'
             }
         },
 
         fieldReady: ko.observable(''),
 
-        initialize: function (config) {
+        initialize: function () {
             this._super();
-            this.parentName = config.parentName
             return this;
         },
 
-        afterRender: function (el) {
+        afterRender: function(el) {
             // notify parent that field is rendered and let it know name
-            this.fieldReady({name: this.inputName, element: el, parentName: this.parentName});
+            this.fieldReady({name: this.inputName, element: el});
         }
 
     });

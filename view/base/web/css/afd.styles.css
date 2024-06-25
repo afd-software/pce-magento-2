@@ -16,7 +16,7 @@
 }
 
 .afd-typeahead-query {
-    display: flex;
+    display:flex;
 }
 
 .afd-typeahead-query input {
@@ -40,89 +40,4 @@ button.reverse-geocode-button > span {
 
 button.reverse-geocode-button > span svg {
     fill: white;
-}
-
-#address-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 2em;
-    font-family: Arial, sans-serif;
-    color: #2c3c5b;
-}
-
-#address-container .address-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    max-width: 200px
-}
-
-#address-container .address-field input {
-    padding: 0.5em;
-}
-
-#address-container .address-field input:focus {
-    border: #03A29A solid 2px;
-    outline: #03A29A;
-}
-
-#address-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-top: 2em;
-    font-family: Arial, sans-serif;
-    color: #2c3c5b;
-}
-
-#address-container .address-field {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-    max-width: 200px
-}
-
-#address-container .address-field input {
-    padding: 0.5em;
-}
-
-#address-container .address-field input:focus {
-    border: #03A29A solid 2px;
-    outline: #03A29A;
-}
-
-
-afd-typeahead {
-    position: relative;
-    color: #2c3c5b
-}
-
-afd-typeahead > input {
-    padding: 0.5em;
-    min-width: 300px;
-}
-
-afd-typeahead > input:focus {
-    border: #03A29A solid 2px;
-    outline: #03A29A;
-}
-
-afd-typeahead > afd-typeahead-utility {
-    margin-top: 0.5em;
-}
-
-afd-typeahead > afd-typeahead-utility:hover {
-    color: #03A29A;
-}
-
-afd-typeahead > afd-typeahead-results {
-    position: absolute;
-    margin-right: 0.5em;
-    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
-    min-width: 500px;
-}
-
-.field-afd_typeahead {
-    z-index: 1000;
 }
