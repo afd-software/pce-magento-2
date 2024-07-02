@@ -290,15 +290,6 @@
             <group id="advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Advanced Options</label>
-                <field id="polyfill" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Enable JavaScript Polyfill</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Our Javascript requires the use of `Promise` which is not natively available in IE11.
-                        Enabling this will retrieve a polyfill from polyfill.io. You can safely disable this if you do
-                        not need to support IE 11 or you are using your own polyfills.
-                    </comment>
-                </field>
                 <field id="enterpriseEdition" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enterprise Edition</label>

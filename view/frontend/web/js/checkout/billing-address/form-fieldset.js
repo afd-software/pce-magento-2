@@ -126,10 +126,10 @@ define([
             registry.get(this.regionComponent.customName, function (input) {
                 input.visible.valueHasMutated(); //manually force an update of the input component
             });
-            // need to still manually hide if beforeHideResults is set
+
             if (afdOptions.typeahead.beforeHideResults) {
-                $(this.regionComponent).closest('.field').css('display', 'none')
-                $(this.regionIDElement).closest('.field').css('display', 'none')
+                $('[data-afd-result="PostalCounty"]').closest('.field').hide()
+                $(this.regionIDElement).hide()
             }
         }
 

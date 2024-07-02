@@ -1,6 +1,3 @@
-<?php if ($block->getConfig('afd_typeahead/advanced/polyfill') == 1) { ?>
-    <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=Promise"></script>
-<?php } ?>
 <script>
 
     var countryMap = {
@@ -76,7 +73,7 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010616',
+        platformVersion: 'mag010617',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
             pushUp: false,

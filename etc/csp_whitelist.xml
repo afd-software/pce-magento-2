@@ -9,9 +9,6 @@
     <policies>
         <policy id="script-src">
             <values>
-                <!--Polyfill-->
-                <value id="polyfill" type="host">polyfill.io</value>
-
                 <!--Google-->
                 <value id="google" type="host">www.google.com</value>
 
@@ -27,7 +24,7 @@
         </policy>
         <policy id="connect-src">
             <values>
-                <value id="afd" type="host">pce.afd.co.uk</value>
+                <value id="afd" type="host">*.afd.co.uk</value>
             </values>
         </policy>
     </policies>
