@@ -1,22 +1,31 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" invalid="true">
     <update handle="customer_address_form"/>
-    <referenceContainer name="content">
-        <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml"
+    <head>
+        <css src="Afd_Pce::css/jquery.typeahead.afd.css"/>
+        <css src="Afd_Pce::css/jquery.phone.afd.css"/>
+        <css src="Afd_Pce::css/jquery.spinner.afd.css"/>
+        <css src="Afd_Pce::css/jquery.result.list.afd.css"/>
+        <css src="Afd_Pce::css/afd.styles.css"/>
+    </head>
+    <referenceContainer name="head.components">
+
+        <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"
                before="customer_address_edit"
-               />
+        />
         <block class="Afd\Pce\Block\Afd" name="afd.typeahead" template="Afd_Pce::typeahead.phtml"
                before="customer_address_edit" ifconfig="afd_typeahead/forms/account"
-               />
+        />
         <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
                before="customer_address_edit" ifconfig="afd_phone/forms/account"
-               />
+        />
         <referenceBlock name="customer_address_edit">
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Afd_Pce::customerAddressEdit.phtml</argument>
             </action>
         </referenceBlock>
+
         <referenceBlock name="customer_form_address_user_attributes">
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Afd_Pce::form/userattributes.phtml</argument>

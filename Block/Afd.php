@@ -2,11 +2,8 @@
 
 namespace Afd\Pce\Block;
 
-
-
 class Afd extends \Magento\Framework\View\Element\Template
 {
-
     protected $helperData;
 
     public function __construct(
@@ -26,5 +23,7 @@ class Afd extends \Magento\Framework\View\Element\Template
         $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
         return $productMetadata->getVersion();
     }
+
+
 
 }

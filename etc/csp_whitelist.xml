@@ -10,7 +10,7 @@
         <policy id="script-src">
             <values>
                 <!--Google-->
-                <value id="google" type="host">www.google.com</value>
+                <value id="google" type="host" >www.google.com</value>
 
                 <!--AFD-->
                 <value id="afd" type="host">*.afd.co.uk</value>

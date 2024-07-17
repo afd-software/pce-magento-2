@@ -22,14 +22,25 @@ define([
 
         fieldReady: ko.observable(''),
 
-        initialize: function () {
+        initialize: function (config) {
             this._super();
+            this.parentName = config.parentName
             return this;
         },
 
         afterRender: function(el) {
             // notify parent that field is rendered and let it know name
-            this.fieldReady({name: this.index, element: el, koComponent: this});
+            const checkCounter = () => {
+                window.setTimeout(()=> { //todo not ideal
+                    if(jQuery(el).find('select').length === 0) {
+                        checkCounter()
+                    } else {
+                        // notify parent that field is rendered and let it know name
+                        console.log('billing done')
+                        this.fieldReady({name: this.index, element: el, koComponent: this})
+                    }
+                }, 20)}
+            checkCounter()
         }
 
     });

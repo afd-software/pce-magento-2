@@ -77,11 +77,12 @@ define([
 
             // events
             $('.afd-manual-input-button').on('click', () => {
-                this.regionVisibility();
+                this.regionVisibility(false);
             });
 
             $(document).on('afd:populateResultsComplete', (e) => {
-                this.regionVisibility($container, $countryControl.val());
+                this.regionVisibility(false);
+                $(this.regionIDElement).change()
 
                 //zip plus 4
                 if (!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
@@ -115,7 +116,7 @@ define([
             }
         },
 
-        regionVisibility: function () {
+        regionVisibility: function (isInitial = true) {
 
             const valStore = $(this.regionIDElement).val();
             this.regionComponent.setOptions(this.regionComponent.options());
@@ -125,9 +126,11 @@ define([
                 input.visible.valueHasMutated(); //manually force an update of the input component
             });
 
-            if (afdOptions.typeahead.beforeHideResults) {
-                $('[data-afd-result="PostalCounty"]').closest('.field').hide()
-                $(this.regionIDElement).hide()
+            if(isInitial) {
+                if (afdOptions.typeahead.beforeHideResults) {
+                    $('[data-afd-result="PostalCounty"]').closest('.field').hide()
+                    $(this.regionIDElement).closest('.field').hide()
+                }
             }
         }
 

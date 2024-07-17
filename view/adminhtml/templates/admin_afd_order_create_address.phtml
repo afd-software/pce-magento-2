@@ -145,9 +145,8 @@ endif; ?>
             $("#shipping-typeahead").detach().insertAfter("#order-shipping_address .field-country_id").show();
             $('#shipping-manual-input, #shipping-manual-input-search, #shipping-search-again').detach().insertAfter('#shipping-typeahead');
             $("#order-shipping_address_company").attr("data-afd-result", "Organisation");
-            $("#order-shipping_address_street0").attr("data-afd-result", "Property");
-            $("#order-shipping_address_street1").attr("data-afd-result", "Street");
-            $("#order-shipping_address_street2").attr("data-afd-result", "Locality");
+            $("#order-shipping_address_street0").attr("data-afd-result", "Property,Street");
+            $("#order-shipping_address_street1").attr("data-afd-result", "Locality");
             $("#order-shipping_address_city").attr("data-afd-result", "Town");
             $("#order-shipping_address_postcode").attr("data-afd-result", "Postcode");
             $("#shipping-typeahead").find('[data-afd-control="typeahead"]').afd('typeahead');

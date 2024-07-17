@@ -41,9 +41,8 @@ define([
                         $('#afd-typeahead').detach().insertAfter('#customer-new-adddress [data-index="country_id"]').show();
                         $('#afd-manual-input, #afd-manual-input-search, #afd-search-again').detach().insertAfter('#afd-typeahead');
                         $('#customer-new-adddress [name="company"]').attr('data-afd-result', 'Organisation');
-                        $('#customer-new-adddress [name="street[0]"]').attr('data-afd-result', 'Property');
-                        $('#customer-new-adddress [name="street[1]"]').attr('data-afd-result', 'Street');
-                        $('#customer-new-adddress [name="street[2]"]').attr('data-afd-result', 'Locality');
+                        $('#customer-new-adddress [name="street[0]"]').attr('data-afd-result', 'Property,Street');
+                        $('#customer-new-adddress [name="street[1]"]').attr('data-afd-result', 'Locality');
                         $('#customer-new-adddress [name="city"]').attr('data-afd-result', 'Town');
                         $('#customer-new-adddress [name="postcode"]').attr('data-afd-result', 'Postcode');
                         $('#customer-new-adddress [name="region"]').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);

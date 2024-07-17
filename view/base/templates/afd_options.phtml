@@ -1,5 +1,4 @@
-<script>
-
+<script id="afdOptions" nonce="<?php echo $block->getNonce(); ?>">
     var countryMap = {
         'ALB': 'AL',
         'ARG': 'AR',
@@ -13,7 +12,7 @@
         'CHE': 'CH',
         'CHL': 'CL',
         'CHN': 'CN',
-        'COL' :'CO',
+        'COL': 'CO',
         'DEU': 'DE',
         'DNK': 'DK',
         'ECU': 'EC',
@@ -44,14 +43,12 @@
 
     var regions = <?= /* @noEscape */ $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>;
 
-    const selectRegionCountries = Object.entries(regions).filter(function(region){
+    const selectRegionCountries = Object.entries(regions).filter(function (region) {
         return region[0] !== 'config'
-    }).map(function(region){
+    }).map(function (region) {
         return region[0]
     })
-
     var regionMap = function (result) {
-
         if (typeof countryMap[result.CountryISO] === 'undefined') {
             return null;
         }
@@ -63,7 +60,7 @@
                 val = regionIndex;
                 break;
             }
-            if(['CN','BG', 'IT', 'FR', 'DE', 'GR'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
+            if (['CN', 'BG', 'IT', 'FR', 'DE', 'GR'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
                 val = regionIndex;
             }
         }
@@ -73,7 +70,7 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010617',
+        platformVersion: 'mag0106x',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
             pushUp: false,
@@ -96,6 +93,7 @@
             regionMap: regionMap,
             afterRetrieveHideResultsList: true,
             requiredSelector: '.required-entry, ._required',
+            extraPCESearchParams: '<?php echo $block->getConfig('afd_typeahead/fields/postcodeFirst') ?>' === '0' ? {listenv: '1'} : {},
             extraPCERetrieveParams: '<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies')?>' === '1' ? {crownCountry: '1'} : {}
         },
         country: {
@@ -168,7 +166,7 @@
         1,
             invalidMessage
     :
-        '<?php echo $block->getConfig("phone/fields/msg"); ?>',
+        '<?php echo $block->getConfig("afd_ phone/fields/msg"); ?>',
             adminEditCustomerEnabled
     :   <?php echo $block->getConfig('afd_phone/forms/adminCustomer'); ?> ===
         1,
@@ -188,7 +186,7 @@
         const $region = $container.find('#region, [name="region"], #order-billing_address_region');
         const country = $container.find(afdOptions.country.customCountryControl).val()
         const requireRegionCountries = '<?php print_r($block->getConfig('general/region/state_required')); ?>'.split(',');
-        const regionHiddenIfOptional =  '<?php echo $block->getConfig('general/region/display_all') ?>' !== '1';
+        const regionHiddenIfOptional = '<?php echo $block->getConfig('general/region/display_all') ?>' !== '1';
 
         // Magento gives the option to hide non required region fields
         if (requireRegionCountries.indexOf(country) < 0 && regionHiddenIfOptional) {

@@ -407,6 +407,10 @@ $version = $productMetadata->getVersion();
                     .on('mousedown.afd', function(){
                     $('.telephone > .control > .iti').each(function(){
                         var $input = $(this).find('.input-text').first();
+                        if ($input.val().substring(0, 1) === '+') {
+                            const currentNumber = $input.val()
+                            $input.val(currentNumber.replace(/^\+\d+ /, ''))
+                        }
                         var dailCode = $(this).find('.iti__selected-dial-code').first().text();
                         if ($input.val().substring(0, dailCode.length) !== dailCode ) {
                             $input.val(dailCode + ' ' + $input.val());
