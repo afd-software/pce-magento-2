@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd" invalid="true">
-    <update handle="customer_address_form"/>
     <head>
         <css src="Afd_Pce::css/jquery.typeahead.afd.css"/>
         <css src="Afd_Pce::css/jquery.phone.afd.css"/>

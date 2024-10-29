@@ -29,8 +29,10 @@ define([
 
                 // todo find out a solid way to know when fields have finished loading
                 window.setTimeout(function () {
+                    const countryControlSelector = '#customer-new-adddress [name="country_id"]';
+                    const countryControl = $(countryControlSelector);
+                    afdOptions.country.customCountryControl = countryControlSelector
 
-                    afdOptions.country.customCountryControl = '#customer-new-adddress [name="country_id"]';
 
                     if (afdOptions.magentoOptions.typeahead.adminEditCustomerEnabled) {
 
@@ -50,10 +52,31 @@ define([
                         $('#afd-typeahead input').afd('typeahead');
 
                         $(document).on('afd:populateResultsComplete', (e) => {
-                            showHideRegion(e, null,  $('#customer-new-adddress'));
+                            showHideRegion(e, null, $('#customer-new-adddress'));
                         });
 
 
+                        $(document).on("afd:pceRetrieveComplete", function (e, result) {
+
+                            // crown dependency setting
+                            if (afdOptions.magentoOptions.typeahead.crownCountries) {
+                                if (result.CountryISO === "GBR") {
+                                    switch (result.Country) {
+                                        case "Isle of Man":
+                                            countryControl.val("IM");
+                                            break;
+                                        case "Jersey":
+                                            countryControl.val("JE");
+                                            break;
+                                        case "Guernsey":
+                                            countryControl.val("GG");
+                                            break;
+                                        default:
+                                            countryControl.val("GB");
+                                    }
+                                }
+                            }
+                        })
                     }
 
                     if (afdOptions.magentoOptions.phone.adminEditCustomerEnabled) {

@@ -8,7 +8,6 @@
         <remove src="Afd_Pce::css/jquery.result.list.afd.css"/>
     </head>
     <referenceBlock name="afd.email.newsletter" remove="true"/>
-    <referenceBlock name="afd.options" remove="true"/>
     <referenceContainer name="footer-content">
         <block class="Magento\Newsletter\Block\Subscribe" name="form.subscribe" as="subscribe" before="-"
                template="Magento_Newsletter::subscribe.phtml" ifconfig="newsletter/general/active"/>
