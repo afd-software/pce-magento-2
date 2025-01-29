@@ -54,6 +54,7 @@
                 <hideEmpties>1</hideEmpties>
                 <highlightResults>0</highlightResults>
                 <postcodeFirst>0</postcodeFirst>
+                <hideRegion>GG,IM,JE,GB</hideRegion>
                 <afdCounty>PostalCounty</afdCounty>
                 <zipPlusFour>1</zipPlusFour>
                 <crownDependencies>0</crownDependencies>
@@ -71,16 +72,8 @@
                 <mobileOnly>1</mobileOnly>
                 <buttonText>Find Address Automatically</buttonText>
             </reverseGeocode>
-            <what3words>
-                <mode>1</mode>
-                <near>1</near>
-                <nearTemplate>Near {near}</nearTemplate>
-                <focusMode>0</focusMode>
-                <distance>0</distance>
-                <distanceUnit>m</distanceUnit>
-                <distanceTemplate>{distance} Miles</distanceTemplate>
-            </what3words>
             <advanced>
+                <polyfill>1</polyfill>
                 <enterpriseEdition>1</enterpriseEdition>
                 <customCountryCredentials>0</customCountryCredentials>
                 <customCountryCredentialsUK>0</customCountryCredentialsUK>

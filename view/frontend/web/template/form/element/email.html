@@ -31,11 +31,9 @@
                        data-afd-additional-options="afdEmailOptions"
                        afterRender="afdInit"
                 />
-                <div for="customer-email" generated="true" class="afd-error"
-                     data-bind="text: afdOptions.email.invalidEmailMessage"></div>
+                <div for="customer-email" generated="true" class="afd-error">Please enter a valid email address.</div>
                 <!-- ko template: 'ui/form/element/helper/tooltip' --><!-- /ko -->
-                <span class="note" data-bind="fadeVisible: isPasswordVisible() == false"><!-- ko i18n: 'You can create an account after checkout.'-->
-                    <!-- /ko --></span>
+                <span class="note" data-bind="fadeVisible: isPasswordVisible() == false"><!-- ko i18n: 'You can create an account after checkout.'--><!-- /ko --></span>
             </div>
         </div>
         <!--Hidden fields -->
@@ -54,8 +52,7 @@
                            name="password"
                            id="customer-password"
                            data-validate="{required:true}" autocomplete="off"/>
-                    <span class="note"
-                          data-bind="i18n: 'You already have an account with us. Sign in or continue as guest.'"></span>
+                    <span class="note" data-bind="i18n: 'You already have an account with us. Sign in or continue as guest.'"></span>
                 </div>
 
             </div>
@@ -63,10 +60,9 @@
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!-- /ko -->
             <div class="actions-toolbar">
-                <input name="context" type="hidden" value="checkout"/>
+                <input name="context" type="hidden" value="checkout" />
                 <div class="primary">
-                    <button type="submit" class="action login primary" data-action="checkout-method-login"><span
-                            data-bind="i18n: 'Login'"></span></button>
+                    <button type="submit" class="action login primary" data-action="checkout-method-login"><span data-bind="i18n: 'Login'"></span></button>
                 </div>
                 <div class="secondary">
                     <a class="action remind" data-bind="attr: { href: forgotPasswordUrl }">

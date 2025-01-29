@@ -199,6 +199,11 @@
                     <label>Display postcode before address in results</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="hideRegion" translate="label" type="multiselect" sortOrder="160" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Countries for which the region field should be hidden</label>
+                    <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                </field>
                 <field id="afdCounty" translate="label" type="select" sortOrder="165" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>AFD County Field</label>
@@ -282,95 +287,19 @@
                     </comment>
                 </field>
             </group>
-            <group id="what3words" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
-                   showInStore="1">
-                <label>What3Words</label>
-                <field id="text_block" translate="label" type="label" sortOrder="1" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Introduction</label>
-                    <comment>If What3Words functionality is enabled for your account, any search will by default,
-                        automatically search for a W3W result once two words and two full stops have been input in the
-                        typeahead box. When the user selects their W3W a search will be done on that location that will
-                        find the nearest street addresses, and once the address is selected the address will be
-                        retrieved as normal.
-                    </comment>
-                </field>
-                <field id="mode" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>W3W Mode</label>
-                    <comment>'Exact' returns addresses for exact W3W match only, no suggestions are returned, 'Choices'
-                        will show choices of closest matches which once selected will show matching addresses
-                    </comment>
-                    <source_model>Afd\Pce\Model\Config\Source\W3WMode</source_model>
-                </field>
-                <field id="near" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Show nearest town</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>When enabled the search will show the closest town to the matched W3W.</comment>
-                </field>
-                <field id="nearTemplate" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
-                       showInStore="1">
-                    <label>Nearest Town Template</label>
-                    <depends>
-                        <field id="near">1</field>
-                    </depends>
-                    <comment>Template for how the nearest town is displayed, use {near} to as a placeholder for the town
-                        name
-                    </comment>
-                </field>
-                <field id="focusMode" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>W3W Focus Mode</label>
-                    <comment>'When set to either init or focus, the browsers geolocation API will be used to estimate
-                        the users location and returned W3W choices will favour matches closer to the estimated
-                        location. This requires the user to agree to allow the page to access it’s location. If access
-                        is denied, the search will continue as normal. The options relate to when the user is asked to
-                        give permission for the page to access their location:
-                        Disable - no location estimation will be used
-                        Init – The user will be asked permission on page load
-                        Focus – The user will be asked permission when the typeahead control gains focus
-                    </comment>
-                    <source_model>Afd\Pce\Model\Config\Source\W3WFocusMode</source_model>
-                </field>
-                <field id="distance" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Display distance from current location</label>
-                    <comment>When enabled will display the distance from the current estimated location to the W3W
-                        item
-                    </comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <depends>
-                        <field id="focusMode" separator=",">init,focus</field>
-                    </depends>
-                </field>
-                <field id="distanceUnit" translate="label" type="select" sortOrder="1" showInDefault="1"
-                       showInWebsite="1" showInStore="1">
-                    <label>Distance Unit</label>
-                    <source_model>Afd\Pce\Model\Config\Source\W3WDistanceUnit</source_model>
-                    <depends>
-                        <field id="focusMode" separator=",">init,focus</field>
-                        <field id="distance">1</field>
-                    </depends>
-                </field>
-                <field id="distanceTemplate" translate="label" type="text" sortOrder="1" showInDefault="1"
-                       showInWebsite="1"
-                       showInStore="1">
-                    <label>Distance Template</label>
-                    <comment>Template for how the distance from the estimated location is displayed, use {distance} to
-                        as a placeholder for the distance
-                    </comment>
-                    <depends>
-                        <field id="focusMode" separator=",">init,focus</field>
-                        <field id="distance">1</field>
-                    </depends>
-                </field>
-            </group>
             <group id="advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Advanced Options</label>
-                <field id="enterpriseEdition" translate="label" type="select" sortOrder="10" showInDefault="1"
-                       showInWebsite="1"
+                <field id="polyfill" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable JavaScript Polyfill</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Our Javascript requires the use of `Promise` which is not natively available in IE11.
+                        Enabling this will retrieve a polyfill from polyfill.io. You can safely disable this if you do
+                        not need to support IE 11 or you are using your own polyfills.
+                    </comment>
+                </field>
+                <field id="enterpriseEdition" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Enterprise Edition</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -379,12 +308,7 @@
                        showInWebsite="1" showInStore="1">
                     <label>Use custom country based credentials in Admin</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>On some occasions you may wish to use different AFD credentials for different country
-                        address search. For the front end this can be achieved using different credentials on a store
-                        view basis. But in the admin panel address forms Magento only uses the default values. If you
-                        need this functionality, you can set this to yes and override credentials on a country by
-                        country basis.
-                    </comment>
+                    <comment>On some occasions you may wish to use different AFD credentials for different country address search.  For the front end this can be achieved using different credentials on a store view basis.  But in the admin panel address forms Magento only uses the default values.  If you need this functionality, you can set this to yes and override credentials on a country by country basis.</comment>
                     <depends>
                         <field id="afd_general/account/method">id</field>
                     </depends>
@@ -398,8 +322,7 @@
                         <field id="customCountryCredentials">1</field>
                     </depends>
                 </field>
-                <field id="customCountryCredentialsUKID" translate="label" type="text" sortOrder="40" showInDefault="1"
-                       showInWebsite="1"
+                <field id="customCountryCredentialsUKID" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>UK AFD ID</label>
                     <depends>
@@ -408,8 +331,7 @@
                         <field id="customCountryCredentialsUK">1</field>
                     </depends>
                 </field>
-                <field id="customCountryCredentialsUKToken" translate="label" type="text" sortOrder="50"
-                       showInDefault="1" showInWebsite="1"
+                <field id="customCountryCredentialsUKToken" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>UK AFD Token</label>
                     <depends>
@@ -427,8 +349,7 @@
                         <field id="customCountryCredentials">1</field>
                     </depends>
                 </field>
-                <field id="customCountryCredentialsIEID" translate="label" type="text" sortOrder="70" showInDefault="1"
-                       showInWebsite="1"
+                <field id="customCountryCredentialsIEID" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Eircode ID</label>
                     <depends>
@@ -437,8 +358,7 @@
                         <field id="customCountryCredentialsIE">1</field>
                     </depends>
                 </field>
-                <field id="customCountryCredentialsIEToken" translate="label" type="text" sortOrder="80"
-                       showInDefault="1" showInWebsite="1"
+                <field id="customCountryCredentialsIEToken" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>Eircode Token</label>
                     <depends>
@@ -456,8 +376,7 @@
                         <field id="customCountryCredentials">1</field>
                     </depends>
                 </field>
-                <field id="customCountryCredentialsUSID" translate="label" type="text" sortOrder="100" showInDefault="1"
-                       showInWebsite="1"
+                <field id="customCountryCredentialsUSID" translate="label" type="text" sortOrder="100" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>ZipAddress ID</label>
                     <depends>
@@ -466,8 +385,7 @@
                         <field id="customCountryCredentialsUS">1</field>
                     </depends>
                 </field>
-                <field id="customCountryCredentialsUSToken" translate="label" type="text" sortOrder="110"
-                       showInDefault="1" showInWebsite="1"
+                <field id="customCountryCredentialsUSToken" translate="label" type="text" sortOrder="110" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>ZipAddress Token</label>
                     <depends>
@@ -610,8 +528,7 @@
                 <field id="emailTask" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1"
                        showInStore="1">
                     <label>AFD Email Task</label>
-                    <comment>The email 'task' when communicating with AFD servers. Unless advised by AFD support this
-                        should be 'live'.
+                    <comment>The email 'task' when communicating with AFD servers.  Unless advised by AFD support this should be 'live'.
                     </comment>
                 </field>
             </group>

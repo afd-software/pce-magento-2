@@ -4,14 +4,17 @@ define([
     'jquery',
     'ko',
     'afdPce'
-], function (Component,uiRegistry, $, ko) {
+], function (Component, uiRegistry, $, ko) {
     'use strict';
 
     return Component.extend({
 
         defaults: {
             skipValidation: true,
-            exports : {
+            imports: {
+                countryOptions: '${ $.parentName }.country_id:indexedOptions'
+            },
+            exports: {
                 typeaheadReady: '${ $.parentName }:typeaheadReady',
                 fieldReady: '${ $.parentName }:fieldReady'
             }
@@ -19,21 +22,22 @@ define([
 
         fieldReady: ko.observable(''),
 
-        initialize: function () {
+        initialize: function (config) {
             this._super();
+            this.parentName = config.parentName
             return this;
         },
 
         afdInit: function (target) {
-            this.fieldReady({name: this.index, element: target});
+            this.fieldReady({name: this.index, element: target, parentName: this.parentName});
         },
 
-        checkBool: function(setting) {
+        checkBool: function (setting) {
             return window.checkoutConfig.afd[setting] === "1";
         },
 
-        getConfig: function(setting) {
-            if(window.checkoutConfig) {
+        getConfig: function (setting) {
+            if (window.checkoutConfig) {
                 return window.checkoutConfig.afd[setting];
             }
         }

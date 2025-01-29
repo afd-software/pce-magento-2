@@ -1,4 +1,7 @@
-<script nonce="<?php echo $block->getNonce(); ?>">
+<?php if ($block->getConfig('afd_typeahead/advanced/polyfill') == 1) { ?>
+    <script crossorigin="anonymous" src="https://polyfill.io/v3/polyfill.min.js?flags=gated&features=Promise"></script>
+<?php } ?>
+<script>
 
     var countryMap = {
         'ALB': 'AL',
@@ -56,6 +59,7 @@
 
         var mappedCountry = countryMap[result.CountryISO];
         var val = '';
+        console.log(mappedCountry)
         for (var regionIndex in regions[mappedCountry]) {
             if (regions[mappedCountry][regionIndex].code === result.TraditionalCounty) {
                 val = regionIndex;
@@ -71,10 +75,10 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010701',
+        platformVersion: 'mag010702',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
-            pushUp: true,
+            pushUp: false,
             afterHideTypeahead: '<?php echo $block->getConfig('afd_typeahead/fields/afterHideTypeahead');?>' === '1',
             searchAgain: '<?php echo $block->getConfig('afd_typeahead/fields/enableSearchAgainButton');?>' === '1',
             afterClearTypeahead: '<?php echo $block->getConfig('afd_typeahead/fields/afterClearTypeahead');?>' === '1',
@@ -89,20 +93,12 @@
             containers: ['#order-billing_address', '#order-shipping_address', '.customer_form_areas_address_address_customer_address_update_modal', '.form-address-edit'],
             matchPositions: '<?php echo $block->getConfig('afd_typeahead/fields/highlightMatches');?>' === '1',
             postcodeFirst: '<?php echo $block->getConfig('afd_typeahead/fields/postcodeFirst');?>' === '1',
-            listEnv: '<?php echo $block->getConfig('afd_typeahead/fields/postcodeFirst');?>' !== '1',
             showForCountries: '<?php echo $block->getConfig('afd_typeahead/countries/typeaheadCountries');?>'.split(','),
             containerOnlyContainsControl: false,
             regionMap: regionMap,
             afterRetrieveHideResultsList: true,
             requiredSelector: '.required-entry, ._required',
-            extraPCERetrieveParams: '<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies')?>' === '1' ? {crownCountry: '1'} : {},
-            w3wMode: <?php echo $block->getConfig('afd_typeahead/what3words/mode');?>,
-            w3wNear: '<?php echo $block->getConfig('afd_typeahead/what3words/near');?>' === '1',
-            w3wNearTemplate: '<?php echo $block->getConfig('afd_typeahead/what3words/nearTemplate');?>',
-            w3wFocusMode: '<?php echo $block->getConfig('afd_typeahead/what3words/focusMode');?>' === '0' ? false : '<?php echo $block->getConfig('afd_typeahead/what3words/focusMode');?>',
-            w3wDistance: '<?php echo $block->getConfig('afd_typeahead/what3words/distance');?>' === '1',
-            w3wDistanceUnit: '<?php echo $block->getConfig('afd_typeahead/what3words/distanceUnit');?>',
-            w3wDistanceTemplate: '<?php echo $block->getConfig('afd_typeahead/what3words/distanceTemplate');?>'
+            extraPCERetrieveParams: '<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies')?>' === '1' ? {crownCountry: '1'} : {}
         },
         country: {
             customCountryControl: '[name="country_id"], .form-address-edit #country, #order-billing_address_country_id, #order-shipping_address_country_id'
@@ -118,8 +114,7 @@
             invalidEmailMessage: '<?php echo $block->getConfig('afd_email/fields/msg');?>'
         },
         reverseGeocode: {
-            containers: ['.form-shipping-address', '.billing-address-form', '.form-address-edit'],
-            hideOnDesktop: '<?php echo $block->getConfig('afd_typeahead/reverseGeocode/mobileOnly');?>' === '1',
+            containers: ['.form-shipping-address', '.billing-address-form', '.form-address-edit']
         }
     };
 
@@ -136,13 +131,10 @@
     // custom options that are needed in some parts of the application where templates cannot access back end config
     afdOptions.magentoOptions = {
         typeahead: {
-            adminEditCustomerEnabled: <?php echo $block->getConfig('afd_typeahead/forms/adminCustomer'); ?> === 1,
-        adminCreateOrderEnabled: <?php echo $block->getConfig('afd_typeahead/forms/adminOrder'); ?> === 1,
-        crownCountries
-    : <?php echo $block->getConfig('afd_typeahead/fields/crownDependencies'); ?> ===
-    1,
+            adminEditCustomerEnabled:   <?php echo $block->getConfig('afd_typeahead/forms/adminCustomer'); ?> === 1,
+        adminCreateOrderEnabled:   <?php echo $block->getConfig('afd_typeahead/forms/adminOrder'); ?> === 1,
         zipPlusFour
-    : <?php echo $block->getConfig('afd_typeahead/fields/zipPlusFour'); ?> ===
+    :   <?php echo $block->getConfig('afd_typeahead/fields/zipPlusFour'); ?> ===
     1,
         afdCounty
     :
@@ -206,7 +198,7 @@
         1,
             invalidMessage
     :
-        '<?php echo $block->getConfig("afd_phone/fields/msg"); ?>',
+        '<?php echo $block->getConfig("phone/fields/msg"); ?>',
             adminEditCustomerEnabled
     :   <?php echo $block->getConfig('afd_phone/forms/adminCustomer'); ?> ===
         1,
@@ -216,16 +208,18 @@
     }
     ,
     version: '<?php echo $block->getMageVersion() ?>'
+
     }
 
     //logic for which region field should be shown after results populate
     function showHideRegion(e, $element, $container, result) {
 
-        const $region_id = $container.find('#region_id, [name="region_id"], #order-billing_address_region_id, #order-shipping_address_region_id');
-        const $region = $container.find('#region, [name="region"], #order-billing_address_region, #order-shipping_address_region');
-        const country = $container.find(afdOptions.country.customCountryControl).val() || jQuery(afdOptions.country.customCountryControl).last().val()
+        const $region_id = $container.find('#region_id, [name="region_id"], #order-billing_address_region_id');
+        const $region = $container.find('#region, [name="region"], #order-billing_address_region');
+        const country = $container.find(afdOptions.country.customCountryControl).val()
         const requireRegionCountries = '<?php print_r($block->getConfig('general/region/state_required')); ?>'.split(',');
         const regionHiddenIfOptional = '<?php echo $block->getConfig('general/region/display_all') ?>' !== '1';
+
         // Magento gives the option to hide non required region fields
         if (requireRegionCountries.indexOf(country) < 0 && regionHiddenIfOptional) {
             $region_id.closest('.' + afdOptions.typeahead.parentClass).hide();
@@ -235,7 +229,6 @@
             if (selectRegionCountries.indexOf(country) > 0) {
                 $region.closest('.' + afdOptions.typeahead.parentClass).hide();
                 $region_id.closest('.' + afdOptions.typeahead.parentClass).show();
-                $region_id.change()
                 $region.hide();
             } else {
                 $region_id.closest('.' + afdOptions.typeahead.parentClass).hide();

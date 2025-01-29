@@ -126,10 +126,3 @@ afd-typeahead > afd-typeahead-results {
 .field-afd_typeahead {
     z-index: 1000;
 }
-
-.afd-near, .afd-distance {
-    display: block;
-    margin-left: 0.75em;
-    padding: 0.25em 0;
-    font-size: 0.75em;
-}

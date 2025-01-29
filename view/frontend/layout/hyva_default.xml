@@ -11,6 +11,5 @@
     <referenceContainer name="footer-content">
         <block class="Magento\Newsletter\Block\Subscribe" name="form.subscribe" as="subscribe" before="-"
                template="Magento_Newsletter::subscribe.phtml" ifconfig="newsletter/general/active"/>
-
     </referenceContainer>
 </page>

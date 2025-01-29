@@ -11,8 +11,9 @@ define([
     'mageUtils',
     'uiLayout',
     'uiRegistry',
-    'ko'
-], function (Region, utils, layout, registry, ko) {
+    'ko',
+    'jquery'
+], function (Region, utils, layout, registry, ko, $) {
     'use strict';
 
     return Region.extend({

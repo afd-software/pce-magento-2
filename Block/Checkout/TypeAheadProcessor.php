@@ -117,9 +117,8 @@ class TypeAheadProcessor
             $addressFieldset['telephone']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/telephone';
         }
 
-        if($this->_scopeConfig->getValue('afd_typeahead/fields/countryAboveStreet', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
-            $addressFieldset['country_id']['config']['sortOrder'] = 65;
-        }
+        $addressFieldset['country_id']['config']['sortOrder'] = 65;
+
         return $addressFieldset;
     }
 }

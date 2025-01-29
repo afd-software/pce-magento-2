@@ -11,61 +11,63 @@ define([
     return Component.extend({
 
         defaults: {
-            exports: {
-                afdReady: '${ $.parentName }:afdReady'
-            },
             imports: {
                 typeahead: '${$.name}.afd_typeahead:index'
             }
         },
 
-        resolvers: {},
-        fieldsToBeLoaded: [
-            'afd_typeahead',
-            'postcode',
-            'street',
-            'city',
-            'country_id',
-            'region',
-            'region_id'
-        ],
-
+        resolvers: null,
+        fieldsToBeLoaded: null,
         regionComponent: null,
         regionIDElement: null,
         countryComponent: null,
 
-        initialize: function () {
+        initialize: function (config) {
             this._super();
 
-            const promises = [];
+            this.parentName = config.name;
 
-            // creates an array of promises and populates an object with resolve functions
-            for (let i = 0; i < this.fieldsToBeLoaded.length; i++) {
-                const name = this.fieldsToBeLoaded[i];
-                promises.push(new Promise(resolve => {
+            this.resolvers = {}
+            this.fieldsToBeLoaded = [
+                'afd_typeahead',
+                'postcode',
+                'street',
+                'city',
+                'country_id',
+                'region',
+                'region_id'
+            ]
+
+            const promises = this.fieldsToBeLoaded.map(name => {
+                return new Promise(resolve => {
                     this.resolvers[name] = resolve;
-                }));
-            }
+                });
+            });
+
 
             // when all afd dependencies have been loaded
             Promise.all(promises).then((res) => {
-                this.regionIDElement = res.find(element => element.name === 'region_id').element;
-                const typeahead = res.find(element => element.name === 'afd_typeahead')
-                this.initTypeahead(typeahead.element);
+                this.handleDependenciesLoaded(res);
             });
 
             return this;
         },
 
+        handleDependenciesLoaded: function (res) {
+            this.regionIDElement = res.find(element => element.name === 'region_id').element;
+            const typeahead = res.find(element => element.name === 'afd_typeahead');
+            this.initTypeahead(typeahead.element);
+        },
+
         initTypeahead: function (typeaheadContainer) {
 
-            const $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
-            const $container = $typeahead.closest('form');
-            const countrySelector = '[name="country_id"]';
-            const $countryControl = $container.find(countrySelector)
-            const initialCountry = $countryControl.val();
-
+            // define the containers
             afdOptions.typeahead.containers = ['.form-shipping-address', '.billing-address-form'];
+            let $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
+
+            let $container = $typeahead.closest('form');
+            let countrySelector = '[name="country_id"]';
+
             afdOptions.country.customCountryControl = countrySelector;
 
             // initialise controls
@@ -77,16 +79,15 @@ define([
 
             // events
             $('.afd-manual-input-button').on('click', () => {
-                this.regionVisibility(false);
+                this.regionVisibility();
             });
 
             $(document).on('afd:populateResultsComplete', (e) => {
-                this.regionVisibility(false);
-                $(this.regionIDElement).change()
+                this.regionVisibility();
 
                 //zip plus 4
                 if (!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
-                    const originalVal = $('[data-afd-result="Postcode"]').val();
+                    const originalVal = $('[data-afd-result="TraditionalCounty"]').val();
                     $('[data-afd-result="Postcode"]').val(originalVal.substr(0, 5));
                 }
             });
@@ -97,16 +98,15 @@ define([
                         .closest('.field')
                         .hide()
                 } else {
-                    this.regionVisibility($container, country);
+                    this.hideRegions($container, $container.find(countrySelector).val());
                 }
             });
-
-            // $(document).on('afd:populateResultsComplete', showHideRegion);
         },
+
 
         // set by observable on children
         fieldReady: function (field) {
-            if (typeof this.resolvers[field.name] !== 'undefined') {
+            if (typeof this.resolvers[field.name] !== 'undefined' && this.name === field.parentName) {
                 this.resolvers[field.name](field);
                 if (field.name === 'region_id') {
                     this.regionComponent = field.koComponent
@@ -117,7 +117,7 @@ define([
 
         },
 
-        regionVisibility: function (isInitial = true) {
+        regionVisibility: function () {
 
             const valStore = $(this.regionIDElement).val();
             this.regionComponent.setOptions(this.regionComponent.options());
@@ -127,12 +127,6 @@ define([
                 input.visible.valueHasMutated(); //manually force an update of the input component
             });
 
-            if(isInitial) {
-                if (afdOptions.typeahead.beforeHideResults) {
-                    $('[data-afd-result="PostalCounty"]').closest('.field').hide()
-                    $(this.regionIDElement).closest('.field').hide()
-                }
-            }
         }
 
     });

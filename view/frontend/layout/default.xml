@@ -12,7 +12,6 @@
     <referenceBlock name="head.components">
         <block class="Afd\Pce\Block\Afd" name="afd.email.newsletter" template="Afd_Pce::email.phtml"
                 ifconfig="afd_email/enable/enable"/>
-        <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml" />
     </referenceBlock>
     <referenceContainer name="footer">
         <block class="Afd\Pce\Block\Subscribe" name="form.subscribe" as="subscribe" before="-"

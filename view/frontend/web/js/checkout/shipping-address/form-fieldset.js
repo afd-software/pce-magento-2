@@ -3,7 +3,7 @@ define([
     'uiRegistry',
     'underscore',
     'jquery'
-], function (Component, registry, _, $) {
+],function (Component, registry, _, $) {
     'use strict';
 
     //  extends base UIComponent /vendor/magento/module-ui/view/base/web/js/lib/core/collection
@@ -11,7 +11,7 @@ define([
     return Component.extend({
 
         defaults: {
-            exports: {
+            exports : {
                 afdReady: '${ $.parentName }:afdReady'
             },
             imports: {
@@ -31,7 +31,7 @@ define([
         ],
 
         regionComponent: null,
-        regionIDElement: null,
+        regionIDElement:null,
         countryComponent: null,
 
         initialize: function () {
@@ -40,7 +40,7 @@ define([
             const promises = [];
 
             // creates an array of promises and populates an object with resolve functions
-            for (let i = 0; i < this.fieldsToBeLoaded.length; i++) {
+            for(let i = 0; i < this.fieldsToBeLoaded.length; i++) {
                 const name = this.fieldsToBeLoaded[i];
                 promises.push(new Promise(resolve => {
                     this.resolvers[name] = resolve;
@@ -57,7 +57,7 @@ define([
             return this;
         },
 
-        initTypeahead: function (typeaheadContainer) {
+        initTypeahead: function(typeaheadContainer) {
 
             const $typeahead = $(typeaheadContainer).find('[data-afd-control="typeahead"]');
             const $container = $typeahead.closest('form');
@@ -77,22 +77,21 @@ define([
 
             // events
             $('.afd-manual-input-button').on('click', () => {
-                this.regionVisibility(false);
+                this.regionVisibility();
             });
 
             $(document).on('afd:populateResultsComplete', (e) => {
-                this.regionVisibility(false);
-                $(this.regionIDElement).change()
+                this.regionVisibility($container, $countryControl.val());
 
                 //zip plus 4
-                if (!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
+                if(!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
                     const originalVal = $('[data-afd-result="Postcode"]').val();
-                    $('[data-afd-result="Postcode"]').val(originalVal.substr(0, 5));
+                    $('[data-afd-result="Postcode"]').val(originalVal.substr(0,5));
                 }
             });
 
             $(document).on('afd:countryChanged', (e, country) => {
-                if (afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf($container.find(countrySelector).val()) > -1) {
+                if(afdOptions.typeahead.beforeHideResults && afdOptions.typeahead.showForCountries.indexOf($container.find(countrySelector).val()) > -1) {
                     $container.find('[data-afd-result="TraditionalCounty"]')
                         .closest('.field')
                         .hide()
@@ -105,8 +104,8 @@ define([
         },
 
         // set by observable on children
-        fieldReady: function (field) {
-            if (typeof this.resolvers[field.name] !== 'undefined') {
+        fieldReady: function(field) {
+            if(typeof this.resolvers[field.name] !== 'undefined') {
                 this.resolvers[field.name](field);
                 if (field.name === 'region_id') {
                     this.regionComponent = field.koComponent
@@ -116,22 +115,16 @@ define([
             }
         },
 
-        regionVisibility: function (isInitial = true) {
+        regionVisibility: function() {
 
             const valStore = $(this.regionIDElement).val();
-            this.regionComponent.setOptions(this.regionComponent.options());
-            this.regionComponent.visible.valueHasMutated(); // manually force an update of the select component
+           this.regionComponent.setOptions(this.regionComponent.options());
+           this.regionComponent.visible.valueHasMutated(); // manually force an update of the select component
             $(this.regionIDElement).val(valStore);
             registry.get(this.regionComponent.customName, function (input) {
                 input.visible.valueHasMutated(); //manually force an update of the input component
             });
 
-            if(isInitial) {
-                if (afdOptions.typeahead.beforeHideResults) {
-                    $('[data-afd-result="PostalCounty"]').closest('.field').hide()
-                    $(this.regionIDElement).closest('.field').hide()
-                }
-            }
         }
 
     });
