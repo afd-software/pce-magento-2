@@ -34,7 +34,6 @@ define([
                     window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
                         .then(function(){
                             var pn = $('#telephone').val();
-                            $('#telephone')
                             $(target)
                                 .addClass('afd-padding-fix')
                                 .afd('phone')
@@ -46,7 +45,6 @@ define([
                         });
                 } else {
                     var pn = $('#telephone').val();
-                    $('#telephone')
                     $(target)
                         .addClass('afd-padding-fix')
                         .afd('phone')

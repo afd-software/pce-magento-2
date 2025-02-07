@@ -1,6 +1,6 @@
 <?php if ($block->getConfig('afd_email/enable/enable') == 1): ?>
 
-    <script type="text/javascript">
+    <script type="text/javascript" nonce="<?php echo $block->getNonce(); ?>">
 
         require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
 
@@ -26,7 +26,7 @@
 
             <?php endif; ?>
 
-            $('[data-afd-control="email"]').on('keyup', function(e){
+            $('[data-afd-control="email"]').on('keyup', function (e) {
 
                 $(e.target).closest('form').find('button').attr('disabled', true);
 
@@ -39,10 +39,10 @@
                 // newsletter signup
                 if ($el.closest('.newsletter').length !== 0) {
                     $el.closest('.field').addClass('afd-loading');
-                //create account
+                    //create account
                 } else if ($el.closest('.form-create-account').length !== 0) {
                     $el.closest('.control').addClass('afd-loading');
-                // my account edit email
+                    // my account edit email
                 } else if ($el.closest('.form-edit-account').length !== 0) {
                     $el.closest('.control').addClass('afd-loading');
                 } else {
@@ -63,7 +63,12 @@
 
                 $el.closest('.afd-loading').removeClass('afd-loading');
             });
-
+            $(document).on('afd:emailValidationUpdated', function (e, $el) {
+                const currentEmail = $el.val();
+                if ($el.data('afd-already-valid') && $el.data('afd-already-valid').indexOf(currentEmail) > -1) {
+                    $el.closest('form').find('button').attr('disabled', false);
+                }
+            })
         });
 
     </script>

@@ -17,30 +17,22 @@
 
 
 <?php
-    // there are two different versions of this base file depending on the magento version 'account'phtml'
-    $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
-    $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
-    $version = $productMetadata->getVersion();
+// there are two different versions of this base file depending on the magento version 'account'phtml'
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+$version = $productMetadata->getVersion();
 
 ?>
 
-<?php if(substr( $version, 0 , 3) == 2.3) :  ?>
-
-<script>
-    require(["prototype", "Magento_Sales/order/create/form"], function(){
-        order.accountFieldsBind($('customer_account_fields'));
-    });
-</script>
-
-<?php else :
-    $scriptString = <<<script
+<?php
+$scriptString = <<<script
     require(["prototype", "Magento_Sales/order/create/form"], function(){
         order.accountFieldsBind($('customer_account_fields'));
     });
 script;
 ?>
-<?= /* @noEscape */  $secureRenderer->renderTag('script', [], $scriptString, false)?>
-<?php endif; ?>
+<?= /* @noEscape */
+$secureRenderer->renderTag('script', [], $scriptString, false) ?>
 
 <div class="afd-typeahead-container field admin__field" id="billing-typeahead" style="display:none;">
     <div class="admin__field-label">
@@ -76,24 +68,77 @@ script;
     </div>
 </div>
 
-<div id="shipping-manual-input" class="afd-manual-input-button" style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually</div>
-<div id="shipping-manual-input-search" class="afd-manual-input-search-button" style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address</div>
-<div id="shipping-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">Search Again</div>
+<div id="shipping-manual-input" class="afd-manual-input-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually
+</div>
+<div id="shipping-manual-input-search" class="afd-manual-input-search-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address
+</div>
+<div id="shipping-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">
+    Search Again
+</div>
 <style class="afd-manual-input-style"></style>
 <style class="afd-search-again-style"></style>
-<div for="telephone" generated="true" id="afd-shipping-phone-error" class="afd-error mage-error">Please enter a valid phone number</div>
+<div for="telephone" generated="true" id="afd-shipping-phone-error" class="afd-error mage-error">Please enter a valid
+    phone number
+</div>
 
-<div id="billing-manual-input" class="afd-manual-input-button" style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually</div>
-<div id="billing-manual-input-search" class="afd-manual-input-search-button" style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address</div>
-<div id="billing-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">Search Again</div>
+<div id="billing-manual-input" class="afd-manual-input-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually
+</div>
+<div id="billing-manual-input-search" class="afd-manual-input-search-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address
+</div>
+<div id="billing-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">
+    Search Again
+</div>
 <style class="afd-manual-input-style"></style>
 <style class="afd-search-again-style"></style>
-<div for="telephone" generated="true" id="afd-billing-phone-error" class="afd-error mage-error">Please enter a valid phone number</div>
+<div for="telephone" generated="true" id="afd-billing-phone-error" class="afd-error mage-error">Please enter a valid
+    phone number
+</div>
 
-<script>
-    require(['jquery', 'afdPce', 'Magento_Sales/order/create/form', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+<?php
+$scriptString = <<<script
+    require(['jquery', 'afdPce', 'Magento_Sales/order/create/form', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($, afdPCE) {
+    
+        const shippingTypeaheadContainer = $('#shipping-typeahead')
+        const shippingTypeahead = shippingTypeaheadContainer.find('#afd-shipping-typeahead')
+        const combineFirstLine = window.afdOptions.magentoOptions.typeahead.combineFirstLine
 
-        if(afdOptions.magentoOptions.typeahead.adminCreateOrderEnabled) {
+        const populateShipping = () => {
+            $('#order-shipping_address_fields .field-country_id').detach().insertAfter("#order-shipping_address_fields .field-company");
+            shippingTypeaheadContainer.detach().insertAfter("#order-shipping_address .field-country_id").show();
+            $('#shipping-manual-input, #shipping-manual-input-search, #shipping-search-again').detach().insertAfter('#shipping-typeahead');
+            $('#order-shipping_address_company').attr('data-afd-result', 'Organisation');
+            $('#order-shipping_address_street0').attr('data-afd-result', combineFirstLine ? 'Property,Street' : 'Property');
+            $('#order-shipping_address_street1').attr('data-afd-result', combineFirstLine ? 'Locality': 'Street');
+            !combineFirstLine && $('#order-shipping_address_street1').attr('data-afd-result',  'Locality');
+            $('#order-shipping_address_city').attr('data-afd-result', 'Town');
+            $('#order-shipping_address_postcode').attr('data-afd-result', 'Postcode');
+            $('#order-shipping_address_region').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
+            $('#order-shipping_address_region_id').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
+            shippingTypeahead.afd('typeahead');
+            $('.afd-manual-input-button').triggerHandler('click');
+        }
+
+        order.setShippingAsBilling = function (flag) {
+            var data,
+                areasToLoad = ['billing_method', 'shipping_address', 'shipping_method', 'totals', 'giftmessage'];
+            this.disableShippingAddress(flag);
+            data = this.serializeData(flag ? this.billingAddressContainer : this.shippingAddressContainer);
+            data = data.toObject();
+            data['shipping_as_billing'] = flag ? 1 : 0;
+            data['reset_shipping'] = 1;
+            // set customer_address_id to null for shipping address in order to treat it as new from backend
+            // Checkbox(Same As Billing Address) uncheck event
+            data['order[shipping_address][customer_address_id]'] = null;
+            this.loadArea(areasToLoad, true, data).done(()=> {
+              populateShipping()
+            })
+        }
+
+        if (afdOptions.magentoOptions.typeahead.adminCreateOrderEnabled) {
 
             afdOptions.typeahead.containerOnlyContainsControl = true;
             afdOptions.typeahead.parentClass = 'admin__field';
@@ -102,37 +147,47 @@ script;
             $('#billing-typeahead').detach().insertAfter('#order-billing_address_fields .field-country_id').show();
             $('#billing-manual-input, #billing-manual-input-search, #billing-search-again').detach().insertAfter('#billing-typeahead');
             $('#order-billing_address_company').attr('data-afd-result', 'Organisation');
-            $('#order-billing_address_street0').attr('data-afd-result', 'Property');
-            $('#order-billing_address_street1').attr('data-afd-result', 'Street');
-            $('#order-billing_address_street2').attr('data-afd-result', 'Locality');
+            $('#order-billing_address_street0').attr('data-afd-result', combineFirstLine ? 'Property,Street' : 'Property');
+            $('#order-billing_address_street1').attr('data-afd-result', combineFirstLine ? 'Locality' : 'Street');
+            !combineFirstLine && $('#order-billing_address_street2').attr('data-afd-result',  'Locality' );
             $('#order-billing_address_city').attr('data-afd-result', 'Town');
             $('#order-billing_address_postcode').attr('data-afd-result', 'Postcode');
             $('#order-billing_address_region').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
             $('#order-billing_address_region_id').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
             $('#afd-billing-typeahead').afd('typeahead');
-
-            $('#order-shipping_address_fields .field-country_id').detach().insertAfter("#order-shipping_address_fields .field-company");
-            $('#shipping-typeahead').detach().insertAfter("#order-shipping_address .field-country_id").show();
-            $('#shipping-manual-input, #shipping-manual-input-search, #shipping-search-again').detach().insertAfter('#shipping-typeahead');
-            $('#order-shipping_address_company').attr('data-afd-result', 'Organisation');
-            $('#order-shipping_address_street0').attr('data-afd-result', 'Property');
-            $('#order-shipping_address_street1').attr('data-afd-result', 'Street');
-            $('#order-shipping_address_street2').attr('data-afd-result', 'Locality');
-            $('#order-shipping_address_city').attr('data-afd-result', 'Town');
-            $('#order-shipping_address_postcode').attr('data-afd-result', 'Postcode');
-            $('#order-shipping_address_region').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
-            $('#order-shipping_address_region_id').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
-            $('#afd-shipping-typeahead').afd('typeahead');
-            $('.afd-manual-input-button').triggerHandler('click');
-
-            $(document).on('afd:populateResultsComplete', (e) => {
-                showHideRegion(e, null, $('#afd-shipping-typeahead'));
+            
+           populateShipping() 
+            $(document).on('afd:populateRegionIDComplete', (e) => {
+                const container = $(e.target).closest('.admin__page-section-item');
+                showHideRegion(e, null, container);
             });
-
+            
+            $(document).on("afd:pceRetrieveComplete", function (e, result) {
+                const countryControl = $('#order-billing_address_country_id')
+                
+                // crown dependency setting
+                if (afdOptions.magentoOptions.typeahead.crownCountries) {
+                    if (result.CountryISO === "GBR") {
+                        switch (result.Country) {
+                            case "Isle of Man":
+                                countryControl.val("IM");
+                                break;
+                            case "Jersey":
+                                countryControl.val("JE");
+                                break;
+                            case "Guernsey":
+                                countryControl.val("GG");
+                                break;
+                            default:
+                                countryControl.val("GB");
+                        }
+                    }
+                }
+            })
 
         }
 
-        if(afdOptions.magentoOptions.phone.adminCreateOrderEnabled) {
+        if (afdOptions.magentoOptions.phone.adminCreateOrderEnabled) {
 
             if (typeof window.intlTelInputUtils === 'undefined') {
                 window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
@@ -157,8 +212,8 @@ script;
 
             }
 
-            function initPhoneAdminOrder($el) {
-                $el.addClass('afd-padding-fix')
+            function initPhoneAdminOrder(el) {
+                el.addClass('afd-padding-fix')
                     .attr('data-afd-additional-options', 'afdPhoneOptions')
                     .afd('phone');
             }
@@ -167,10 +222,11 @@ script;
 
     });
 
-</script>
+    script;
+?>
 
-<style>
-    .afd-padding-fix {
-        padding-left: 90px !important;
-    }
-</style>
+<?= /* @noEscape */
+$secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false) ?>
+
+<?= /* @noEscape */
+$secureRenderer->renderTag('style', [], '.afd-padding-fix {padding-left: 85px !important}', false) ?>

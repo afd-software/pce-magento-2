@@ -29,21 +29,24 @@ define([
 
                 // todo find out a solid way to know when fields have finished loading
                 window.setTimeout(function () {
+                    const countryControlSelector = '#customer-new-adddress [name="country_id"]';
+                    const countryControl = $(countryControlSelector);
+                    afdOptions.country.customCountryControl = countryControlSelector
 
-                    afdOptions.country.customCountryControl = '#customer-new-adddress [name="country_id"]';
 
                     if (afdOptions.magentoOptions.typeahead.adminEditCustomerEnabled) {
 
                         afdOptions.typeahead.containerOnlyContainsControl = true;
                         afdOptions.typeahead.parentClass = 'admin__field';
 
+                        const combineFirstLine = afdOptions.magentoOptions.typeahead.combineFirstLine;
                         $('#customer-new-adddress [data-index="country_id"]').detach().insertAfter('#customer-new-adddress [data-index="middlename"]');
                         $('#afd-typeahead').detach().insertAfter('#customer-new-adddress [data-index="country_id"]').show();
                         $('#afd-manual-input, #afd-manual-input-search, #afd-search-again').detach().insertAfter('#afd-typeahead');
                         $('#customer-new-adddress [name="company"]').attr('data-afd-result', 'Organisation');
-                        $('#customer-new-adddress [name="street[0]"]').attr('data-afd-result', 'Property');
-                        $('#customer-new-adddress [name="street[1]"]').attr('data-afd-result', 'Street');
-                        $('#customer-new-adddress [name="street[2]"]').attr('data-afd-result', 'Locality');
+                        $('#customer-new-adddress [name="street[0]"]').attr('data-afd-result', combineFirstLine ? 'Property,Street' : 'Property');
+                        $('#customer-new-adddress [name="street[1]"]').attr('data-afd-result', combineFirstLine ? 'Locality' : 'Street');
+                        !combineFirstLine && $('#customer-new-adddress [name="street[2]"]').attr('data-afd-result', 'Locality');
                         $('#customer-new-adddress [name="city"]').attr('data-afd-result', 'Town');
                         $('#customer-new-adddress [name="postcode"]').attr('data-afd-result', 'Postcode');
                         $('#customer-new-adddress [name="region"]').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
@@ -51,10 +54,31 @@ define([
                         $('#afd-typeahead input').afd('typeahead');
 
                         $(document).on('afd:populateResultsComplete', (e) => {
-                            showHideRegion(e, null,  $('#customer-new-adddress'));
+                            showHideRegion(e, null, $('#customer-new-adddress'));
                         });
 
 
+                        $(document).on("afd:pceRetrieveComplete", function (e, result) {
+
+                            // crown dependency setting
+                            if (afdOptions.magentoOptions.typeahead.crownCountries) {
+                                if (result.CountryISO === "GBR") {
+                                    switch (result.Country) {
+                                        case "Isle of Man":
+                                            countryControl.val("IM");
+                                            break;
+                                        case "Jersey":
+                                            countryControl.val("JE");
+                                            break;
+                                        case "Guernsey":
+                                            countryControl.val("GG");
+                                            break;
+                                        default:
+                                            countryControl.val("GB");
+                                    }
+                                }
+                            }
+                        })
                     }
 
                     if (afdOptions.magentoOptions.phone.adminEditCustomerEnabled) {

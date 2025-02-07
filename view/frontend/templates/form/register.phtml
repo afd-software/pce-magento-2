@@ -17,7 +17,7 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
 <?php /* Extensions placeholder */ ?>
 <?= $block->getChildHtml('customer.form.register.extra') ?>
 <form class="form create account form-create-account" action="<?= $block->escapeUrl($block->getPostActionUrl()) ?>"
-      method="post" id="form-validate" enctype="multipart/form-data" autocomplete="off">
+      method="post" id="form-validate" enctype="multipart/form-notdata" autocomplete="off">
     <?= /* @noEscape */
     $block->getBlockHtml('formkey'); ?>
     <fieldset class="fieldset create info">
@@ -294,13 +294,14 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
 <?php if($emailActive): ?>
 <script type="text/javascript">
     require(['jquery', 'mage/validation', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
-        // $.validator.addMethod("afdEmailCheck", function(value, element) {
-        //     return $(element).data('afd-email-valid');
-        // }, afdOptions.email.invalidEmailMessage);
-       / $('#email_address').afd('email').on('afd:emailValidationUpdatedFocusOut',function(e, $el) {
+        $.validator.addMethod("afdEmailCheck", function(value, element) {
+            return $(element).data('afd-email-valid');
+        }, afdOptions.email.invalidEmailMessage);
+        $('#email_address').on('afd:emailValidationUpdatedFocusOut',function(e, $el) {
+      
            $el.data('afd-email-valid',
                 $el.data('email-is-afd-valid')
-                && $el.data('email-is-syntax-valid')
+                && $el.data('email-syntax-valid')
             ).valid();
         });
 

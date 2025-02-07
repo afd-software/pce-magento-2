@@ -92,8 +92,11 @@ class TypeAheadProcessor
 
             // Sets template for address fields - see view/frontend/web/template/form/element
             $addressFieldset['street']['config']['template'] = 'Afd_Pce/checkout/address/group';
-            $addressFieldset['street']['children'][0]['config']['elementTmpl'] = 'Afd_Pce/checkout/address/property';
-            $addressFieldset['street']['children'][1]['config']['elementTmpl'] = 'Afd_Pce/checkout/address/locality';
+            $addressFieldset['street']['children'][0]['config']['elementTmpl'] = 'Afd_Pce/checkout/address/street';
+            $addressFieldset['street']['children'][1]['config']['elementTmpl'] = 'Afd_Pce/checkout/address/street';
+            if (isset($addressFieldset['street']['children'][2])) {
+                $addressFieldset['street']['children'][2]['config']['elementTmpl'] = 'Afd_Pce/checkout/address/street';
+            }
             $addressFieldset['city']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/city';
             $addressFieldset['company']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/company';
             $addressFieldset['postcode']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/postcode';
@@ -103,6 +106,9 @@ class TypeAheadProcessor
             $addressFieldset['street']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/group';
             $addressFieldset['street']['children'][0]['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/abstract';
             $addressFieldset['street']['children'][1]['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/abstract';
+            if (isset($addressFieldset['street']['children'][2])) {
+                $addressFieldset['street']['children'][2]['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/abstract';
+            }
             $addressFieldset['city']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/abstract';
             $addressFieldset['postcode']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/postcode';
             $addressFieldset['region_id']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/region';
@@ -117,8 +123,9 @@ class TypeAheadProcessor
             $addressFieldset['telephone']['config']['elementTmpl'] = 'Afd_Pce/checkout/address/telephone';
         }
 
-        $addressFieldset['country_id']['config']['sortOrder'] = 65;
-
+        if($this->_scopeConfig->getValue('afd_typeahead/fields/countryAboveStreet', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
+            $addressFieldset['country_id']['config']['sortOrder'] = 65;
+        }
         return $addressFieldset;
     }
 }
