@@ -83,6 +83,7 @@
             </what3words>
             <advanced>
                 <enterpriseEdition>1</enterpriseEdition>
+                <enableLegacyGeodeomographics>1</enableLegacyGeodeomographics>
                 <customCountryCredentials>0</customCountryCredentials>
                 <customCountryCredentialsUK>0</customCountryCredentialsUK>
                 <customCountryCredentialsIE>0</customCountryCredentialsIE>

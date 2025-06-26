@@ -386,6 +386,15 @@
                     <label>Enterprise Edition</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="enableLegacyGeodeomographics" translate="label" type="select" sortOrder="10" showInDefault="1"
+                       showInWebsite="1"
+                       showInStore="1">
+                    <label>Enable Legacy Geodemographics</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <depends>
+                        <field id="afd_typeahead/account/enterpriseEdition">id</field>
+                    </depends>
+                </field>
                 <field id="customCountryCredentials" translate="label" type="select" sortOrder="20" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Use custom country based credentials in Admin</label>

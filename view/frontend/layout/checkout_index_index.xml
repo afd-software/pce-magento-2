@@ -53,31 +53,6 @@
                                         </item>
                                     </item>
                                 </item>
-                                <item name="sidebar" xsi:type="array">
-                                    <item name="children" xsi:type="array">
-                                        <item name="shipping-information" xsi:type="array">
-                                            <item name="children" xsi:type="array">
-                                                <item name="ship-to" xsi:type="array">
-                                                    <item name="component" xsi:type="string">
-                                                        Afd_Pce/js/view/shipping-information/list
-                                                    </item>
-                                                    <item name="rendererTemplates" xsi:type="array">
-                                                        <item name="customer-address" xsi:type="array">
-                                                            <item name="component" xsi:type="string">
-                                                                Afd_Pce/js/view/checkout/shipping-information/address-renderer/shipping
-                                                            </item>
-                                                        </item>
-                                                        <item name="new-customer-address" xsi:type="array">
-                                                            <item name="component" xsi:type="string">
-                                                                Afd_Pce/js/view/checkout/shipping-information/address-renderer/shipping
-                                                            </item>
-                                                        </item>
-                                                    </item>
-                                                </item>
-                                            </item>
-                                        </item>
-                                    </item>
-                                </item>
                             </item>
                         </item>
                     </item>
