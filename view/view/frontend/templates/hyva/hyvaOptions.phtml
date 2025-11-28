@@ -1,0 +1,38 @@
+<script>
+    const afdHyvaOptions = {
+        pceURL: afdOptions.pceUrl,
+        ...afdOptions.typeahead
+    }
+
+    if (afdOptions.id) {
+        afdHyvaOptions.id = afdOptions.id
+        afdHyvaOptions.token = afdOptions.token
+    } else {
+        afdHyvaOptions.serial = afdOptions.serial
+        afdHyvaOptions.password = afdOptions.password
+    }
+
+
+    afdHyvaOptions.setCrownDependencyCountry = '<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies');?>' === '1'
+
+    afdHyvaOptions.inputClass = 'form-input'
+    afdHyvaOptions.regionMap = (item) => {
+        const mappedCountry = countryMap[item.CountryISO]
+
+        if (typeof mappedCountry === 'undefined') {
+            return ''
+
+        }
+        for (const key in regions[mappedCountry]) {
+            if (regions[mappedCountry][key].code === item.PostalCounty) {
+                return key
+            }
+            if (['CN', 'BG', 'IT', 'FR', 'DE', 'GR'].indexOf(mappedCountry) > 0 && regions[mappedCountry][key].name.match(item.TraditionalCounty)) {
+                return key;
+            }
+        }
+        return ''
+    }
+
+
+</script>

@@ -1,0 +1,32 @@
+<?php
+/**
+ * AFD PCE Address Metadata Template for Customer Address Edit Form
+ *
+ * @var $block \Afd\Pce\Block\Customer\Address\Metadata
+ */
+
+// Only process if metadata is enabled in configuration
+if (!$block->isMetadataEnabled()) {
+    return;
+}
+
+// Get existing metadata for this address (if any)
+$metadata = $block->getAddressMetadata();
+$metadataJson = $metadata ? $block->getMetadataJson() : '{}';
+?>
+
+<!-- Address metadata fields -->
+<?php
+$captureFields = $block->getCaptureFields();
+$captureFieldsJson = json_encode(is_array($captureFields) ? $captureFields : []);
+?>
+<div id="address-metadata-container" data-mage-init='{"addressMetadata": {"captureFields": <?= $captureFieldsJson ?>}}'>
+    <!-- Hidden fields for metadata -->
+    <input type="hidden" 
+           id="customer-address-metadata" 
+           name="customer-address-metadata" 
+           value="<?= $block->escapeHtmlAttr($metadataJson) ?>" />
+    
+    <!-- Ensure metadata_enabled is always included -->
+    <input type="hidden" id="metadata_enabled" name="metadata_enabled" value="1" />
+</div>

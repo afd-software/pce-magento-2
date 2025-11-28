@@ -1,0 +1,119 @@
+.address-metadata {
+    margin-top: 15px;
+    border-top: 1px solid #cccccc;
+    padding-top: 10px;
+}
+
+.address-metadata-header {
+    margin-bottom: 10px;
+}
+
+.address-validated {
+    color: #006400;
+    margin-left: 5px;
+    font-style: italic;
+}
+
+/* Make metadata sections use 50% width each (side by side) */
+.admin__page-section-item.order-billing-address,
+.admin__page-section-item.order-shipping-address {
+    width: 50%;
+    float: left;
+    box-sizing: border-box;
+}
+
+/* Wrapper for metadata table */
+.metadata-table-wrapper {
+    margin-bottom: 20px;
+}
+
+/* Style for metadata tables */
+.admin__table-secondary.metadata-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.admin__table-secondary.metadata-table tbody tr {
+    border-bottom: 1px solid #e3e3e3;
+    background: transparent !important;
+}
+
+.admin__table-secondary.metadata-table tbody tr:last-child {
+    border-bottom: none;
+}
+
+.admin__table-secondary.metadata-table tbody tr:nth-child(odd),
+.admin__table-secondary.metadata-table tbody tr:nth-child(even) {
+    background: transparent !important;
+}
+
+.admin__table-secondary.metadata-table th {
+    width: 30%;
+    font-weight: 600;
+    padding: 10px 15px;
+    text-align: left;
+    background: transparent !important;
+    vertical-align: top;
+}
+
+.admin__table-secondary.metadata-table td {
+    width: 70%;
+    padding: 10px 15px;
+    background: transparent !important;
+    vertical-align: top;
+}
+
+/* Styles for grouped address metadata display */
+.metadata-grouped-wrapper {
+    padding-right: 20px;
+}
+
+.metadata-category-section {
+    margin-bottom: 20px;
+    margin-right: 0;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.metadata-category-header {
+    background-color: #f5f5f5;
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    font-weight: bold;
+    color: #333;
+}
+
+.metadata-category-content {
+    padding: 0;
+}
+
+.metadata-category-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.metadata-category-table tr {
+    border-bottom: 1px solid #eee;
+}
+
+.metadata-category-table tr:last-child {
+    border-bottom: none;
+}
+
+.metadata-category-table th {
+    background-color: #fafafa;
+    padding: 10px 15px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    width: 30%;
+    border-right: 1px solid #eee;
+}
+
+.metadata-category-table td {
+    padding: 10px 15px;
+    color: #666;
+    word-break: break-word;
+}

@@ -1,0 +1,46 @@
+<?php if ($block->getConfig('afd_phone/enable/enable') == 1): ?>
+
+    <script type="text/javascript" nonce="<?php echo $block->getNonce(); ?>" >
+
+        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+
+            window.afdPhoneOptions = {};
+
+            <?php if($block->getConfig('afd_phone/account/useDefaultCredentials') == 0): ?>
+
+
+            <?php if($block->getConfig('afd_phone/account/authMethod') == "id"): ?>
+                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('afd_phone/account/idPceUrl'); ?>';
+                afdPhoneOptions.id = '<?php echo $block->getConfig('afd_phone/account/id'); ?>';
+                afdPhoneOptions.token = '<?php echo $block->getConfig('afd_phone/account/token'); ?>';
+                afdPhoneOptions.serial = null;
+                afdPhoneOptions.password = null;
+            <?php else: ?>
+                afdPhoneOptions.pceUrl = '<?php echo $block->getConfig('afd_phone/account/serialPceUrl'); ?>';
+                afdPhoneOptions.serial = '<?php echo $block->getConfig('afd_phone/account/serial'); ?>';
+                afdPhoneOptions.password = '<?php echo $block->getConfig('afd_phone/account/password'); ?>';
+                afdPhoneOptions.id = null;
+                afdPhoneOptions.token = null;
+            <?php endif; ?>
+
+
+            <?php endif; ?>
+
+            $(document).on('afd:phoneValidationStared', function (e, el) {
+                var $el = $(el);
+                $el.parent().addClass('afd-loading');
+            });
+            $(document).on('afd:phoneValidationUpdated', function (e, el) {
+                var $el = $(el);
+                $el.parent().removeClass('afd-loading');
+            });
+
+        });
+
+    </script>
+    <style>
+        .iti__selected-flag {
+            height: 31px !important
+        }
+    </style>
+<?php endif; ?>

@@ -1,0 +1,115 @@
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<div
+  class="fieldset-wrapper"
+  id="customer-new-adddress"
+  css="$data.additionalClasses"
+  attr="'data-level': $data.level, 'data-index': index"
+  data-bind="visible: $data.visible === undefined ? true: $data.visible"
+  afterRender="afdInit"
+>
+  <div
+    class="fieldset-wrapper-title"
+    attr="tabindex: !collapsible ? -1 : 0,
+               'data-state-collapsible': collapsible ? opened() ? 'open' : 'closed' : null"
+    click="toggleOpened"
+    keyboard="13: toggleOpened"
+    if="label"
+  >
+    <strong
+      css="'admin__collapsible-title': collapsible,
+                      title: !collapsible,
+                      '_changed': changed,
+                      '_loading': loading,
+                      '_error': error"
+    >
+      <span translate="label" />
+      <span class="admin__page-nav-item-messages" if="collapsible">
+        <span class="admin__page-nav-item-message _changed">
+          <span class="admin__page-nav-item-message-icon"></span>
+          <span
+            class="admin__page-nav-item-message-tooltip"
+            data-bind="i18n: 'Changes have been made to this section that have not been saved.'"
+          >
+          </span>
+        </span>
+        <span class="admin__page-nav-item-message _error">
+          <span class="admin__page-nav-item-message-icon"></span>
+          <span
+            class="admin__page-nav-item-message-tooltip"
+            data-bind="i18n: 'This tab contains invalid data. Please resolve this before saving.'"
+          >
+          </span>
+        </span>
+        <span class="admin__page-nav-item-message-loader">
+          <span class="spinner">
+            <span repeat="8" />
+          </span>
+        </span>
+      </span>
+    </strong>
+  </div>
+
+  <div
+    class="admin__fieldset-wrapper-content"
+    css="'admin__collapsible-content': collapsible, '_show': opened, '_hide': !opened()"
+  >
+    <fieldset
+      if="opened() || _wasOpened || initializeFieldsetDataByDefault"
+      class="admin__fieldset"
+      each="data: elems, as: 'element'"
+      render=""
+    />
+  </div>
+</div>
+
+<div
+  class="afd-typeahead-container field admin__field"
+  id="afd-typeahead"
+  style="display: none; margin-bottom: 0"
+>
+  <div class="admin__field-label">
+    <label><span>Address Search</span></label>
+  </div>
+  <div class="afd-typeahead-field admin__field-control">
+    <div class="afd-typeahead-query">
+      <input
+        class="input-text"
+        id="afd-billing-typeahead"
+        type="search"
+        autocomplete="password-new"
+        name="afd-search"
+      />
+    </div>
+  </div>
+</div>
+
+<span
+  id="afd-manual-input"
+  class="afd-manual-input-button"
+  style="display: none; margin-bottom: 16px; margin-top: -24px"
+  >Input Manually</span
+>
+<span
+  id="afd-manual-input-search"
+  class="afd-manual-input-search-button"
+  style="display: none; margin-bottom: 16px; margin-top: -24px"
+  >Search for Address</span
+>
+<span
+  id="afd-search-again"
+  class="afd-search-again"
+  style="display: none; margin-bottom: 16px; margin-top: -24px"
+  >Search Again</span
+>
+<span
+  for="telephone"
+  generated="true"
+  id="afd-phone-error"
+  class="afd-error mage-error"
+  >Please enter a valid phone number</span
+>

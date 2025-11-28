@@ -1,0 +1,22 @@
+<script type="text/javascript" src="https://cdn.afd.co.uk/plugins/shared/utils.js"></script>
+<script type="text/javascript">
+    require(['jquery', 'afdPce'], function ($) {
+
+
+        function checkElementsLoaded() {
+            if ($('[name="customer[email]"]').length < 1) {
+                window.setTimeout(checkElementsLoaded, 100); /* this checks the flag every 100 milliseconds*/
+            } else {
+                $('[name="customer[email]"]')
+                    .attr('data-afd-additional-options', 'afdEmailOptions')
+                    .afd('email')
+                    .closest('div')
+                    .append(`<div for="customer[email]" generated="true" class="afd-error mage-error">${afdOptions.email.invalidEmailMessage}</div>`);
+            }
+        }
+
+        checkElementsLoaded();
+
+
+    });
+</script>

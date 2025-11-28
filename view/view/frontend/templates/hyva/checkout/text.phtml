@@ -1,0 +1,77 @@
+<?php
+/**
+ * Hyvä Themes - https://hyva.io
+ * Copyright © Hyvä Themes 2022-present. All rights reserved.
+ * This product is licensed per Magento install
+ * See https://hyva.io/license
+ */
+
+declare(strict_types=1);
+
+use Hyva\Checkout\Model\Form\EntityFieldInterface;
+use Hyva\Theme\Model\ViewModelRegistry;
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Magewirephp\Magewire\Component\Form as MagewireFormComponent;
+
+/** @var Template $block */
+/** @var EntityFieldInterface $element */
+/** @var ViewModelRegistry $viewModels */
+/** @var Escaper $escaper */
+/** @var MagewireFormComponent $magewire */
+
+/** @Tailwind md:w-1/4 md:w-2/4 md:w-3/4 md:w-4/4 mb-2 */
+
+$element = $block->getData('element');
+$attributes = $element->getAttributes();
+$renderer = $element->getRenderer();
+?>
+<div class="w-full font-medium text-gray-700 relative <?= /* @noEscape */
+$element->isRequired() ? 'required' : 'not-required' ?>"
+    <?php if ($element->hasData('afdAddressField')): ?>
+
+        x-afd-address-field="<?= /* @noEscape */
+        $element->getData('afdAddressField') ?>"
+
+    <?php endif ?>
+>
+    <?= /* @noEscape */
+    $renderer->renderLabel($element) ?>
+    <?= /* @noEscape */
+    $renderer->renderBefore($element) ?>
+
+    <?php if ($element->hasRelatives()): ?>
+    <div class="space-y-2">
+        <?php endif ?>
+
+        <div class="flex items-center gap-4">
+            <input class="<?= $escaper->escapeHtmlAttr($element->renderClass(['block w-full form-input grow renderer-text'])) ?>"
+                <?php if ($element->hasAttributes()): ?>
+                    <?= /* @noEscape */
+                    $element->renderAttributes($escaper) ?>
+                <?php endif ?>
+            />
+
+            <?= /* @noEscape */
+            $element->getRenderer()->renderTooltip($element) ?>
+        </div>
+
+        <?= /* @noEscape */
+        $element->getRenderer()->renderComment($element) ?>
+
+        <?php if ($element->hasRelatives()): ?>
+            <?php foreach ($element->getRelatives() as $relative): ?>
+                <?php if ($relative->isVisible()): ?>
+                    <?= /* @noEscape */
+                    $relative->render() ?>
+                <?php endif ?>
+            <?php endforeach ?>
+        <?php endif ?>
+
+        <?php if ($element->hasRelatives()): ?>
+    </div>
+<?php endif ?>
+
+    <?= /* @noEscape */
+    $renderer->renderAfter($element) ?>
+</div>

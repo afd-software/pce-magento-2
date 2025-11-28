@@ -1,0 +1,20 @@
+<script>
+require(['jquery', 'afdPce', 'domReady!'], function($) {
+    const $form = jQuery('#edit_form');
+    const $phoneField = $form.find('#telephone');
+
+    if ($phoneField.length) {
+        // Add phone validation attributes
+        $phoneField.attr('data-afd-control', 'phone');
+        $phoneField.attr('data-afd-additional-options', 'afdPhoneOptions');
+        $phoneField.addClass('afd-validate-phone');
+
+        // Add error message container after the telephone field
+        if (!$phoneField.next('.afd-error').length) {
+            $phoneField.after(`<div for="telephone" generated="true" class="afd-error mage-error">${window.afdOptions.magentoOptions.phone.invalidMessage}</div>`);
+        }
+        $phoneField.afd('phone');
+    }
+
+});
+</script>

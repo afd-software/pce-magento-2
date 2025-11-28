@@ -1,0 +1,80 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/** @var \Magento\Newsletter\Block\Subscribe $block */
+
+?>
+
+<?php
+
+$emailAcive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getConfig('afd_email/forms/newsletter') == 1;
+
+?>
+
+<div class="block newsletter">
+    <div class="title"><strong><?= $block->escapeHtml(__('Newsletter')) ?></strong></div>
+    <div class="content">
+        <form class="form subscribe"
+              novalidate
+              action="<?= $block->escapeUrl($block->getFormActionUrl()) ?>"
+              method="post"
+              data-mage-init='{"validation": {"errorClass": "mage-error"}}'
+              id="newsletter-validate-detail">
+            <div class="field newsletter">
+                <div class="control">
+                    <label for="newsletter">
+                        <span class="label">
+                            <?= $block->escapeHtml(__('Sign Up for Our Newsletter:')) ?>
+                        </span>
+                        <input name="email" type="email" id="newsletter"
+                               placeholder="<?= $block->escapeHtml(__('Enter your email address')) ?>"
+                               data-mage-init='{"mage/trim-input":{}}'
+                               data-validate="{required:true, 'validate-email':true}"
+                        />
+                    </label>
+                </div>
+            </div>
+            <div class="actions">
+                <button class="action subscribe primary sr-only"
+                        title="<?= $block->escapeHtmlAttr(__('Subscribe')) ?>"
+                        type="submit"
+                        aria-label="Subscribe">
+                    <span><?= $block->escapeHtml(__('Subscribe')) ?></span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+<?php if($block->getConfig('afd_email/forms/newsletter') == 1) : ?>
+<script type="text/x-magento-init">
+{
+    "#newsletter": {
+        "Afd_Pce/js/newsletter-email": {
+            "useDefaultCredentials": <?= $block->getConfig('afd_email/account/useDefaultCredentials') == 0 ? 'false' : 'true' ?>
+            <?php if($block->getConfig('afd_email/account/useDefaultCredentials') == 0): ?>
+            <?php if($block->getConfig('afd_email/account/authMethod') == "id"): ?>
+            ,"pceUrl": "<?= $block->escapeJs($block->getConfig('afd_email/account/idPceUrl')) ?>"
+            ,"id": "<?= $block->escapeJs($block->getConfig('afd_email/account/id')) ?>"
+            ,"token": "<?= $block->escapeJs($block->getConfig('afd_email/account/token')) ?>"
+            <?php else: ?>
+            ,"pceUrl": "<?= $block->escapeJs($block->getConfig('afd_email/account/serialPceUrl')) ?>"
+            ,"serial": "<?= $block->escapeJs($block->getConfig('afd_email/account/serial')) ?>"
+            ,"password": "<?= $block->escapeJs($block->getConfig('afd_email/account/password')) ?>"
+            <?php endif; ?>
+            <?php endif; ?>
+        }
+    }
+}
+</script>
+
+<style>
+    .newsletter .afd-loading > div.control::before,
+    .newsletter .afd-loading > div.control::after{
+        top: 10px !important;
+        right: 12px;
+    }
+</style>
+<?php endif ?>

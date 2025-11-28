@@ -1,0 +1,45 @@
+<?php
+/**
+ * Template for displaying address metadata in admin order view
+ * Displays metadata grouped by category for better organization
+ *
+ * @var $block \Afd\Pce\Block\Adminhtml\Order\View\AddressMetadata
+ */
+?>
+<?php $groupedMetadata = $block->getGroupedAddressMetadata(); ?>
+
+<?php if (!empty($groupedMetadata)): ?>
+<div class="metadata-grouped-wrapper">
+    <?php foreach ($groupedMetadata as $categoryCode => $categoryData): ?>
+        <div class="metadata-category-section">
+            <div class="metadata-category-header">
+                <?= $block->escapeHtml($categoryData['label']) ?>
+            </div>
+            <div class="metadata-category-content">
+                <table class="metadata-category-table">
+                    <tbody>
+                    <?php foreach ($categoryData['fields'] as $key => $value): ?>
+                        <?php 
+                            $label = $block->getFieldLabel($key);
+                            $description = $block->getFieldDescription($key);
+                        ?>
+                        <tr>
+                            <th>
+                                <span title="<?= $block->escapeHtmlAttr($description) ?>">
+                                    <?= $block->escapeHtml($label) ?>
+                                </span>
+                            </th>
+                            <td><?= $block->escapeHtml($block->formatMetadataValue($value)) ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <?php endforeach; ?>
+</div>
+<?php else: ?>
+    <div class="message message-notice">
+        <div><?= $block->escapeHtml(__('No metadata found for this address.')) ?></div>
+    </div>
+<?php endif; ?>

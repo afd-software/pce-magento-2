@@ -1,0 +1,26 @@
+[data-afd-control='lookupResultsList'],
+[data-afd-control='reverseGeocodeResultsList'] {
+  border: 1px solid #6e6e6e;
+  list-style-type: none;
+  padding: 0;
+  overflow-y: scroll;
+  max-height: 200px;
+  background-color: #ffffff;
+}
+[data-afd-control='lookupResultsList'] li,
+[data-afd-control='reverseGeocodeResultsList'] li {
+  padding: 4px 8px;
+  cursor: pointer;
+}
+[data-afd-control='lookupResultsList'] li:hover,
+[data-afd-control='reverseGeocodeResultsList'] li:hover {
+  background-color: #f5f5f5;
+}
+[data-afd-control='lookupResultsList'] li:first-child,
+[data-afd-control='reverseGeocodeResultsList'] li:first-child {
+  padding-top: 8px;
+}
+[data-afd-control='lookupResultsList'] li:last-child,
+[data-afd-control='reverseGeocodeResultsList'] li:last-child {
+  padding-bottom: 8px;
+}

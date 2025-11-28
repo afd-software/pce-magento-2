@@ -1,0 +1,75 @@
+<div class="field" data-bind="visible: visible, attr: {'name': element.dataScope}, css: additionalClasses" afterRender="afterRender">
+    <label class="label" data-bind="attr: { for: uid }">
+        <!-- ko if: element.labelVisible -->
+        <span data-bind="i18n: element.label"></span>
+        <!-- /ko -->
+    </label>
+    <div class="control" data-bind="css: {'_with-tooltip': element.tooltip}">
+        <!-- Hidden select element to maintain Magento functionality -->
+        <select class="select" style="display: none;" data-bind="
+            attr: {
+                id: uid,
+                name: inputName,
+                disabled: disabled,
+                'aria-describedby': getDescriptionId(),
+                'aria-required': required,
+                'aria-invalid': error() ? true : 'false',
+                placeholder: placeholder
+            },
+            hasFocus: focused,
+            optgroup: options,
+            value: value,
+            optionsCaption: caption,
+            optionsValue: 'value',
+            optionsText: 'label',
+            optionsAfterRender: function(option, item) {
+                if (item && item.disabled) {
+                    ko.applyBindingsToNode(option, {attr: {disabled: true}}, item);
+                }
+            }
+            "></select>
+
+        <!-- AFD Country Input Web Component -->
+        <afd-country-input data-bind="
+            attr: {
+                id: uid + '_afd',
+                value: value
+            },
+            event: {
+                change: function(data, event) {
+                    value(event.target.value);
+                    // Trigger change event on hidden select for Magento validation
+                    var selectElement = document.getElementById(uid);
+                    if (selectElement) {
+                        selectElement.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    return true;
+                }
+            }
+        "></afd-country-input>
+        <!-- ko if: element.notice -->
+        <div class="field-note" data-bind="attr: { id: element.noticeId }">
+            <span data-bind="text: element.notice"></span>
+        </div>
+        <!-- /ko -->
+        <!-- ko if: element.error() -->
+        <div class="field-error" data-bind="attr: { id: element.errorId }" generated="true">
+            <span data-bind="text: element.error"></span>
+        </div>
+        <!-- /ko -->
+        <!-- ko if: element.tooltip -->
+        <div class="field-tooltip toggle">
+            <span class="field-tooltip-action action-tooltip"
+                  tabindex="0"
+                  data-toggle="dropdown"
+                  data-bind="attr: { title: element.tooltip.description }">
+                <span data-bind="i18n: 'What\'s this?'"></span>
+            </span>
+            <div class="field-tooltip-content"
+                 data-target="dropdown"
+                 data-bind="html: element.tooltip.description">
+            </div>
+        </div>
+        <!-- /ko -->
+    </div>
+</div>

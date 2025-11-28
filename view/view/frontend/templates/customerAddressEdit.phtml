@@ -1,0 +1,605 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+// phpcs:disable Magento2.Templates.ThisInTemplate
+?>
+
+<?php
+// there are two different versions of this base file depending on the magento version
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+$version = $productMetadata->getVersion();
+?>
+
+
+<?php
+
+$phoneActive = $block->getConfig('afd_phone/enable/enable') == 1 && $block->getConfig('afd_phone/forms/account') == 1;
+$phoneAttribute = $phoneActive ? "data-afd-control=\"phone\"" : "";
+$typeaheadActive = $block->getConfig('afd_typeahead/forms/account') == 1;
+
+function afdResultFieldAttribute($field, $active)
+{
+
+    echo $active ? "data-afd-result=\"" . $field . "\"" : "";
+
+}
+
+?>
+
+
+<?php
+/**
+ * Edit customer address template
+ *
+ * @var $block \Magento\Customer\Block\Address\Edit
+ */
+/** @var \Magento\Customer\Helper\Address $addressHelper */
+$addressHelper = $this->helper(\Magento\Customer\Helper\Address::class);
+$requiredAttributesPrechecked = $block->getData('required_attributes_prechecked');
+?>
+<form class="form-address-edit" action="<?= $block->escapeUrl($block->getSaveUrl()) ?>" method="post"
+      id="form-validate" enctype="multipart/form-data"
+      data-hasrequired="<?= $block->escapeHtmlAttr(__('* Required Fields')) ?>">
+    <fieldset class="fieldset">
+        <legend class="legend"><span><?= $block->escapeHtml(__('Contact Information')) ?></span></legend>
+        <br>
+        <?= $block->getBlockHtml('formkey') ?>
+        <input type="hidden" name="success_url" value="<?= $block->escapeUrl($block->getSuccessUrl()) ?>"/>
+        <input type="hidden" name="error_url" value="<?= $block->escapeUrl($block->getErrorUrl()) ?>"/>
+        <?= $block->getNameBlockHtml() ?>
+        <?php if ($addressHelper->isAttributeVisible('company')) : ?>
+            <div class="field company <?php if (in_array('company', $requiredAttributesPrechecked)) :
+                ?>required<?php endif; ?>">
+                <label class="label" for="company"><span><?= $block->escapeHtml(__('Company')) ?></span></label>
+                <div class="control">
+                    <input type="text" name="company" id="company" title="<?= $block->escapeHtml(__('Company')) ?>"
+                           value="<?= $block->escapeHtml($block->getAddress()->getCompany()) ?>"
+                           class="input-text <?= $block->escapeHtmlAttr($addressHelper->getAttributeValidationClass('company')) ?>" <?php afdResultFieldAttribute('Organisation', $typeaheadActive); ?> />
+                </div>
+            </div>
+        <?php endif; ?>
+        <?php if ($addressHelper->isAttributeVisible('telephone')) : ?>
+        <div class="field telephone <?php if (in_array('telephone', $requiredAttributesPrechecked)) :
+            ?>required<?php endif; ?>">
+            <label class="label"
+                   for="telephone"><span><?= $block->escapeHtml(__('Phone Number')) ?></span></label>
+            <div class="control">
+                <input type="text" name="telephone"
+                       value="<?= $block->escapeHtml($block->getAddress()->getTelephone()) ?>"
+                       title="<?= $block->escapeHtml(__('Phone Number')) ?>"
+                       class="afd-validate-phone input-text <?= /* @noEscape */
+                       $addressHelper->getAttributeValidationClass('telephone') ?>"
+                       id="telephone"
+                       <?php if ($phoneActive) : ?> data-afd-additional-options="afdPhoneOptions"<?php endif; ?>
+                />
+            </div>
+            <?php endif; ?>
+            <?php if ($addressHelper->isAttributeVisible('fax')) : ?>
+                <div class="field fax">
+                    <label class="label" for="fax"><span><?= $block->escapeHtml(__('Fax')) ?></span></label>
+                    <div class="control">
+                        <input type="text" name="fax" id="fax" title="<?= $block->escapeHtmlAttr(__('Fax')) ?>"
+                               value="<?= $block->escapeHtml($block->getAddress()->getFax()) ?>"
+                               class="input-text <?= /* @noEscape */
+                               $addressHelper->getAttributeValidationClass('fax') ?>"/>
+                    </div>
+                </div>
+            <?php endif; ?>
+    </fieldset>
+    <fieldset class="fieldset">
+        <legend class="legend"><span><?= $block->escapeHtml(__('Address')) ?></span></legend>
+        <br>
+
+        <!-- AFD Country above street option !-->
+        <?php if ($block->getConfig('afd_typeahead/forms/account') == 1 && $block->getConfig('afd_typeahead/fields/countryAboveStreet') == 1) : ?>
+            <div class="field country required">
+                <label class="label" for="country"><span><?= /* @noEscape */
+                        $block->getAttributeData()->getFrontendLabel('country_id') ?></span></label>
+                <div class="control">
+                    <?= $block->getCountryHtmlSelect() ?>
+                </div>
+            </div>
+            <?php if ($block->getConfig('afd_typeahead/countries/useAdvancedCountryControl')): ?>
+            <script type="text/javascript">
+                // Inline implementation of the advanced country control
+                require(['jquery', 'afdCountry', 'domReady!'], function($) {
+                    // Get the country element
+                    const countryElement = document.getElementById('country');
+                    if (!countryElement) return;
+
+                    // Find or create the afd-country-input element
+                    let countryInput = document.querySelector('#country_afd');
+
+                    if (!countryInput) {
+                        // Create the country input element if it doesn't exist
+                        countryInput = document.createElement('afd-country-input');
+                        countryInput.id = 'country_afd';
+
+                        // Insert the country input after the select
+                        countryElement.parentNode.insertBefore(countryInput, countryElement.nextSibling);
+
+                        // Hide the original select
+                        countryElement.style.display = 'none';
+                    }
+
+                    // Get countries from the options in the select
+                    const countries = [];
+                    Array.from(countryElement.options).forEach(option => {
+                        const value = option.value;
+                        const text = option.text;
+
+                        if (value && value.length === 2) {
+                            countries.push({
+                                name: text,
+                                iso2: value,
+                                iso3: value // We don't have ISO3 codes from Magento, so use ISO2
+                            });
+                        }
+                    });
+
+                    // Configure the country control
+                    countryInput.options = {
+                        countries: countries,
+                        defaultCountry: countryElement.value || 'GB',
+                        loadCountriesImmediately: false,
+                        fallbackToDefaultCountries: false
+                    };
+
+                    // Initialize with the current value
+                    if (countryElement.value) {
+                        // Set the initial value of the country input
+                        countryInput.value = countryElement.value;
+                    }
+                });
+            </script>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <!--AFD Typeahead -->
+        <?php if ($block->getConfig('afd_typeahead/forms/account') == 1): ?>
+            <div class="afd-typeahead-container field">
+                <label class="label"><span>Address Search</span></label>
+                <div class="afd-typeahead-field">
+                    <div class="afd-typeahead-query<?php if ($block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?> afd-typeahead-with-reverse-geocode<?php endif ?>">
+                        <?php if ($block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?>
+                            <div class="reverse-geocode-container">
+                                <button class="primary action reverse-geocode-button"
+                                        data-afd-control="reverseGeocodeButton" id="reverseGeocodeButton">
+                                    <span><?php echo $block->getConfig('afd_typeahead/reverseGeocode/buttonText') ?></span>
+                                </button>
+                            </div>
+                        <?php endif ?>
+                        <input
+                                class="input-text"
+                                type="search"
+                                autocomplete="password-new"
+                                data-afd-control="typeahead"
+                                id="typeahead"
+                                placeholder="<?php echo $block->getConfig('afd_typeahead/fields/placeholder') ?>"
+                                name="afd-search-<?php echo rand(); ?>"
+                        >
+                    </div>
+                </div>
+                <?php if ($block->getConfig('afd_typeahead/fields/enableManualEntryButton') == 1): ?>
+                    <div class="afd-manual-input-button"
+                         style="display:none"><?php echo $block->getConfig('afd_typeahead/fields/manualEntryMarkup') ?></div>
+                    <div class="afd-manual-input-search-button"
+                         style="display:none"><?php echo $block->getConfig('afd_typeahead/fields/manualEntrySearchMarkup') ?></div>
+                    <style>
+                        <?php echo $block->getConfig('afd_typeahead/fields/manualEntryCss') ?>
+                    </style>
+                <?php endif ?>
+                <?php if ($block->getConfig('afd_typeahead/fields/enableSearchAgainButton') == 1): ?>
+                    <div class="afd-search-again"
+                         style="display:none"><?php echo $block->getConfig('afd_typeahead/fields/searchAgainMarkup') ?></div>
+                    <style>
+                        <?php echo $block->getConfig('afd_typeahead/fields/searchAgainCss') ?>
+                    </style>
+                <?php endif ?>
+
+            </div>
+        <?php endif; ?>
+        <?php if ($block->getConfig('afd_typeahead/forms/account') == 1 && $block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?>
+            <div class="afd-form-control">
+                <ul data-afd-control="reverseGeocodeResultsList"></ul>
+            </div>
+        <?php endif; ?>
+        <!--/AFD Typeahead-->
+
+        <?php
+        $afdStreetFields = $block->getConfig('afd_typeahead/fields/combineFirstLine') == 1 ? ['Property,Street', 'Locality'] : ['Property', 'Street', 'Locality'];
+        ?>
+        <?php $_streetValidationClass = $addressHelper->getAttributeValidationClass('street'); ?>
+        <div class="field street required">
+            <label for="street_1" class="label"><span><?= /* @noEscape */
+                    $block->getAttributeData()->getFrontendLabel('street') ?></span></label>
+            <div class="control">
+                <input
+                        type="text"
+                        name="street[]"
+                        value="<?= $block->escapeHtml($block->getStreetLine(1)) ?>"
+                        title="<?= $block->escapeHtmlAttr(__('Street Address')) ?>"
+                        id="street_1"
+                        class="input-text <?= /* @noEscape */
+                        $_streetValidationClass ?>"
+                    <?php afdResultFieldAttribute($afdStreetFields[0], $typeaheadActive); ?>
+                />
+                <div class="nested">
+                    <?php $_streetValidationClass = trim(str_replace('required-entry', '', $_streetValidationClass)); ?>
+                    <?php for ($_i = 2, $_n = $addressHelper->getStreetLines(); $_i <= $_n; $_i++) : ?>
+                        <div class="field additional">
+                            <label class="label" for="street_<?= /* @noEscape */
+                            $_i ?>">
+                                <span><?= $block->escapeHtml(__('Street Address %1', $_i)) ?></span>
+                            </label>
+                            <div class="control">
+                                <input type="text"
+                                    <?php afdResultFieldAttribute($afdStreetFields[$_i - 1], $typeaheadActive); ?>
+                                       name="street[]"
+                                       value="<?= $block->escapeHtml($block->getStreetLine($_i)) ?>"
+                                       title="<?= $block->escapeHtmlAttr(__('Street Address %1', $_i)) ?>"
+                                       id="street_<?= /* @noEscape */
+                                       $_i ?>"
+                                       class="input-text <?= /* @noEscape */
+                                       $_streetValidationClass ?>"
+                                />
+                            </div>
+                        </div>
+                    <?php endfor; ?>
+                </div>
+            </div>
+        </div>
+
+        <?php if ($addressHelper->isVatAttributeVisible()) : ?>
+            <div class="field taxvat">
+                <label class="label" for="vat_id"><span><?= /* @noEscape */
+                        $block->getAttributeData()->getFrontendLabel('vat_id') ?></span></label>
+                <div class="control">
+                    <input type="text" name="vat_id"
+                           value="<?= $block->escapeHtml($block->getAddress()->getVatId()) ?>"
+                           title="<?= /* @noEscape */
+                           $block->getAttributeData()->getFrontendLabel('vat_id') ?>"
+                           class="input-text <?= /* @noEscape */
+                           $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('vat_id') ?>"
+                           id="vat_id"/>
+                </div>
+            </div>
+        <?php endif; ?>
+        <div class="field city required">
+            <label class="label" for="city"><span><?= /* @noEscape */
+                    $block->getAttributeData()->getFrontendLabel('city') ?></span></label>
+            <div class="control">
+                <input type="text" name="city" value="<?= $block->escapeHtml($block->getAddress()->getCity()) ?>"
+                       title="<?= /* @noEscape */
+                       $block->getAttributeData()->getFrontendLabel('city') ?>"
+                       class="input-text <?= /* @noEscape */
+                       $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('city') ?>"
+                       id="city" <?php afdResultFieldAttribute("Town", $typeaheadActive); ?> />
+            </div>
+        </div>
+
+        <div class="field region required">
+            <label class="label" for="region_id"><span><?= /* @noEscape */
+                    $block->getAttributeData()->getFrontendLabel('region') ?></span></label>
+            <div class="control">
+                <select id="region_id" name="region_id" title="<?= /* @noEscape */
+                $block->getAttributeData()->getFrontendLabel('region') ?>" class="validate-select region_id"
+                    <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?>
+                        data-afd-result="<?= $block->getConfig('afd_typeahead/fields/afdCounty') ?>">
+                    <option value=""><?= $block->escapeHtml(__('Please select a region, state or province.')) ?></option>
+                </select>
+
+                <input type="text" id="region" name="region" value="<?= $block->escapeHtml($block->getRegion()) ?>"
+                       title="<?= /* @noEscape */
+                       $block->getAttributeData()->getFrontendLabel('region') ?>"
+                       class="input-text <?= /* @noEscape */
+                       $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('region') ?>"
+                       data-afd-result="<?= $block->getConfig('afd_typeahead/fields/afdCounty') ?>"
+                    <?= (!$block->getConfig('general/region/display_all')) ? ' disabled="disabled"' : ''; ?>/>
+            </div>
+        </div>
+
+        <div class="field zip required">
+            <label class="label" for="zip"><span><?= /* @noEscape */
+                    $block->getAttributeData()->getFrontendLabel('postcode') ?></span></label>
+            <div class="control">
+                <input type="text" name="postcode"
+                    <?php afdResultFieldAttribute("Postcode", $typeaheadActive); ?>
+                       value="<?= $block->escapeHtml($block->getAddress()->getPostcode()) ?>"
+                       title="<?= /* @noEscape */
+                       $block->getAttributeData()->getFrontendLabel('postcode') ?>" id="zip"
+                       class="input-text validate-zip-international <?= /* @noEscape */
+                       $this->helper(\Magento\Customer\Helper\Address::class)->getAttributeValidationClass('postcode') ?>"/>
+                <div role="alert" class="message warning" style="display:none">
+                    <span></span>
+                </div>
+            </div>
+        </div>
+
+        <?php if ($block->getConfig('afd_typeahead/forms/account') == 0 || ($block->getConfig('afd_typeahead/forms/account') == 1 && $block->getConfig('afd_typeahead/fields/countryAboveStreet') != 1)): ?>
+            <div class="field country required">
+                <label class="label" for="country"><span><?= /* @noEscape */
+                        $block->getAttributeData()->getFrontendLabel('country_id') ?></span></label>
+                <div class="control">
+                    <?= $block->getCountryHtmlSelect() ?>
+                </div>
+            </div>
+            <?php if ($block->getConfig('afd_typeahead/countries/useAdvancedCountryControl')): ?>
+            <script type="text/javascript">
+                // Inline implementation of the advanced country control
+                require(['jquery', 'afdCountry', 'domReady!'], function($) {
+                    // Get the country element
+                    const countryElement = document.getElementById('country');
+                    if (!countryElement) return;
+
+                    // Find or create the afd-country-input element
+                    let countryInput = document.querySelector('#country_afd');
+
+                    if (!countryInput) {
+                        // Create the country input element if it doesn't exist
+                        countryInput = document.createElement('afd-country-input');
+                        countryInput.id = 'country_afd';
+
+                        // Insert the country input after the select
+                        countryElement.parentNode.insertBefore(countryInput, countryElement.nextSibling);
+
+                        // Hide the original select
+                        countryElement.style.display = 'none';
+                    }
+
+                    // Get countries from the options in the select
+                    const countries = [];
+                    Array.from(countryElement.options).forEach(option => {
+                        const value = option.value;
+                        const text = option.text;
+
+                        if (value && value.length === 2) {
+                            countries.push({
+                                name: text,
+                                iso2: value,
+                                iso3: value // We don't have ISO3 codes from Magento, so use ISO2
+                            });
+                        }
+                    });
+
+                    // Configure the country control
+                    countryInput.options = {
+                        countries: countries,
+                        defaultCountry: countryElement.value || 'GB',
+                        loadCountriesImmediately: false,
+                        fallbackToDefaultCountries: false
+                    };
+
+                    // Add event listener to update the hidden select when the country input changes
+                    countryInput.addEventListener('change', function(event) {
+                        // Update the original select value
+                        countryElement.value = event.target.value;
+
+                        // Create and dispatch a native change event
+                        const changeEvent = new Event('change', { bubbles: true });
+                        countryElement.dispatchEvent(changeEvent);
+
+                        // Also trigger jQuery change event for any jQuery-based listeners
+                        $(countryElement).trigger('change');
+
+                        // Trigger the afd:countryChanged event that other AFD components might be listening for
+                        $(document).trigger('afd:countryChanged', [event.target.value]);
+                    });
+
+                    // Initialize with the current value
+                    if (countryElement.value) {
+                        // Set the initial value of the country input
+                        countryInput.value = countryElement.value;
+                    }
+                });
+            </script>
+            <?php endif; ?>
+        <?php endif; ?>
+
+        <?php $userDefinedAttributes = $block->getLayout()->getBlock('customer_form_address_user_attributes'); ?>
+        <?php if ($userDefinedAttributes) : ?>
+            <?= $userDefinedAttributes->setShowContainer(false)->toHtml() ?>
+        <?php endif; ?>
+        <?php if ($block->isDefaultBilling()) : ?>
+            <div class="message info">
+                <span><?= $block->escapeHtml(__("This is your default billing address.")) ?></span>
+            </div>
+        <?php elseif ($block->canSetAsDefaultBilling()) : ?>
+            <div class="field choice set billing">
+                <input type="checkbox" id="primary_billing" name="default_billing" value="1" class="checkbox"/>
+                <label class="label"
+                       for="primary_billing"><span><?= $block->escapeHtml(__('Use as my default billing address')) ?></span></label>
+            </div>
+        <?php else : ?>
+            <input type="hidden" name="default_billing" value="1"/>
+        <?php endif; ?>
+
+        <?php if ($block->isDefaultShipping()) : ?>
+            <div class="message info">
+                <span><?= $block->escapeHtml(__("This is your default shipping address.")) ?></span>
+            </div>
+        <?php elseif ($block->canSetAsDefaultShipping()) : ?>
+            <div class="field choice set shipping">
+                <input type="checkbox" id="primary_shipping" name="default_shipping" value="1" class="checkbox"/>
+                <label class="label"
+                       for="primary_shipping"><span><?= $block->escapeHtml(__('Use as my default shipping address')) ?></span></label>
+            </div>
+        <?php else : ?>
+            <input type="hidden" name="default_shipping" value="1"/>
+        <?php endif; ?>
+    </fieldset>
+    <?php echo $block->getChildHtml('customer.address.metadata'); ?>
+    <div class="actions-toolbar">
+        <div class="primary">
+            <button type="submit" class="action submit primary" data-action="save-address"
+                    title="<?= $block->escapeHtmlAttr(__('Save Address')) ?>">
+                <span><?= $block->escapeHtml(__('Save Address')) ?></span>
+            </button>
+        </div>
+        <div class="secondary">
+            <a class="action back" href="<?= $block->escapeUrl($block->getBackUrl()) ?>">
+                <span><?= $block->escapeHtml(__('Go back')) ?></span>
+            </a>
+        </div>
+    </div>
+</form>
+
+<script type="text/x-magento-init">
+
+    {
+        "#form-validate": {
+            "addressValidation": {
+                "postCodes": <?= /* @noEscape */
+    $block->getPostCodeConfig()->getSerializedPostCodes(); ?>
+    }
+},
+"#country": {
+    "regionUpdater": {
+        "optionalRegionAllowed": <?= /* @noEscape */
+    ($block->getConfig('general/region/display_all') ? 'true' : 'false') ?>,
+                "regionListId": "#region_id",
+                "regionInputId": "#region",
+                "postcodeId": "#zip",
+                "form": "#form-validate",
+                "regionJson": <?= /* @noEscape */
+    $this->helper(\Magento\Directory\Helper\Data::class)->getRegionJson() ?>,
+                "defaultRegion": "<?= /* @noEscape */
+    $block->getRegionId() ?>",
+                "countriesWithOptionalZip": <?= /* @noEscape */
+    $this->helper(\Magento\Directory\Helper\Data::class)->getCountriesWithOptionalZip(true) ?>
+    }
+}
+}
+
+</script>
+
+<!-- Add CSS for the AFD Country Control -->
+<?php if ($block->getConfig('afd_typeahead/countries/useAdvancedCountryControl')): ?>
+<style>
+    /* Styles for the AFD Country Control */
+    afd-country-input {
+        width: 100%;
+        display: block;
+    }
+
+    /* Match Magento's form field styling */
+    afd-country-input .afd-country-input {
+        height: 32px;
+        padding: 0 9px;
+        border: 1px solid #c2c2c2;
+        border-radius: 1px;
+        font-size: 14px;
+        background-color: #fff;
+    }
+
+    /* Style the dropdown to match Magento's */
+    afd-country-list {
+        border: 1px solid #c2c2c2;
+        border-radius: 1px;
+        box-shadow: 0 3px 3px rgba(0,0,0,0.15);
+    }
+</style>
+<?php endif; ?>
+
+<script>
+    require(['jquery', 'afdPce', 'afdCountryUtils', 'domReady!'], function ($, afdPce, afdCountryUtils) {
+        // Initialize typeahead and reverse geocode button
+        $('#typeahead').afd('typeahead');
+        $('#reverseGeocodeButton').afd('reverseGeocodeButton');
+        
+        // Check if preferred countries are enabled
+        if (afdOptions && 
+            afdOptions.magentoOptions && 
+            afdOptions.magentoOptions.typeahead && 
+            afdOptions.magentoOptions.typeahead.useAdvancedCountryControl) {
+            
+            
+            // Initialize the country control with preferred countries
+            afdCountryUtils.initCountryControl('#country');
+        }
+        
+        $(document).on('afd:populateResultsComplete', function (e) {
+
+            // zip plus 4
+            if (!afdOptions.magentoOptions.typeahead.zipPlusFour && $(afdOptions.country.customCountryControl).val() === 'US') {
+                const originalVal = $('[data-afd-result="Postcode"]').val()
+                $('[data-afd-result="Postcode"]').val(originalVal.substr(0, 5))
+            }
+
+            $(document).on('afd:populateResultsComplete', (e) => {
+                showHideRegion(e, null, $('#form-validate'))
+            });
+
+        });
+    })
+
+
+</script>
+
+<?php if ($phoneActive): ?>
+    <script type="text/javascript">
+        require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd', 'mage/validation'], function ($) {
+
+            const form = $('#form-validate');
+            const $telephone = $('#telephone');
+
+            // Explicitly initialize the phone control
+            if ($telephone.length) {
+                $telephone.afd('phone');
+            }
+
+            $.validator.addMethod(
+                'afd-validate-phone',
+                function (value, element) {
+                    return !(element.className.search('afd-invalid') > -1)
+                },
+                afdOptions.magentoOptions.phone.invalidMessage
+            );
+
+            // Handle form submission to prepend dialing code
+            // Use mousedown to ensure this runs before click handlers
+            $('.form-address-edit .submit').on('mousedown', function (e) {
+                // Get the dial code from the visible element
+                var $dialCodeElement = $('.telephone .iti__selected-dial-code');
+                if ($dialCodeElement.length) {
+                    var dialCode = $dialCodeElement.text().trim();
+                    var currentVal = $telephone.val().trim();
+                    
+                    // Only prepend if the number doesn't already start with + and we have a dial code
+                    if (currentVal && dialCode && currentVal.substring(0, 1) !== '+') {
+                        // Remove dial code if it's already at the start (without +)
+                        var dialCodeWithoutPlus = dialCode.substring(1); // Remove the + from dial code
+                        if (currentVal.indexOf(dialCodeWithoutPlus) === 0) {
+                            currentVal = currentVal.substring(dialCodeWithoutPlus.length).trim();
+                        }
+                        // Set the full international number
+                        $telephone.val(dialCode + ' ' + currentVal);
+                    }
+                }
+            });
+
+        })
+
+    </script>
+
+    <style>
+        .customer-address-form {
+            .afd-loading > div.iti:before,
+            .afd-loading > div.iti:after,
+            .afd-loading > div.control:before,
+            .afd-loading > div.control:after {
+                right: 16px
+            }
+        }
+    </style>
+
+
+<?php endif ?>
+
+
+
+
