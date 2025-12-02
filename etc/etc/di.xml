@@ -1,0 +1,98 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <type name="\Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <plugin name="Afd_Pce_Checkout" type="Afd\Pce\Block\Checkout\TypeAheadProcessor" sortOrder="1"
+                disabled="false"/>
+    </type>
+    <type name="\Magento\CustomerCustomAttributes\Block\Checkout\LayoutProcessor">
+        <plugin name="Afd_Pce_Checkout_Geodemographics" type="Afd\Pce\Block\Checkout\GeodemographicsProcessor" sortOrder="1"
+                disabled="false"/>
+    </type>
+    
+    <!-- Address Metadata Interface Preferences -->
+    <preference for="Afd\Pce\Api\Data\AddressMetadataInterface" type="Afd\Pce\Model\Data\AddressMetadata"/>
+    
+    <!-- Quote Address Metadata Repository -->
+    <virtualType name="AfdQuoteAddressMetadataRepository" type="Afd\Pce\Model\QuoteAddressMetadataRepository">
+        <arguments>
+            <argument name="resource" xsi:type="object">Afd\Pce\Model\ResourceModel\QuoteAddressMetadata</argument>
+            <argument name="quoteAddressMetadataFactory" xsi:type="object">Afd\Pce\Model\QuoteAddressMetadataFactory</argument>
+            <argument name="collectionFactory" xsi:type="object">Afd\Pce\Model\ResourceModel\QuoteAddressMetadata\CollectionFactory</argument>
+            <argument name="searchResultsFactory" xsi:type="object">Magento\Framework\Api\SearchResultsInterfaceFactory</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Order Address Metadata Repository -->
+    <virtualType name="AfdOrderAddressMetadataRepository" type="Afd\Pce\Model\OrderAddressMetadataRepository">
+        <arguments>
+            <argument name="resource" xsi:type="object">Afd\Pce\Model\ResourceModel\OrderAddressMetadata</argument>
+            <argument name="orderAddressMetadataFactory" xsi:type="object">Afd\Pce\Model\OrderAddressMetadataFactory</argument>
+            <argument name="collectionFactory" xsi:type="object">Afd\Pce\Model\ResourceModel\OrderAddressMetadata\CollectionFactory</argument>
+            <argument name="searchResultsFactory" xsi:type="object">Magento\Framework\Api\SearchResultsInterfaceFactory</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Customer Address Metadata Repository -->
+    <virtualType name="AfdCustomerAddressMetadataRepository" type="Afd\Pce\Model\CustomerAddressMetadataRepository">
+        <arguments>
+            <argument name="resource" xsi:type="object">Afd\Pce\Model\ResourceModel\CustomerAddressMetadata</argument>
+            <argument name="customerAddressMetadataFactory" xsi:type="object">Afd\Pce\Model\CustomerAddressMetadataFactory</argument>
+            <argument name="collectionFactory" xsi:type="object">Afd\Pce\Model\ResourceModel\CustomerAddressMetadata\CollectionFactory</argument>
+            <argument name="searchResultsFactory" xsi:type="object">Magento\Framework\Api\SearchResultsInterfaceFactory</argument>
+        </arguments>
+    </virtualType>
+    
+    <!-- Quote to Order Address Converter Plugin -->
+    <type name="Magento\Quote\Model\Quote\Address\ToOrderAddress">
+        <plugin name="afd_pce_quote_to_order_address" type="Afd\Pce\Plugin\Quote\ToOrderAddressPlugin" sortOrder="10"/>
+    </type>
+    
+    <!-- Quote Address to Customer Address Plugin -->
+    <type name="Magento\Quote\Model\Quote\Address">
+        <plugin name="afd_pce_quote_to_customer_address" type="Afd\Pce\Plugin\Customer\QuoteAddressToCustomerAddressPlugin" sortOrder="20"/>
+    </type>
+    
+    <!-- Customer Address Repository Plugin -->
+    <type name="Magento\Customer\Api\AddressRepositoryInterface">
+        <plugin name="afd_pce_customer_address_repository" type="Afd\Pce\Plugin\Customer\AddressRepositoryPlugin" sortOrder="10"/>
+        <plugin name="afd_pce_save_customer_address_metadata" type="Afd\Pce\Plugin\Customer\SaveCustomerAddressMetadataPlugin" sortOrder="20"/>
+    </type>
+    
+    
+    <!-- Shipping Information Management Plugin -->
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="afd_pce_shipping_information_management" type="Afd\Pce\Plugin\Checkout\ShippingInformationManagementPlugin" sortOrder="10"/>
+    </type>
+    
+    <!-- Save Order Address Metadata Plugin -->
+    <type name="Magento\Sales\Api\OrderManagementInterface">
+        <plugin name="afd_pce_save_order_address_metadata" type="Afd\Pce\Plugin\Order\SaveOrderAddressMetadataPlugin" sortOrder="10"/>
+    </type>
+    
+    <!-- Copy Metadata To Billing Plugin (Logged-in customers) -->
+    <type name="Magento\Quote\Api\BillingAddressManagementInterface">
+        <plugin name="afd_pce_copy_metadata_to_billing" type="Afd\Pce\Plugin\Checkout\CopyMetadataToBillingPlugin" sortOrder="10"/>
+    </type>
+    
+    <!-- Strip Extension Attribute from Guest Billing Address (prevents array_diff issues) -->
+    <type name="Magento\Checkout\Model\GuestPaymentInformationManagement">
+        <plugin name="afd_pce_guest_payment_strip_extension" type="Afd\Pce\Plugin\Checkout\GuestPaymentInformationManagementPlugin" sortOrder="1"/>
+        <plugin name="afd_pce_guest_payment_billing_metadata" type="Afd\Pce\Plugin\Checkout\CopyMetadataToBillingPlugin" sortOrder="10"/>
+    </type>
+    
+    <!-- Strip Extension Attribute from Logged-in Billing Address (prevents array_diff issues) -->
+    <type name="Magento\Checkout\Model\PaymentInformationManagement">
+        <plugin name="afd_pce_payment_strip_extension" type="Afd\Pce\Plugin\Checkout\PaymentInformationManagementPlugin" sortOrder="5"/>
+        <plugin name="afd_pce_payment_billing_metadata" type="Afd\Pce\Plugin\Checkout\CopyMetadataToBillingPlugin" sortOrder="10"/>
+    </type>
+    
+    <!-- Address Metadata Repository Interface for Admin Blocks -->
+    <type name="Afd\Pce\Block\Adminhtml\Order\View\AddressMetadata">
+        <arguments>
+            <argument name="orderAddressMetadataRepository" xsi:type="object">AfdOrderAddressMetadataRepository</argument>
+        </arguments>
+    </type>
+    
+    <!-- Address Metadata Repository Interface Preference -->
+    <preference for="Afd\Pce\Api\AddressMetadataRepositoryInterface" type="Afd\Pce\Model\OrderAddressMetadataRepository"/>
+</config>

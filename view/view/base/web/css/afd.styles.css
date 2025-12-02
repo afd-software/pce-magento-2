@@ -1,0 +1,185 @@
+.reverse-geocode-button {
+  margin-bottom: 16px;
+}
+
+.geodemographic-input {
+  display: none !important;
+}
+
+.afd-typeahead-query {
+  display: flex;
+}
+
+.afd-typeahead-query input {
+  flex-grow: 1;
+}
+
+.afd-typeahead-with-reverse-geocode.afd-typeahead-query input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+button.reverse-geocode-button {
+  height: 32px;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+button.reverse-geocode-button > span {
+  white-space: nowrap;
+}
+
+button.reverse-geocode-button > span svg {
+  fill: white;
+}
+
+#address-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2em;
+  font-family: Arial, sans-serif;
+  color: #2c3c5b;
+}
+
+#address-container .address-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 200px;
+}
+
+#address-container .address-field input {
+  padding: 0.5em;
+}
+
+#address-container .address-field input:focus {
+  border: #03a29a solid 2px;
+  outline: #03a29a;
+}
+
+#address-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 2em;
+  font-family: Arial, sans-serif;
+  color: #2c3c5b;
+}
+
+#address-container .address-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-width: 200px;
+}
+
+#address-container .address-field input {
+  padding: 0.5em;
+}
+
+#address-container .address-field input:focus {
+  border: #03a29a solid 2px;
+  outline: #03a29a;
+}
+
+afd-typeahead {
+  position: relative;
+  color: #2c3c5b;
+}
+
+afd-typeahead > input {
+  padding: 0.5em;
+  min-width: 300px;
+}
+
+afd-typeahead > input:focus {
+  border: #03a29a solid 2px;
+  outline: #03a29a;
+}
+
+afd-typeahead > afd-typeahead-utility {
+  margin-top: 0.5em;
+}
+
+afd-typeahead > afd-typeahead-utility:hover {
+  color: #03a29a;
+}
+
+afd-typeahead > afd-typeahead-results {
+  position: absolute;
+  margin-right: 0.5em;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.2);
+  min-width: 500px;
+}
+
+.field-afd_typeahead {
+  z-index: 1000;
+}
+
+.afd-near,
+.afd-distance {
+  display: block;
+  margin-left: 0.75em;
+  padding: 0.25em 0;
+  font-size: 0.75em;
+}
+
+.afd-typeahead-container.result .afd-typeahead-list {
+  max-height: 205px;
+  overflow-y: scroll;
+}
+.sales-order-address .afd-typeahead-list,
+.modal-slide #customer-new-adddress .afd-typeahead-list {
+  margin-left: calc( (100%) * .25 + 30px );
+  margin-top:30px;
+  width: calc( (100%) * 0.5 - 30px );
+}
+
+.sales-order-address .afd-typeahead-container {
+  margin-bottom: 0;
+}
+
+.sales-order-address .afd-manual-input-button,
+.sales-order-address .afd-manual-input-search-button,
+.sales-order-address .afd-search-again,
+.modal-slide .afd-manual-input-button,
+.modal-slide .afd-manual-input-search-button,
+.modal-slide .afd-search-again {
+  margin-left: calc( (100%) * .25 + 8px);
+}
+
+.admin__page-section.order-addresses  .afd-typeahead-list {
+  margin-left: 30px;
+  width: calc(100% - 30px);
+  margin-top: -1px;
+}
+
+body .newsletter .afd-loading > div.control::after {
+  top: 16px !important;
+}
+
+/* Styles for the AFD Country Control */
+afd-country-input {
+  width: 100%;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Match Magento's admin form field styling */
+afd-country-input .afd-country-input {
+  height: 33px;
+  padding: 4px 9px;
+  border: 1px solid #adadad;
+  border-radius: 1px;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+/* Style the dropdown to match Magento's */
+afd-country-list {
+  border: 1px solid #adadad;
+  border-radius: 1px;
+  box-shadow: 0 3px 3px rgba(0,0,0,0.15);
+  z-index: 1000;
+}

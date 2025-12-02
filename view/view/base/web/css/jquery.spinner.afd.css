@@ -1,0 +1,47 @@
+.afd-loading {
+  position: relative;
+}
+
+.afd-loading > div.iti:before,
+.afd-loading > div.iti:after,
+.afd-loading > div.control:before,
+.afd-loading > div.control:after {
+  transition:
+    all 0s linear,
+    opacity 0.2s ease;
+  position: absolute;
+  z-index: 3;
+  content: '';
+  top: 16px;
+  right: 48px;
+  margin-top: -0.675rem;
+  width: 1.35rem;
+  height: 1.35rem;
+  box-sizing: border-box;
+  border-radius: 500rem;
+  border-style: solid;
+  border-width: 0.1em;
+}
+.afd-loading > div.iti:before {
+  border-color: rgba(0, 0, 0, 0.35);
+}
+.afd-loading > div.iti:after {
+  animation: button-spin 0.6s linear;
+  animation-iteration-count: infinite;
+  border-color: #fff transparent transparent;
+  box-shadow: 0 0 0 1px transparent;
+}
+
+@keyframes button-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.afd-loading > div.control:before,
+.afd-loading > div.control:after {
+  top: 16px !important;
+}

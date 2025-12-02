@@ -1,0 +1,97 @@
+.categorised-metadata-fields {
+    margin-bottom: 20px;
+}
+
+.metadata-category {
+    margin-bottom: 10px;
+    border: 1px solid #e3e3e3;
+    border-radius: 4px;
+}
+
+.category-header {
+    padding: 10px;
+    background: #f1f1f1;
+    cursor: pointer;
+    border-radius: 4px 4px 0 0;
+}
+
+.category-toggle {
+    display: inline-block;
+    width: 20px;
+    font-weight: bold;
+}
+
+.category-fields {
+    padding: 10px;
+    border-top: 1px solid #e3e3e3;
+}
+
+.field-option {
+    margin-bottom: 5px;
+    padding-left: 20px;
+    position: relative;
+}
+
+/* Tooltip Styles */
+.field-option {
+    position: relative;
+}
+
+.field-info {
+    position: relative;
+    display: inline-block;
+}
+
+.field-tooltip {
+    position: absolute;
+    z-index: 100;
+    display: none;
+    width: 250px;
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    left: 20px;  /* Position to the right of the info icon */
+    top: 20px;   /* Position below the info icon */
+}
+
+.field-info {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    color: white;
+    margin-left: 5px;
+    cursor: help;
+    font-size: 12px;
+}
+
+.field-option {
+    padding: 4px 0;
+}
+
+.field-option:hover .field-tooltip {
+    display: block;
+}
+.categorised-metadata-fields .field-option { position: relative; }
+.categorised-metadata-fields .field-info {
+    position: relative;
+    display: inline-block;
+    margin-left: 5px;
+    cursor: help;
+}
+.categorised-metadata-fields .field-tooltip {
+    display: none;
+    position: absolute;
+    background: #f8f8f8;
+    color: #303030;
+    border: 1px solid #ccc;
+    padding: 10px;
+    width: 250px;
+    z-index: 100;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    left: 20px;  /* Position to the right of the info icon */
+    top: 20px;   /* Position below the info icon */
+}

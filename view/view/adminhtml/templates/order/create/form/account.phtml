@@ -1,0 +1,96 @@
+<?php
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+
+/** @var $block \Magento\Sales\Block\Adminhtml\Order\Create\Form\Account */
+?>
+
+<div class="admin__page-section-title <?= $block->escapeHtmlAttr($block->getHeaderCssClass()) ?>">
+    <span class="title"><?= $block->escapeHtml($block->getHeaderText()) ?></span>
+    <div class="actions"></div>
+</div>
+<div id="customer_account_fields" class="admin__page-section-content" data-mage-init='{"Afd_Pce/js/order/create/form-init": {"accountFieldsId": "customer_account_fields"}}'>
+    <?= $block->getForm()->getHtml() ?>
+</div>
+
+
+<?php
+// there are two different versions of this base file depending on the magento version 'account'phtml'
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+$version = $productMetadata->getVersion();
+
+?>
+<div class="afd-typeahead-container field admin__field" id="billing-typeahead" style="display:none;" data-mage-init='{"Afd_Pce/js/order/create/typeahead": {}, "Afd_Pce/js/order/create/country": {}, "Afd_Pce/js/order/create/phone-init": {}}'>
+    <div class="admin__field-label">
+        <label><span>Address Search</span></label>
+    </div>
+    <div class="afd-typeahead-field admin__field-control">
+        <div class="afd-typeahead-query">
+            <input
+                    class="input-text"
+                    id="afd-billing-typeahead"
+                    type="search"
+                    autocomplete="password-new"
+                    name="afd-search"
+            >
+        </div>
+    </div>
+</div>
+
+
+<div class="afd-typeahead-container field admin__field" id="shipping-typeahead" style="display:none;">
+    <div class="admin__field-label">
+        <label><span>Address Search</span></label>
+    </div>
+    <div class="afd-typeahead-field admin__field-control">
+        <div class="afd-typeahead-query">
+            <input
+                    class="input-text"
+                    id="afd-shipping-typeahead"
+                    type="search"
+                    autocomplete="password-new"
+                    name="afd-search"
+            >
+        </div>
+    </div>
+</div>
+
+<div id="shipping-manual-input" class="afd-manual-input-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually
+</div>
+<div id="shipping-manual-input-search" class="afd-manual-input-search-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address
+</div>
+<div id="shipping-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">
+    Search Again
+</div>
+<style class="afd-manual-input-style"></style>
+<style class="afd-search-again-style"></style>
+<div for="telephone" generated="true" id="afd-shipping-phone-error" class="afd-error mage-error">Please enter a valid
+    phone number
+</div>
+
+<div id="billing-manual-input" class="afd-manual-input-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Input Manually
+</div>
+<div id="billing-manual-input-search" class="afd-manual-input-search-button"
+     style="display:none; margin-bottom:16px; margin-top: -24px">Search for Address
+</div>
+<div id="billing-search-again" class="afd-search-again" style="display:none; margin-bottom:16px; margin-top: -24px">
+    Search Again
+</div>
+<style class="afd-manual-input-style"></style>
+<style class="afd-search-again-style"></style>
+<div for="telephone" generated="true" id="afd-billing-phone-error" class="afd-error mage-error">Please enter a valid
+    phone number
+</div>
+
+<style>
+    .afd-padding-fix {padding-left: 85px !important}
+    .afd-loading > div.iti:before, .afd-loading > div.iti:after, .afd-loading > div.control:before, .afd-loading > div.control:after {
+        right: 8px
+    }
+</style>

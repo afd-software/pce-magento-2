@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright  Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<csp_whitelist xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Csp/etc/csp_whitelist.xsd">
+    <policies>
+        <policy id="script-src">
+            <values>
+                <!--Google-->
+                <value id="google" type="host" >www.google.com</value>
+
+                <!--AFD-->
+                <value id="afd" type="host">*.afd.co.uk</value>
+                <value id="jsdelivr" type="host">*.jsdelivr.net</value>
+            </values>
+        </policy>
+        <policy id="img-src">
+            <values>
+                <!--AFD-->
+                <value id="afd" type="host">*.afd.co.uk</value>
+            </values>
+        </policy>
+        <policy id="connect-src">
+            <values>
+                <value id="afd" type="host">*.afd.co.uk</value>
+            </values>
+        </policy>
+    </policies>
+</csp_whitelist>
