@@ -74,11 +74,8 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                        class="afd-validate-phone input-text <?= /* @noEscape */
                        $addressHelper->getAttributeValidationClass('telephone') ?>"
                        id="telephone"
-                       data-afd-control="phone"
-                       data-afd-additional-options="afdPhoneOptions"
+                       <?php if ($phoneActive) : ?> data-afd-additional-options="afdPhoneOptions"<?php endif; ?>
                 />
-                <div for="telephone" generated="true"
-                     class="afd-error mage-error"><?php echo $block->getConfig('afd_phone/fields/msg'); ?></div>
             </div>
             <?php endif; ?>
             <?php if ($addressHelper->isAttributeVisible('fax')) : ?>
@@ -106,6 +103,60 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                     <?= $block->getCountryHtmlSelect() ?>
                 </div>
             </div>
+            <?php if ($block->getConfig('afd_typeahead/countries/useAdvancedCountryControl')): ?>
+            <script type="text/javascript">
+                // Inline implementation of the advanced country control
+                require(['jquery', 'afdCountry', 'domReady!'], function($) {
+                    // Get the country element
+                    const countryElement = document.getElementById('country');
+                    if (!countryElement) return;
+
+                    // Find or create the afd-country-input element
+                    let countryInput = document.querySelector('#country_afd');
+
+                    if (!countryInput) {
+                        // Create the country input element if it doesn't exist
+                        countryInput = document.createElement('afd-country-input');
+                        countryInput.id = 'country_afd';
+
+                        // Insert the country input after the select
+                        countryElement.parentNode.insertBefore(countryInput, countryElement.nextSibling);
+
+                        // Hide the original select
+                        countryElement.style.display = 'none';
+                    }
+
+                    // Get countries from the options in the select
+                    const countries = [];
+                    Array.from(countryElement.options).forEach(option => {
+                        const value = option.value;
+                        const text = option.text;
+
+                        if (value && value.length === 2) {
+                            countries.push({
+                                name: text,
+                                iso2: value,
+                                iso3: value // We don't have ISO3 codes from Magento, so use ISO2
+                            });
+                        }
+                    });
+
+                    // Configure the country control
+                    countryInput.options = {
+                        countries: countries,
+                        defaultCountry: countryElement.value || 'GB',
+                        loadCountriesImmediately: false,
+                        fallbackToDefaultCountries: false
+                    };
+
+                    // Initialize with the current value
+                    if (countryElement.value) {
+                        // Set the initial value of the country input
+                        countryInput.value = countryElement.value;
+                    }
+                });
+            </script>
+            <?php endif; ?>
         <?php endif; ?>
 
         <!--AFD Typeahead -->
@@ -125,7 +176,7 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                         <input
                                 class="input-text"
                                 type="search"
-                                autocomplete="off"
+                                autocomplete="password-new"
                                 data-afd-control="typeahead"
                                 id="typeahead"
                                 placeholder="<?php echo $block->getConfig('afd_typeahead/fields/placeholder') ?>"
@@ -160,7 +211,7 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
         <!--/AFD Typeahead-->
 
         <?php
-        $afdStreetFields = $addressHelper->getStreetLines() == 2 ? ['Property,Street', 'Locality'] : ['Property', 'Street', 'Locality'];
+        $afdStreetFields = $block->getConfig('afd_typeahead/fields/combineFirstLine') == 1 ? ['Property,Street', 'Locality'] : ['Property', 'Street', 'Locality'];
         ?>
         <?php $_streetValidationClass = $addressHelper->getAttributeValidationClass('street'); ?>
         <div class="field street required">
@@ -277,6 +328,76 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                     <?= $block->getCountryHtmlSelect() ?>
                 </div>
             </div>
+            <?php if ($block->getConfig('afd_typeahead/countries/useAdvancedCountryControl')): ?>
+            <script type="text/javascript">
+                // Inline implementation of the advanced country control
+                require(['jquery', 'afdCountry', 'domReady!'], function($) {
+                    // Get the country element
+                    const countryElement = document.getElementById('country');
+                    if (!countryElement) return;
+
+                    // Find or create the afd-country-input element
+                    let countryInput = document.querySelector('#country_afd');
+
+                    if (!countryInput) {
+                        // Create the country input element if it doesn't exist
+                        countryInput = document.createElement('afd-country-input');
+                        countryInput.id = 'country_afd';
+
+                        // Insert the country input after the select
+                        countryElement.parentNode.insertBefore(countryInput, countryElement.nextSibling);
+
+                        // Hide the original select
+                        countryElement.style.display = 'none';
+                    }
+
+                    // Get countries from the options in the select
+                    const countries = [];
+                    Array.from(countryElement.options).forEach(option => {
+                        const value = option.value;
+                        const text = option.text;
+
+                        if (value && value.length === 2) {
+                            countries.push({
+                                name: text,
+                                iso2: value,
+                                iso3: value // We don't have ISO3 codes from Magento, so use ISO2
+                            });
+                        }
+                    });
+
+                    // Configure the country control
+                    countryInput.options = {
+                        countries: countries,
+                        defaultCountry: countryElement.value || 'GB',
+                        loadCountriesImmediately: false,
+                        fallbackToDefaultCountries: false
+                    };
+
+                    // Add event listener to update the hidden select when the country input changes
+                    countryInput.addEventListener('change', function(event) {
+                        // Update the original select value
+                        countryElement.value = event.target.value;
+
+                        // Create and dispatch a native change event
+                        const changeEvent = new Event('change', { bubbles: true });
+                        countryElement.dispatchEvent(changeEvent);
+
+                        // Also trigger jQuery change event for any jQuery-based listeners
+                        $(countryElement).trigger('change');
+
+                        // Trigger the afd:countryChanged event that other AFD components might be listening for
+                        $(document).trigger('afd:countryChanged', [event.target.value]);
+                    });
+
+                    // Initialize with the current value
+                    if (countryElement.value) {
+                        // Set the initial value of the country input
+                        countryInput.value = countryElement.value;
+                    }
+                });
+            </script>
+            <?php endif; ?>
         <?php endif; ?>
 
         <?php $userDefinedAttributes = $block->getLayout()->getBlock('customer_form_address_user_attributes'); ?>
@@ -311,6 +432,7 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
             <input type="hidden" name="default_shipping" value="1"/>
         <?php endif; ?>
     </fieldset>
+    <?php echo $block->getChildHtml('customer.address.metadata'); ?>
     <div class="actions-toolbar">
         <div class="primary">
             <button type="submit" class="action submit primary" data-action="save-address"
@@ -355,17 +477,51 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
 
 </script>
 
+<!-- Add CSS for the AFD Country Control -->
+<?php if ($block->getConfig('afd_typeahead/countries/useAdvancedCountryControl')): ?>
+<style>
+    /* Styles for the AFD Country Control */
+    afd-country-input {
+        width: 100%;
+        display: block;
+    }
+
+    /* Match Magento's form field styling */
+    afd-country-input .afd-country-input {
+        height: 32px;
+        padding: 0 9px;
+        border: 1px solid #c2c2c2;
+        border-radius: 1px;
+        font-size: 14px;
+        background-color: #fff;
+    }
+
+    /* Style the dropdown to match Magento's */
+    afd-country-list {
+        border: 1px solid #c2c2c2;
+        border-radius: 1px;
+        box-shadow: 0 3px 3px rgba(0,0,0,0.15);
+    }
+</style>
+<?php endif; ?>
+
 <script>
-    require(['jquery', 'afdPce', 'domReady!'], function ($) {
+    require(['jquery', 'afdPce', 'afdCountryUtils', 'domReady!'], function ($, afdPce, afdCountryUtils) {
+        // Initialize typeahead and reverse geocode button
         $('#typeahead').afd('typeahead');
         $('#reverseGeocodeButton').afd('reverseGeocodeButton');
-        $('#country').on('change', function () {
-            window.setTimeout(function () {
-                $('#typeahead').afd('typeahead');
-                $('#reverseGeocodeButton').afd('reverseGeocodeButton');
-            }, 50)
-        });
-
+        
+        // Check if preferred countries are enabled
+        if (afdOptions && 
+            afdOptions.magentoOptions && 
+            afdOptions.magentoOptions.typeahead && 
+            afdOptions.magentoOptions.typeahead.useAdvancedCountryControl) {
+            
+            
+            // Initialize the country control with preferred countries
+            afdCountryUtils.initCountryControl('#country');
+        }
+        
         $(document).on('afd:populateResultsComplete', function (e) {
 
             // zip plus 4
@@ -389,17 +545,12 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
         require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd', 'mage/validation'], function ($) {
 
             const form = $('#form-validate');
+            const $telephone = $('#telephone');
 
-            form.validation({
-                submitHandler: function (form) {
-                    var phone = intlTelInputGlobals.instances[0].getNumber(1);
-                    $('#telephone').val(phone); // Update the phone input
-
-                    // Submit the form
-                    form.submit();
-                }
-            })
-
+            // Explicitly initialize the phone control
+            if ($telephone.length) {
+                $telephone.afd('phone');
+            }
 
             $.validator.addMethod(
                 'afd-validate-phone',
@@ -409,26 +560,43 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                 afdOptions.magentoOptions.phone.invalidMessage
             );
 
-            $('.form-address-edit .submit')
-                .off('mousedown.afd')
-                .on('mousedown.afd', function () {
-                    $('.telephone > .control > .iti').each(function () {
-                        var $input = $(this).find('.input-text').first();
-                        if ($input.val().substring(0, 1) === '+') {
-                            const currentNumber = $input.val()
-                            $input.val(currentNumber.replace(/^\+\d+ /, ''))
+            // Handle form submission to prepend dialing code
+            // Use mousedown to ensure this runs before click handlers
+            $('.form-address-edit .submit').on('mousedown', function (e) {
+                // Get the dial code from the visible element
+                var $dialCodeElement = $('.telephone .iti__selected-dial-code');
+                if ($dialCodeElement.length) {
+                    var dialCode = $dialCodeElement.text().trim();
+                    var currentVal = $telephone.val().trim();
+                    
+                    // Only prepend if the number doesn't already start with + and we have a dial code
+                    if (currentVal && dialCode && currentVal.substring(0, 1) !== '+') {
+                        // Remove dial code if it's already at the start (without +)
+                        var dialCodeWithoutPlus = dialCode.substring(1); // Remove the + from dial code
+                        if (currentVal.indexOf(dialCodeWithoutPlus) === 0) {
+                            currentVal = currentVal.substring(dialCodeWithoutPlus.length).trim();
                         }
-                        var dailCode = $(this).find('.iti__selected-dial-code').first().text();
-                        if ($input.val().substring(0, dailCode.length) !== dailCode) {
-                            $input.val(dailCode + ' ' + $input.val());
-                            $input.triggerHandler('change');
-                        }
-                    })
-                })
+                        // Set the full international number
+                        $telephone.val(dialCode + ' ' + currentVal);
+                    }
+                }
+            });
 
         })
 
     </script>
+
+    <style>
+        .customer-address-form {
+            .afd-loading > div.iti:before,
+            .afd-loading > div.iti:after,
+            .afd-loading > div.control:before,
+            .afd-loading > div.control:after {
+                right: 16px
+            }
+        }
+    </style>
+
 
 <?php endif ?>
 

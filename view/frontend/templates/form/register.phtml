@@ -179,8 +179,7 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
                        value="<?= $block->escapeHtmlAttr($block->getFormData()->getEmail()) ?>"
                        title="<?= $block->escapeHtmlAttr(__('Email')) ?>" class="input-text"
                        data-mage-init='{"mage/trim-input":{}}'
-                       data-validate="{required:true, 'validate-email':true<?php echo $emailActive ? ", 'afdEmailCheck': true" : "" ?>} " <?php echo $emailActive ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ?>>
-                <div for="email" generated="true" class="mage-error afd-error" >Please enter a valid email address.</div>
+                       data-validate="{required:true, 'validate-email':true<?php echo $emailActive ? ", 'afdEmailCheck': true" : "" ?>} " <?php echo $emailActive ? 'data-afd-additional-options="afdEmailOptions"'  : "" ?>>
             </div>
         </div>
 
@@ -293,16 +292,72 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
 </script>
 <?php if($emailActive): ?>
 <script type="text/javascript">
-    require(['jquery', 'mage/validation', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
+    require(['jquery', 'mage/validation', 'afdPce'], function ($) {
+        window.afdEmailOptions = {};
+        
+        <?php if($block->getConfig('afd_email/account/useDefaultCredentials') == 0): ?>
+            <?php if($block->getConfig('afd_email/account/authMethod') == "id"): ?>
+                afdEmailOptions.pceUrl = '<?php echo $block->getConfig('afd_email/account/idPceUrl'); ?>';
+                afdEmailOptions.id = '<?php echo $block->getConfig('afd_email/account/id'); ?>';
+                afdEmailOptions.token = '<?php echo $block->getConfig('afd_email/account/token'); ?>';
+                afdEmailOptions.serial = null;
+                afdEmailOptions.password = null;
+            <?php else: ?>
+                afdEmailOptions.pceUrl = '<?php echo $block->getConfig('afd_email/account/serialPceUrl'); ?>';
+                afdEmailOptions.serial = '<?php echo $block->getConfig('afd_email/account/serial'); ?>';
+                afdEmailOptions.password = '<?php echo $block->getConfig('afd_email/account/password'); ?>';
+                afdEmailOptions.id = null;
+                afdEmailOptions.token = null;
+            <?php endif; ?>
+        <?php endif; ?>
+        console.log(window.afdEmailOptions)
+        $('#email_address').afd('email')
+
+
+
+        let validationTimeout;
+        const VALIDATION_TIMEOUT_MS = 10000; // 10 seconds
+        
         $.validator.addMethod("afdEmailCheck", function(value, element) {
-            return $(element).data('afd-email-valid');
+            const isValid = $(element).data('afd-email-valid');
+            // If validation hasn't completed yet, consider it valid to prevent blocking
+            return isValid !== false;
         }, afdOptions.email.invalidEmailMessage);
+        
         $('#email_address').on('afd:emailValidationUpdatedFocusOut',function(e, $el) {
-      
-           $el.data('afd-email-valid',
+            clearTimeout(validationTimeout);
+            
+            $el.data('afd-email-valid',
                 $el.data('email-is-afd-valid')
                 && $el.data('email-syntax-valid')
             ).valid();
+        });
+        
+        // Add timeout handler to prevent indefinite blocking
+        $(document).on('afd:emailValidationStarted', function(e, el) {
+            const $el = $(el);
+            
+            clearTimeout(validationTimeout);
+            validationTimeout = setTimeout(function() {
+                // If validation hasn't completed after timeout, re-enable form
+                console.warn('Email validation timed out after ' + VALIDATION_TIMEOUT_MS + 'ms');
+                $el.closest('form').find('button').attr('disabled', false);
+                $el.closest('.afd-loading').removeClass('afd-loading');
+            }, VALIDATION_TIMEOUT_MS);
+        });
+        
+        // Clear timeout on success
+        $(document).on('afd:emailValidationSuccess', function() {
+            clearTimeout(validationTimeout);
+        });
+        
+        // Handle validation errors gracefully
+        $(document).on('afd:emailValidationError', function(e, error) {
+            clearTimeout(validationTimeout);
+            console.error('Email validation error:', error);
+            // Re-enable form on error
+            $('#email_address').closest('form').find('button').attr('disabled', false);
+            $('#email_address').closest('.afd-loading').removeClass('afd-loading');
         });
 
     })

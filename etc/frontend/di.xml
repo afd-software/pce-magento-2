@@ -5,13 +5,15 @@
         <arguments>
             <argument name="configProviders" xsi:type="array">
                 <item name="afd_pce_config_provider" xsi:type="object">Afd\Pce\Model\ConfigProvider</item>
+                <item name="afd_pce_customer_address_metadata_config_provider" xsi:type="object">Afd\Pce\Model\Checkout\CustomerAddressMetadataConfigProvider</item>
             </argument>
         </arguments>
     </type>
 
-    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
-        <plugin name="afd_shipping_renderer_condition"
-                type="Afd\Pce\Plugin\Checkout\AddressInformationProcessor"
-                sortOrder="10"/>
+    <!-- Plugin to capture address metadata during checkout -->
+    <type name="Magento\Checkout\Model\ShippingInformationManagement">
+        <plugin name="afd_pce_shipping_information_management" 
+                type="Afd\Pce\Plugin\Checkout\ShippingInformationManagementPlugin" 
+                sortOrder="10" />
     </type>
 </config>

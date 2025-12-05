@@ -39,4 +39,31 @@ class Afd extends \Magento\Framework\View\Element\Template
         return $this->cspNonceProvider->generateNonce();
     }
 
+    /**
+     * Get serialized config value and unserialize it
+     *
+     * @param string $path
+     * @return array
+     */
+    public function getSerializedConfig($path) {
+        $value = $this->helperData->getConfigValue($path);
+        $result = [];
+
+        if ($value) {
+            // Try to unserialize the data
+            $unserializedData = @unserialize($value);
+
+            // If unserialization failed, try to decode as JSON
+            if ($unserializedData === false && is_string($value)) {
+                $unserializedData = json_decode($value, true);
+            }
+
+            if (is_array($unserializedData)) {
+                $result = $unserializedData;
+            }
+        }
+
+        return $result;
+    }
+
 }

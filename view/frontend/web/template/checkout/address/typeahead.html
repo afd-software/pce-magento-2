@@ -1,38 +1,54 @@
 <div class="afd-typeahead-container field" afterRender="afdInit">
-
-    <label class="label"><span>Address Search</span></label>
-    <div class="afd-typeahead-field">
-        <div class="afd-typeahead-query" data-bind="attr: { class: checkBool('reverseGeocodeEnable') ? 'afd-typeahead-query afd-typeahead-with-reverse-geocode' : 'afd-typeahead-query' }">
-            <!-- ko if: checkBool('reverseGeocodeEnable') -->
-            <div class="reverse-geocode-container">
-                <button type="button" class="primary action reverse-geocode-button" data-afd-control="reverseGeocode">
-                    <span data-bind="html: getConfig('reverseGeocodeText')"></span>
-                </button>
-            </div>
-            <!-- /ko -->
-            <input
-                    class="input-text"
-                    type="search"
-                    autocomplete="off"
-                    data-afd-control="typeahead"
-                    data-bind="attr: {placeholder: getConfig('placeholder')}"
-                    name="afd-search"
-            >
-        </div>
+  <label class="label"><span>Address Search</span></label>
+  <div class="afd-typeahead-field">
+    <div
+      class="afd-typeahead-query"
+      data-bind="attr: { class: checkBool('reverseGeocodeEnable') ? 'afd-typeahead-query afd-typeahead-with-reverse-geocode' : 'afd-typeahead-query' }"
+    >
+      <!-- ko if: checkBool('reverseGeocodeEnable') -->
+      <div class="reverse-geocode-container">
+        <button
+          type="button"
+          class="primary action reverse-geocode-button"
+          data-afd-control="reverseGeocode"
+        >
+          <span data-bind="html: getConfig('reverseGeocodeText')"></span>
+        </button>
+      </div>
+      <!-- /ko -->
+      <input
+        class="input-text"
+        type="search"
+        autocomplete="off"
+        data-afd-control="typeahead"
+        data-bind="attr: {placeholder: getConfig('placeholder')}"
+        name="afd-search"
+      />
     </div>
-    <div class="afd-typeahead-error afd-error"></div>
-    <!-- ko if: checkBool('enableManualEntryButton') -->
-    <div class="afd-manual-input-button" data-bind="html: getConfig('manualEntryMarkup')"></div>
-    <div class="afd-manual-input-search-button" style="display:none"
-         data-bind="html: getConfig('manualEntrySearchMarkup')"></div>
-    <style data-bind="text: getConfig('manualEntryCss')"></style>
-    <!-- /ko -->
-    <!-- ko if: checkBool('enableSearchAgainButton') -->
-    <div class="afd-search-again" style="display:none" data-bind="html: getConfig('searchAgainMarkup')"></div>
-    <style data-bind="text: getConfig('searchAgainCss')"></style>
-    <!-- /ko -->
+  </div>
+  <div class="afd-typeahead-error afd-error"></div>
+  <!-- ko if: checkBool('enableManualEntryButton') -->
+  <div
+    class="afd-manual-input-button"
+    data-bind="html: getConfig('manualEntryMarkup')"
+  ></div>
+  <div
+    class="afd-manual-input-search-button"
+    style="display: none"
+    data-bind="html: getConfig('manualEntrySearchMarkup')"
+  ></div>
+  <style data-bind="text: getConfig('manualEntryCss')"></style>
+  <!-- /ko -->
+  <!-- ko if: checkBool('enableSearchAgainButton') -->
+  <div
+    class="afd-search-again"
+    style="display: none"
+    data-bind="html: getConfig('searchAgainMarkup')"
+  ></div>
+  <style data-bind="text: getConfig('searchAgainCss')"></style>
+  <!-- /ko -->
 </div>
 
 <div class="afd-form-control">
-    <ul data-afd-control="reverseGeocodeResultsList" style="display:none"></ul>
+  <ul data-afd-control="reverseGeocodeResultsList" style="display: none"></ul>
 </div>

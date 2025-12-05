@@ -5,6 +5,7 @@
             <module name="Magento_CustomerCustomAttributes" />
             <module name="Magento_Customer" />
             <module name="Magento_Sales" />
+            <module name="Magento_PaymentServicesPaypal" />
         </sequence>
     </module>
 </config>

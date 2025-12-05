@@ -7,75 +7,105 @@
  * @api
  */
 define([
-    'Magento_Ui/js/form/element/abstract',
-    'jquery',
-    'Magento_Checkout/js/model/quote',
-    'afdPce'
-], function (Element, $, quote ) {
-    'use strict';
+  'Magento_Ui/js/form/element/abstract',
+  'jquery',
+  'Magento_Checkout/js/model/quote',
+  'uiRegistry',
+  'afdPce'
+], function (Element, $, quote, registry) {
+  'use strict'
 
-    return Element.extend({
+  return Element.extend({
+    /**
+     * Invokes initialize method of parent class,
+     * contains initialization logic
+     */
+    initialize: function () {
+      this._super()
+      return this
+    },
 
-        /**
-         * Invokes initialize method of parent class,
-         * contains initialization logic
-         */
-        initialize: function () {
-            this._super();
-            return this;
-        },
+    afdInit: function (target) {
+      if (
+        afdOptions.magentoOptions.phone.phoneEnabled &&
+        afdOptions.magentoOptions.phone.loggedOutCheckoutEnabled
+      ) {
+        // Wait for country field to be ready before initializing phone
+        this.waitForCountryField().then(() => {
+          this.initPhoneField(target)
+        })
+      }
+    },
 
-        afdInit: function(target) {
+    /**
+     * Wait for country field component to be registered
+     * Returns a promise that resolves when country field is ready
+     */
+    waitForCountryField: function () {
+      return new Promise((resolve) => {
+        // Try to get the country field component
+        const countryFieldName = this.parentName + '.country_id'
 
-            if(afdOptions.magentoOptions.phone.phoneEnabled && afdOptions.magentoOptions.phone.loggedOutCheckoutEnabled) {
+        registry.get(countryFieldName, function (countryComponent) {
+          // Country component is ready
+          resolve(countryComponent)
+        })
+      })
+    },
 
-                // todo fix this
-                if (typeof window.intlTelInputUtils === 'undefined') {
-                    window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
-                        .then(function(){
-                            var pn = $('#telephone').val();
-                            $(target)
-                                .addClass('afd-padding-fix')
-                                .afd('phone')
-                                .closest('div')
-                                .siblings('.afd-error')
-                                .find('span')
-                                .text(afdOptions.magentoOptions.phone.invalidMessage)
-                                .val(pn);
-                        });
-                } else {
-                    var pn = $('#telephone').val();
-                    $(target)
-                        .addClass('afd-padding-fix')
-                        .afd('phone')
-                        .closest('div')
-                        .siblings('.afd-error')
-                        .find('span')
-                        .text(afdOptions.magentoOptions.phone.invalidMessage)
-                        .val(pn);
+    /**
+     * Initialize the phone field with AFD controls
+     */
+    initPhoneField: function (target) {
+      const phoneNumber = $('#telephone').val()
+      $(target)
+        .addClass('afd-padding-fix')
+        .afd('phone')
+        .closest('div')
+        .siblings('.afd-error')
+        .find('span')
+        .text(afdOptions.magentoOptions.phone.invalidMessage)
+        .val(phoneNumber)
 
-                }
-                // todo got to be a better way to do this
-                $(document).on('afd:phoneValidationStarted', function() {
-                    $('.action-save-address, .action-update').on('mousedown', function() {
-                        mousedownHandler();
-                    })
-                });
+      // Prepend dial code on form submission
+      const prependDialCode = () => {
+        $('.iti').each(function () {
+          const $input = $(this).find('.input-text')
+          const dialCode = $(this)
+            .find('.iti__selected-dial-code')
+            .text()
+            .trim()
+          let currentVal = $input.val().trim()
 
-                function mousedownHandler() {
-                    $('.iti').each(function(){
-                        var $input = $(this).find('.input-text');
-                        var dailCode = $(this).find('.iti__selected-dial-code').text();
-                        if ($input.val().substring(0, dailCode.length) !== dailCode ) {
-                            $input.val(dailCode + ' ' + $input.val());
-                            $input.triggerHandler('change');
-                        }
-                    })
-                }
-
-
+          // Only prepend if the number doesn't already start with + and we have a dial code
+          if (currentVal && dialCode && currentVal.substring(0, 1) !== '+') {
+            // Remove dial code if it's already at the start (without +)
+            const dialCodeWithoutPlus = dialCode.substring(1) // Remove the + from dial code
+            if (currentVal.indexOf(dialCodeWithoutPlus) === 0) {
+              currentVal = currentVal
+                .substring(dialCodeWithoutPlus.length)
+                .trim()
             }
-        }
+            // Set the full international number
+            $input.val(dialCode + ' ' + currentVal)
+            $input.triggerHandler('change')
+          }
+        })
+      }
 
-    });
-});
+      // Attach to mousedown to ensure this runs before click handlers
+      $(document).on(
+        'mousedown',
+        '.action-save-address, .action-update, button[data-role="opc-continue"]',
+        prependDialCode
+      )
+      $(document).on('afd:phoneValidationStarted', () => {
+        $(document).on(
+          'mousedown',
+          '.action-save-address, .action-update, button[data-role="opc-continue"]',
+          prependDialCode
+        )
+      })
+    }
+  })
+})

@@ -6,34 +6,33 @@
 /**
  * @api
  */
-define([
-    'Magento_Ui/js/form/element/post-code',
-    'ko'
-], function (Postcode, ko) {
-    'use strict';
+define(['Magento_Ui/js/form/element/post-code', 'ko'], function (Postcode, ko) {
+  'use strict'
 
-    return Postcode.extend({
+  return Postcode.extend({
+    defaults: {
+      exports: {
+        fieldReady: '${ $.parentName }:fieldReady'
+      }
+    },
 
-        defaults: {
-            exports: {
-                fieldReady: '${ $.parentName }:fieldReady'
-            }
-        },
+    fieldReady: ko.observable(''),
 
-        fieldReady: ko.observable(''),
+    initialize: function (config) {
+      this._super()
 
-        initialize: function (config) {
-            this._super();
+      this.parentName = config.parentName
 
-            this.parentName = config.parentName;
+      return this
+    },
 
-            return this;
-        },
-
-        afterRender: function (el) {
-            // notify parent that field is rendered and let it know name
-            this.fieldReady({name: this.index, element: el, parentName: this.parentName});
-        }
-
-    });
-});
+    afterRender: function (el) {
+      // notify parent that field is rendered and let it know name
+      this.fieldReady({
+        name: this.index,
+        element: el,
+        parentName: this.parentName
+      })
+    }
+  })
+})

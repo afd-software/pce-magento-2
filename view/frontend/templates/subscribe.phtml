@@ -33,9 +33,7 @@ $emailAcive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getCo
                                placeholder="<?= $block->escapeHtml(__('Enter your email address')) ?>"
                                data-mage-init='{"mage/trim-input":{}}'
                                data-validate="{required:true, 'validate-email':true}"
-                               <?php echo $emailAcive ? 'data-afd-control="email" data-afd-additional-options="afdEmailOptions" ' : "" ; ?>
                         />
-                        <div for="newsletter" generated="true" class="mage-error afd-error" ><?php echo $block->getConfig('afd_email/fields/msg'); ?></div>
                     </label>
                 </div>
             </div>
@@ -51,10 +49,25 @@ $emailAcive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getCo
     </div>
 </div>
 <?php if($block->getConfig('afd_email/forms/newsletter') == 1) : ?>
-<script type="text/javascript" nonce="<?php echo $block->getNonce(); ?>">
-    require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
-        $('#newsletter').afd('email');
-    })
+<script type="text/x-magento-init">
+{
+    "#newsletter": {
+        "Afd_Pce/js/newsletter-email": {
+            "useDefaultCredentials": <?= $block->getConfig('afd_email/account/useDefaultCredentials') == 0 ? 'false' : 'true' ?>
+            <?php if($block->getConfig('afd_email/account/useDefaultCredentials') == 0): ?>
+            <?php if($block->getConfig('afd_email/account/authMethod') == "id"): ?>
+            ,"pceUrl": "<?= $block->escapeJs($block->getConfig('afd_email/account/idPceUrl')) ?>"
+            ,"id": "<?= $block->escapeJs($block->getConfig('afd_email/account/id')) ?>"
+            ,"token": "<?= $block->escapeJs($block->getConfig('afd_email/account/token')) ?>"
+            <?php else: ?>
+            ,"pceUrl": "<?= $block->escapeJs($block->getConfig('afd_email/account/serialPceUrl')) ?>"
+            ,"serial": "<?= $block->escapeJs($block->getConfig('afd_email/account/serial')) ?>"
+            ,"password": "<?= $block->escapeJs($block->getConfig('afd_email/account/password')) ?>"
+            <?php endif; ?>
+            <?php endif; ?>
+        }
+    }
+}
 </script>
 
 <style>

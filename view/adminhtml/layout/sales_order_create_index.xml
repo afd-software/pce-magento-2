@@ -7,11 +7,19 @@
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <css src="Afd_Pce::css/jquery.typeahead.afd.css"/>
-        <css src="Afd_Pce::css/jquery.phone.afd.css"/>
-
-    </head>
+    <body>
+        <referenceContainer name="head.additional">
+            <block
+                    class="Afd\Pce\Block\Adminhtml\Css"
+                    name="afd.admin.css"
+                    before="-"
+            >
+                <arguments>
+                    <argument name="page" xsi:type="string">adminOrder</argument>
+                </arguments>
+            </block>
+        </referenceContainer>
+    </body>
     <body>
         <referenceBlock name="after.body.start">
             <block class="Afd\Pce\Block\Afd" name="afd.config" template="Afd_Pce::afd_options.phtml" />

@@ -58,8 +58,12 @@
                 <zipPlusFour>1</zipPlusFour>
                 <combineFirstLine>1</combineFirstLine>
                 <crownDependencies>0</crownDependencies>
+                <regionFieldRemoved>0</regionFieldRemoved>
             </fields>
             <countries>
+                <useAdvancedCountryControl>0</useAdvancedCountryControl>
+                <usePreferredCountries>0</usePreferredCountries>
+                <preferredCountriesCount>5</preferredCountriesCount>
                 <typeaheadCountries>GG,IM,JE,GB</typeaheadCountries>
             </countries>
             <quantity>
@@ -83,6 +87,8 @@
             </what3words>
             <advanced>
                 <enterpriseEdition>1</enterpriseEdition>
+                <customPCESearchParams>a:0:{}</customPCESearchParams>
+                <customPCEParams>a:0:{}</customPCEParams>
                 <enableLegacyGeodeomographics>1</enableLegacyGeodeomographics>
                 <customCountryCredentials>0</customCountryCredentials>
                 <customCountryCredentialsUK>0</customCountryCredentialsUK>

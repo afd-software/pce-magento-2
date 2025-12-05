@@ -36,10 +36,7 @@ $phoneActive = $scopeConfig->getValue('afd_phone/enable/enable') == 1 && $scopeC
             <div class="control">
                 <input name="email" id="email" title="<?= $block->escapeHtmlAttr(__('Email')) ?>"
                        value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('email') ?: $this->helper(\Magento\Contact\Helper\Data::class)->getUserEmail()) ?>"
-                       class="input-text" type="email" data-validate="{required:true, 'validate-email':true}"
-                       data-afd-additional-options="afdEmailOptions"/>
-                <div for="email" generated="true"
-                     class="afd-error mage-error"><?php echo $scopeConfig->getValue('afd_email/fields/msg'); ?></div>
+                       class="input-text" type="email" data-validate="{required:true, 'validate-email':true}"/>
             </div>
         </div>
         <div class="field telephone">
@@ -47,10 +44,7 @@ $phoneActive = $scopeConfig->getValue('afd_phone/enable/enable') == 1 && $scopeC
             <div class="control">
                 <input name="telephone" id="telephone" title="<?= $block->escapeHtmlAttr(__('Phone Number')) ?>"
                        value="<?= $block->escapeHtmlAttr($this->helper(\Magento\Contact\Helper\Data::class)->getPostValue('telephone')) ?>"
-                       class="afd-validate-phone input-text" type="text" data-afd-additional-options="afdPhoneOptions"
-                       data-afd-control="phone"/>
-                <div for="telephone" generated="true"
-                     class="afd-error mage-error"><?php echo $scopeConfig->getValue('afd_phone/fields/msg'); ?></div>
+                       class="afd-validate-phone input-text" type="text"/>
             </div>
         </div>
         <div class="field comment required">
@@ -84,7 +78,11 @@ $phoneActive = $scopeConfig->getValue('afd_phone/enable/enable') == 1 && $scopeC
 <?php if ($emailActive): ?>
     <script type="text/javascript">
         require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($) {
-            $('#email').afd('email');
+
+
+            
+            // Initialize AFD email validation, passing options directly
+            $('#email').afd('email', { ...window.afdOptions, ...(window.afdEmailOptions || {}) });
         })
     </script>
 <?php endif ?>
@@ -92,7 +90,11 @@ $phoneActive = $scopeConfig->getValue('afd_phone/enable/enable') == 1 && $scopeC
 <?php if ($phoneActive): ?>
     <script type="text/javascript">
         require(['jquery', 'afdPce', 'domReady!app/Afd/Pce/view/base/templates/afd', 'mage/validation'], function ($) {
+            // Initialize phone validation with options
             const $phone = $('#telephone')
+            
+            $phone.afd('phone', { ...window.afdOptions, ...(window.afdPhoneOptions || {}) })
+
             const $error = $phone.closest('.iti').siblings('.afd-error')
             $(document).on('afd:validateComplete', (e, {valid}) => {
                 valid ? $error.hide() : $error.show()

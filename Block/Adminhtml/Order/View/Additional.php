@@ -11,6 +11,14 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
     private $_addressInformation;
 
     private $_customer;
+    
+    /**
+     * Flag to determine if geodemographics should be shown
+     * This is set via layout XML
+     *
+     * @var bool
+     */
+    private $afdShowGeoDemographics = true;
 
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -37,11 +45,11 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
 
 
 
-        $cus = $this->_customer
+        $customer = $this->_customer
             ->setWebsiteId(null)
             ->loadByEmail($_order->getCustomerEmail());
 
-        // $logger->info($cus->getId());
+        // $logger->info($customer->getId());
 
         $address = null;
 
@@ -54,7 +62,7 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
         if(!$address){
             return null;
         }
-        return $cus->getAddressById($address->getCustomerAddressId());
+        return $customer->getAddressById($address->getCustomerAddressId());
 
     }
 
@@ -103,5 +111,46 @@ class Additional extends \Magento\Sales\Block\Adminhtml\Order\AbstractOrder
         return $result;
 
     }
+    
+    /**
+     * Check if geodemographics section should be displayed
+     *
+     * @return bool
+     */
+    public function shouldShowGeoDemographics(): bool
+    {
+        // If afd_show_geodemographics is explicitly set to false by layout XML, don't show
+        if ($this->hasData('afd_show_geodemographics') && $this->getData('afd_show_geodemographics') === false) {
+            return false;
+        }
+        
+        // Check if address metadata display is enabled in config
+        $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+        $scopeConfig = $objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $isAddressMetadataEnabled = $scopeConfig->isSetFlag(
+            'afd_typeahead/metadata/display_in_admin',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        
+        // If address metadata is enabled, don't show geodemographics
+        if ($isAddressMetadataEnabled) {
+            return false;
+        }
+        
+        return true;
+    }
 
+    /**
+     * Before rendering HTML, check if we should show this block
+     *
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        if (!$this->shouldShowGeoDemographics()) {
+            return '';
+        }
+        
+        return parent::_toHtml();
+    }
 }

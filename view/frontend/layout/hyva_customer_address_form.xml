@@ -6,8 +6,8 @@
     </head>
     <referenceBlock name="head.components">
         <referenceBlock name="afd.typeahead" remove="true"/>
-        <referenceBlock name="afd.phonerr" remove="true"/>
-        <block name="afd.alpine" template="Afd_Pce::hyva/afdAlpine.phtml"/>
+        <referenceBlock name="afd.phone" remove="true"/>
+        <block name="afd.alpine" template="Afd_Pce::hyva/afdAlpine.phtml" before="alpine"/>
         <block class="Afd\Pce\Block\Afd" name="afd.hyva.options" template="Afd_Pce::hyva/hyvaOptions.phtml"
                after="afd.options"
         />

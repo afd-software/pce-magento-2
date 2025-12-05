@@ -4,7 +4,11 @@
  * See COPYING.txt for license details.
  */
 -->
-<input class="input-text" type="text" autocomplete="off" data-bind="
+<input
+  class="input-text"
+  type="text"
+  autocomplete="off"
+  data-bind="
     value: value,
     valueUpdate: 'keyup',
     hasFocus: focused,
@@ -17,4 +21,5 @@
         id: uid,
         disabled: disabled,
         'data-afd-result': afdOptions.magentoOptions.typeahead.afdCounty
-    }, afterRender: afterRender" />
+    }, afterRender: afterRender"
+/>

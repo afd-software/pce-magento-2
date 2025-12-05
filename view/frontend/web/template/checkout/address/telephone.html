@@ -4,7 +4,10 @@
  * See COPYING.txt for license details.
  */
 -->
-<input class="input-text" type="text" data-bind="
+<input
+  class="input-text"
+  type="text"
+  data-bind="
     value: value,
     valueUpdate: 'keyup',
     hasFocus: focused,
@@ -17,15 +20,15 @@
         id: uid,
         disabled: disabled
     }"
-    data-afd-control="phone"
-    data-afd-additional-options="afdPhoneOptions"
-    afterRender="afdInit"
+  data-afd-control="phone"
+  data-afd-additional-options="afdPhoneOptions"
+  afterRender="afdInit"
 />
 <div class="afd-error field-error">
-    <span></span>
+  <span></span>
 </div>
 <style>
-    .afd-padding-fix {
-        padding-left: 90px !important;
-    }
+  .afd-padding-fix {
+    padding-left: 90px !important;
+  }
 </style>

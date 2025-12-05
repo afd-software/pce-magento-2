@@ -2,7 +2,7 @@
 
 namespace Afd\Pce\Model\Config\Source;
 
-class Authentication implements \Magento\Framework\Option\ArrayInterface
+class Authentication implements \Magento\Framework\Data\OptionSourceInterface
 {
 
     public function toOptionArray()

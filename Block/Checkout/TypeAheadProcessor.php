@@ -114,8 +114,15 @@ class TypeAheadProcessor
             $addressFieldset['region_id']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/region';
 
             // set country component
-            $addressFieldset['country_id']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/select';
-            $addressFieldset['country_id']['config']['template'] = 'Afd_Pce/checkout/address/field';
+            if ($this->_scopeConfig->getValue('afd_typeahead/countries/useAdvancedCountryControl', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {
+                // Use advanced country control
+                $addressFieldset['country_id']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/country';
+                $addressFieldset['country_id']['config']['template'] = 'Afd_Pce/checkout/address/country';
+            } else {
+                // Use default select component
+                $addressFieldset['country_id']['component'] = 'Afd_Pce/js/checkout/' . $addressType . '/select';
+                $addressFieldset['country_id']['config']['template'] = 'Afd_Pce/checkout/address/field';
+            }
 
         }
         if($this->_scopeConfig->getValue('afd_phone/forms/checkout', \Magento\Store\Model\ScopeInterface::SCOPE_STORE) == 1) {

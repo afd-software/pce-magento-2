@@ -86,11 +86,34 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                     </span>
             </label>
             <div class="control">
-                <?php $countries = $block
+                <?php 
+                $countries = $block
                     ->getCountryCollection()
                     ->setForegroundCountries($directoryViewModel->getTopCountryCodes())
                     ->toOptionArray();
+                $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+                $scopeConfig = $objectManager->get(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+                $useAdvancedCountryControl = $scopeConfig->getValue('afd_typeahead/countries/useAdvancedCountryControl', \Magento\Store\Model\ScopeInterface::SCOPE_STORE);
                 ?>
+                
+                <?php if ($useAdvancedCountryControl): ?>
+                <!-- Advanced country control -->
+                <script>
+                    // Set country options immediately - afdOptions should be defined by afd_options.phtml
+                    window.afdCountryOptions = {
+                        defaultCountry: '<?= $escaper->escapeJs($block->getCountryId() ?: 'GB') ?>',
+                        pceURL: typeof afdOptions !== 'undefined' ? afdOptions.pceUrl : '',
+                        id: typeof afdOptions !== 'undefined' ? afdOptions.id : '',
+                        token: typeof afdOptions !== 'undefined' ? afdOptions.token : '',
+                        serial: typeof afdOptions !== 'undefined' ? afdOptions.serial : '',
+                        password: typeof afdOptions !== 'undefined' ? afdOptions.password : '',
+                        mostUsedCountries: afdOptions?.magentoOptions?.typeahead?.preferredCountriesCount ? afdOptions.magentoOptions.typeahead.preferredCountriesCount : 0
+                    };
+                    console.log('Country control options:', window.afdCountryOptions);
+                </script>
+                <div x-data x-afd-country="afdCountryOptions"></div>
+                <?php endif; ?>
+                
                 <select name="country_id"
                         id="country"
                         title="Country"
@@ -98,7 +121,9 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                         class="form-select"
                         x-ref="country_id"
                         @input.debounce="changeCountry"
-                        x-afd-country
+                        <?php if ($useAdvancedCountryControl): ?>
+                        style="display: none;"
+                        <?php endif; ?>
                 >
                     <?php foreach ($countries as $country): ?>
                         <option name="<?= /** @noEscape */
@@ -440,5 +465,6 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
 
             return true;
         });
+
     })
 </script>

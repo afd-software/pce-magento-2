@@ -97,7 +97,7 @@
                 </field>
                 <field id="adminOrder" translate="label" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Admin - Create Order</label>
+                    <label>Admin - Create/Edit Order</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
@@ -228,11 +228,42 @@
                         is from one of these countries.
                     </comment>
                 </field>
+                <field id="regionFieldRemoved" translate="label" type="select" sortOrder="180" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Region field removed</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Some themes manually remove the region field from the checkout. Set this to true if this is the case.</comment>
+                </field>
             </group>
             <group id="countries" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Country Configuration</label>
-                <field id="typeaheadCountries" translate="label" type="multiselect" sortOrder="1" showInDefault="1"
+                <field id="useAdvancedCountryControl" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Use Advanced Country Control</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Override the Magento native country control with an advanced version that has extra features like prioritising most used countries and searching.</comment>
+                </field>
+                <field id="usePreferredCountries" translate="label" type="select" sortOrder="2" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Use Preferred Countries</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Prioritise commonly used countries at the top of the country list.</comment>
+                    <depends>
+                        <field id="useAdvancedCountryControl">1</field>
+                    </depends>
+                </field>
+                <field id="preferredCountriesCount" translate="label" type="text" sortOrder="3" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Number of Preferred Countries</label>
+                    <comment>The number of preferred countries to display at the top of the list. Default is 5.</comment>
+                    <validate>validate-number validate-greater-than-zero</validate>
+                    <depends>
+                        <field id="useAdvancedCountryControl">1</field>
+                        <field id="usePreferredCountries">1</field>
+                    </depends>
+                </field>
+                <field id="typeaheadCountries" translate="label" type="multiselect" sortOrder="10" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Which countries should typeahead be activated on?</label>
                     <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
@@ -377,14 +408,27 @@
                     </depends>
                 </field>
             </group>
-            <group id="advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
+            <group id="advanced" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Advanced Options</label>
+                <field id="debug_mode" translate="label" type="select" sortOrder="5" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Enable Debug Logging</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enable detailed logging for address metadata operations. Logs will appear in system.log (backend) and browser console (frontend).</comment>
+                </field>
                 <field id="enterpriseEdition" translate="label" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="1"
                        showInStore="1">
                     <label>Enterprise Edition</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="customPCEParams" translate="label" type="text" sortOrder="14" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Custom PCE Parameters</label>
+                    <frontend_model>Afd\Pce\Block\Adminhtml\Form\Field\CustomParams</frontend_model>
+                    <backend_model>Magento\Config\Model\Config\Backend\Serialized\ArraySerialized</backend_model>
+                    <comment>Add custom parameters to be included in PCE requests. If empty, no additional parameters will be added.</comment>
                 </field>
                 <field id="enableLegacyGeodeomographics" translate="label" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="1"
@@ -494,6 +538,43 @@
                         <field id="afd_general/account/method">id</field>
                         <field id="customCountryCredentials">1</field>
                         <field id="customCountryCredentialsUS">1</field>
+                    </depends>
+                </field>
+            </group>
+            <group id="metadata" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Address Metadata</label>
+                <comment>Configure which additional metadata fields to capture from the AFD PCE API response</comment>
+                <field id="enabled" translate="label" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Enable Address Metadata Capture</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="capture_fields" translate="label" type="text" sortOrder="20" showInDefault="1"
+                        showInWebsite="1" showInStore="1">
+                    <label>Metadata Fields to Capture</label>
+                    <frontend_model>Afd\Pce\Block\Adminhtml\Form\Field\CategorisedMetadataFieldset</frontend_model>
+                    <comment>Select which metadata fields to capture from the AFD PCE API response. Select "All Fields" to capture any field returned by the API.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="display_in_admin" translate="label" type="select" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Display in Admin Order View</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Display captured metadata in the admin order view</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="display_in_packingslip" translate="label" type="select" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Display in Packing Slip</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Display captured metadata in the packing slip PDF</comment>
+                    <depends>
+                        <field id="enabled">1</field>
                     </depends>
                 </field>
             </group>

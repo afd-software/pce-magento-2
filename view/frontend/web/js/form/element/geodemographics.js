@@ -1,52 +1,48 @@
-define([
-    'Magento_Ui/js/form/element/abstract'
-], function (Component, $) {
-    'use strict';
+define(['Magento_Ui/js/form/element/abstract'], function (Component) {
+  'use strict'
 
-    return Component.extend({
+  return Component.extend({
+    initialize: function () {
+      this._super()
+      return this
+    },
 
-        initialize: function () {
-            this._super();
-            return this;
-        },
+    getAfdFieldName: function () {
+      var fieldName = this.inputName.substr(21).slice(0, -1)
 
+      var replacements = [
+        'nhs',
+        'iso',
+        'dps',
+        'udprn',
+        'pct',
+        'lea',
+        'tv',
+        'soa',
+        'eer',
+        'uprn',
+        'sic',
+        'id'
+      ]
 
-        getAfdFieldName: function () {
+      for (var i = 0; i < replacements.length; i++) {
+        fieldName = fieldName.replace(
+          '_' + replacements[i],
+          '_' + replacements[i].toUpperCase()
+        )
+      }
 
-            var fieldName = this.inputName.substr(21).slice(0, -1);
+      fieldName = this.snakeToCamel(fieldName)
 
-            var replacements = [
-                'nhs',
-                'iso',
-                'dps',
-                'udprn',
-                'pct',
-                'lea',
-                'tv',
-                'soa',
-                'eer',
-                'uprn',
-                'sic',
-                'id'
-            ];
+      fieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1)
 
-            for (var i = 0; i < replacements.length; i++) {
-                fieldName = fieldName.replace('_' + replacements[i], '_' + replacements[i].toUpperCase());
-            }
+      return fieldName
+    },
 
-            fieldName = this.snakeToCamel(fieldName);
-
-            fieldName = fieldName.charAt(0).toUpperCase() + fieldName.slice(1);
-
-            return fieldName;
-
-        },
-
-            snakeToCamel: function (s) {
-            return s.replace(/(\_\w)/g, function (m) {
-                return m[1].toUpperCase();
-            });
-        }
-
-    });
-});
+    snakeToCamel: function (s) {
+      return s.replace(/(\w)/g, function (m) {
+        return m[1].toUpperCase()
+      })
+    }
+  })
+})

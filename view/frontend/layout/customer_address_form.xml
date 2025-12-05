@@ -7,9 +7,9 @@
         <css src="Afd_Pce::css/jquery.spinner.afd.css"/>
         <css src="Afd_Pce::css/jquery.result.list.afd.css"/>
         <css src="Afd_Pce::css/afd.styles.css"/>
+        <css src="Afd_Pce::css/address-metadata.css"/>
     </head>
     <referenceContainer name="head.components">
-
         <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"
                before="customer_address_edit"
         />
@@ -23,6 +23,12 @@
             <action method="setTemplate">
                 <argument name="template" xsi:type="string">Afd_Pce::customerAddressEdit.phtml</argument>
             </action>
+            <!-- Add the address metadata block -->
+            <block class="Afd\Pce\Block\Customer\Address\Metadata" 
+                   name="customer.address.metadata" 
+                   template="Afd_Pce::customer/address/metadata.phtml"
+                   after="-"
+                   ifconfig="afd_typeahead/metadata/enabled" />
         </referenceBlock>
 
         <referenceBlock name="customer_form_address_user_attributes">

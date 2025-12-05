@@ -5,11 +5,17 @@
             <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"
                    before="customer_address_edit"
             />
+            <block class="Afd\Pce\Block\Afd" name="afd.email" template="Afd_Pce::email.phtml"
+                   after="afd.options" ifconfig="afd_email/forms/checkout"
+            />
             <block class="Afd\Pce\Block\Afd" name="afd.typeahead" template="Afd_Pce::typeahead.phtml"
                    after="afd.config"
                    ifconfig="afd_typeahead/forms/checkout"/>
             <block class="Afd\Pce\Block\Afd" name="afd.phone" template="Afd_Pce::phone.phtml"
                    after="afd.config" ifconfig="afd_phone/forms/checkout"
+            />
+            <block class="Afd\Pce\Block\Afd" name="afd.country" template="Afd_Pce::country.phtml"
+                   after="afd.config" ifconfig="afd_typeahead/countries/useAdvancedCountryControl"
             />
         </referenceBlock>
         <referenceBlock name="checkout.root">
@@ -24,9 +30,14 @@
                                             <item name="children" xsi:type="array">
                                                 <item name="shippingAddress" xsi:type="array">
                                                     <item name="children" xsi:type="array">
+                                                        <item name="shipping-address-fieldset" xsi:type="array">
+                                                            <item name="children" xsi:type="array">
+                                                            </item>
+                                                            <item name="component" xsi:type="string">Magento_Ui/js/form/components/group</item>
+                                                        </item>
                                                         <item name="customer-email" xsi:type="array">
                                                             <item name="component" xsi:type="string">
-                                                                Afd_Pce/js/form/element/email
+                                                                Afd_Pce/js/checkout/email
                                                             </item>
                                                         </item>
                                                         <item name="address-list" xsi:type="array">
@@ -44,7 +55,16 @@
                                                     <item name="children" xsi:type="array">
                                                         <item name="customer-email" xsi:type="array">
                                                             <item name="component" xsi:type="string">
-                                                                Afd_Pce/js/form/element/email
+                                                                Afd_Pce/js/checkout/email
+                                                            </item>
+                                                        </item>
+                                                        <item name="afterMethods" xsi:type="array">
+                                                            <item name="children" xsi:type="array">
+                                                                <item name="billing-address-fieldset" xsi:type="array">
+                                                                    <item name="children" xsi:type="array">
+                                                                    </item>
+                                                                    <item name="component" xsi:type="string">Magento_Ui/js/form/components/group</item>
+                                                                </item>
                                                             </item>
                                                         </item>
                                                     </item>

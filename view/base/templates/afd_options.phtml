@@ -71,7 +71,7 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010703',
+        platformVersion: 'mag010801',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
             pushUp: true,
@@ -95,7 +95,49 @@
             regionMap: regionMap,
             afterRetrieveHideResultsList: true,
             requiredSelector: '.required-entry, ._required',
-            extraPCERetrieveParams: '<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies')?>' === '1' ? {crownCountry: '1'} : {},
+            extraPCESearchParams: {
+                <?php
+                // Create search params as a JavaScript object with key-value pairs
+                $customParams = $block->getSerializedConfig('afd_typeahead/advanced/customPCEParams');
+                $outputLines = [];
+
+                if (is_array($customParams)) {
+                    foreach ($customParams as $param) {
+                        if (isset($param['param_name']) && isset($param['param_value']) && $param['param_name'] !== '') {
+                            // Format as JavaScript object property
+                            $outputLines[] = "'{$param['param_name']}': '{$param['param_value']}'";
+                        }
+                    }
+                }
+
+                echo implode(",\n                ", $outputLines);
+                ?>
+            },
+            extraPCERetrieveParams: {
+                <?php
+                // Create retrieve params as a JavaScript object with key-value pairs
+                $outputLines = [];
+
+                // Add crown dependencies parameter if enabled
+                if ($block->getConfig('afd_typeahead/fields/crownDependencies') == '1') {
+                    $outputLines[] = "'crownCountry': '1'";
+                }
+
+                // Add custom parameters from admin configuration
+                $customParams = $block->getSerializedConfig('afd_typeahead/advanced/customPCEParams');
+
+                if (is_array($customParams)) {
+                    foreach ($customParams as $param) {
+                        if (isset($param['param_name']) && isset($param['param_value']) && $param['param_name'] !== '') {
+                            // Format as JavaScript object property
+                            $outputLines[] = "'{$param['param_name']}': '{$param['param_value']}'";
+                        }
+                    }
+                }
+
+                echo implode(",\n                ", $outputLines);
+                ?>
+            },
             w3wMode: <?php echo $block->getConfig('afd_typeahead/what3words/mode');?>,
             w3wNear: '<?php echo $block->getConfig('afd_typeahead/what3words/near');?>' === '1',
             w3wNearTemplate: '<?php echo $block->getConfig('afd_typeahead/what3words/nearTemplate');?>',
@@ -138,6 +180,10 @@
         typeahead: {
             adminEditCustomerEnabled: <?php echo $block->getConfig('afd_typeahead/forms/adminCustomer'); ?> === 1,
             adminCreateOrderEnabled: <?php echo $block->getConfig('afd_typeahead/forms/adminOrder'); ?> === 1,
+            useAdvancedCountryControl: <?php echo $block->getConfig('afd_typeahead/countries/useAdvancedCountryControl'); ?> === 1,
+            usePreferredCountries: <?php echo $block->getConfig('afd_typeahead/countries/usePreferredCountries'); ?> === 1,
+            preferredCountriesCount: <?php echo (int)$block->getConfig('afd_typeahead/countries/preferredCountriesCount') ?: 5; ?>,
+            defaultCountry: '<?php echo $block->getConfig('general/country/default') ?: 'GB'; ?>',
             crownCountries: <?php echo $block->getConfig('afd_typeahead/fields/crownDependencies'); ?> === 1,
             zipPlusFour: <?php echo $block->getConfig('afd_typeahead/fields/zipPlusFour'); ?> === 1,
             afdCounty: '<?php echo $block->getConfig('afd_typeahead/fields/afdCounty'); ?>',
@@ -153,7 +199,8 @@
             customCountryCredentialsUSID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSID'); ?>',
             customCountryCredentialsUSToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsUSToken'); ?>',
             customCountryCredentialsIEID: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEID'); ?>',
-            customCountryCredentialsIEToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEToken'); ?>'
+            customCountryCredentialsIEToken: '<?php echo $block->getConfig('afd_typeahead/advanced/customCountryCredentialsIEToken'); ?>',
+            regionFieldRemoved: <?php echo $block->getConfig('afd_typeahead/fields/regionFieldRemoved'); ?> === 1
         },
         email: {
             emailEnabled: <?php echo $block->getConfig('afd_email/enable/enable'); ?> === 1,

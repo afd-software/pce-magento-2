@@ -6,9 +6,49 @@
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="admin-2columns-left" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Afd_Pce::css/address_metadata.css"/>
+    </head>
     <body>
+        <!-- Add geodemographics block only if enterprise edition is enabled -->
         <referenceBlock name="order_additional_info">
-                <block class="Afd\Pce\Block\Adminhtml\Order\View\Additional"  name="afd.geodemographics" template="Afd_Pce::admin_geodemographics.phtml" ifconfig="afd_typeahead/advanced/enterpriseEdition" />
+            <block class="Afd\Pce\Block\Adminhtml\Order\View\Additional" 
+                   name="afd.geodemographics" 
+                   template="Afd_Pce::admin_geodemographics.phtml" 
+                   ifconfig="afd_typeahead/advanced/enterpriseEdition" />
+        </referenceBlock>
+        
+        <!-- Add address metadata section only if enabled in config -->
+        <referenceBlock name="order_additional_info">
+            <block class="Magento\Framework\View\Element\Template" 
+                   name="address.metadata.wrapper" 
+                   template="Afd_Pce::order/view/metadata_wrapper.phtml"
+                   ifconfig="afd_typeahead/metadata/display_in_admin">
+                <container name="address.metadata.content" htmlTag="div" htmlClass="admin__page-section-content">
+                    <!-- Billing address metadata -->
+                    <container name="billing.address.metadata.wrapper" htmlTag="div" htmlClass="admin__page-section-item order-billing-address">
+                        <block class="Magento\Framework\View\Element\Text" name="billing.address.metadata.title">
+                            <arguments>
+                                <argument name="text" xsi:type="string" translate="true"><![CDATA[<div class="admin__page-section-item-title"><span class="title">Billing Address Metadata</span></div>]]></argument>
+                            </arguments>
+                        </block>
+                        <container name="billing.address.metadata.content" htmlTag="div" htmlClass="admin__page-section-item-content">
+                            <block class="Afd\Pce\Block\Adminhtml\Order\View\AddressMetadata" name="billing_address.metadata" template="Afd_Pce::order/view/address_metadata.phtml" />
+                        </container>
+                    </container>
+                    <!-- Shipping address metadata -->
+                    <container name="shipping.address.metadata.wrapper" htmlTag="div" htmlClass="admin__page-section-item order-shipping-address">
+                        <block class="Magento\Framework\View\Element\Text" name="shipping.address.metadata.title">
+                            <arguments>
+                                <argument name="text" xsi:type="string" translate="true"><![CDATA[<div class="admin__page-section-item-title"><span class="title">Shipping Address Metadata</span></div>]]></argument>
+                            </arguments>
+                        </block>
+                        <container name="shipping.address.metadata.content" htmlTag="div" htmlClass="admin__page-section-item-content">
+                            <block class="Afd\Pce\Block\Adminhtml\Order\View\AddressMetadata" name="shipping_address.metadata" template="Afd_Pce::order/view/address_metadata.phtml" />
+                        </container>
+                    </container>
+                </container>
+            </block>
         </referenceBlock>
     </body>
 </page>

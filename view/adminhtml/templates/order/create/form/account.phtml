@@ -11,7 +11,7 @@
     <span class="title"><?= $block->escapeHtml($block->getHeaderText()) ?></span>
     <div class="actions"></div>
 </div>
-<div id="customer_account_fields" class="admin__page-section-content">
+<div id="customer_account_fields" class="admin__page-section-content" data-mage-init='{"Afd_Pce/js/order/create/form-init": {"accountFieldsId": "customer_account_fields"}}'>
     <?= $block->getForm()->getHtml() ?>
 </div>
 
@@ -23,18 +23,7 @@ $productMetadata = $objectManager->get('Magento\Framework\App\ProductMetadataInt
 $version = $productMetadata->getVersion();
 
 ?>
-
-<?php
-$scriptString = <<<script
-    require(["prototype", "Magento_Sales/order/create/form"], function(){
-        order.accountFieldsBind($('customer_account_fields'));
-    });
-script;
-?>
-<?= /* @noEscape */
-$secureRenderer->renderTag('script', [], $scriptString, false) ?>
-
-<div class="afd-typeahead-container field admin__field" id="billing-typeahead" style="display:none;">
+<div class="afd-typeahead-container field admin__field" id="billing-typeahead" style="display:none;" data-mage-init='{"Afd_Pce/js/order/create/typeahead": {}, "Afd_Pce/js/order/create/country": {}, "Afd_Pce/js/order/create/phone-init": {}}'>
     <div class="admin__field-label">
         <label><span>Address Search</span></label>
     </div>
@@ -44,12 +33,13 @@ $secureRenderer->renderTag('script', [], $scriptString, false) ?>
                     class="input-text"
                     id="afd-billing-typeahead"
                     type="search"
-                    autocomplete="off"
+                    autocomplete="password-new"
                     name="afd-search"
             >
         </div>
     </div>
 </div>
+
 
 <div class="afd-typeahead-container field admin__field" id="shipping-typeahead" style="display:none;">
     <div class="admin__field-label">
@@ -61,7 +51,7 @@ $secureRenderer->renderTag('script', [], $scriptString, false) ?>
                     class="input-text"
                     id="afd-shipping-typeahead"
                     type="search"
-                    autocomplete="off"
+                    autocomplete="password-new"
                     name="afd-search"
             >
         </div>
@@ -98,135 +88,9 @@ $secureRenderer->renderTag('script', [], $scriptString, false) ?>
     phone number
 </div>
 
-<?php
-$scriptString = <<<script
-    require(['jquery', 'afdPce', 'Magento_Sales/order/create/form', 'domReady!app/Afd/Pce/view/base/templates/afd'], function ($, afdPCE) {
-    
-        const shippingTypeaheadContainer = $('#shipping-typeahead')
-        const shippingTypeahead = shippingTypeaheadContainer.find('#afd-shipping-typeahead')
-        const combineFirstLine = window.afdOptions.magentoOptions.typeahead.combineFirstLine
-
-        const populateShipping = () => {
-            $('#order-shipping_address_fields .field-country_id').detach().insertAfter("#order-shipping_address_fields .field-company");
-            shippingTypeaheadContainer.detach().insertAfter("#order-shipping_address .field-country_id").show();
-            $('#shipping-manual-input, #shipping-manual-input-search, #shipping-search-again').detach().insertAfter('#shipping-typeahead');
-            $('#order-shipping_address_company').attr('data-afd-result', 'Organisation');
-            $('#order-shipping_address_street0').attr('data-afd-result', combineFirstLine ? 'Property,Street' : 'Property');
-            $('#order-shipping_address_street1').attr('data-afd-result', combineFirstLine ? 'Locality': 'Street');
-            !combineFirstLine && $('#order-shipping_address_street1').attr('data-afd-result',  'Locality');
-            $('#order-shipping_address_city').attr('data-afd-result', 'Town');
-            $('#order-shipping_address_postcode').attr('data-afd-result', 'Postcode');
-            $('#order-shipping_address_region').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
-            $('#order-shipping_address_region_id').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
-            shippingTypeahead.afd('typeahead');
-            $('.afd-manual-input-button').triggerHandler('click');
-        }
-
-        order.setShippingAsBilling = function (flag) {
-            var data,
-                areasToLoad = ['billing_method', 'shipping_address', 'shipping_method', 'totals', 'giftmessage'];
-            this.disableShippingAddress(flag);
-            data = this.serializeData(flag ? this.billingAddressContainer : this.shippingAddressContainer);
-            data = data.toObject();
-            data['shipping_as_billing'] = flag ? 1 : 0;
-            data['reset_shipping'] = 1;
-            // set customer_address_id to null for shipping address in order to treat it as new from backend
-            // Checkbox(Same As Billing Address) uncheck event
-            data['order[shipping_address][customer_address_id]'] = null;
-            this.loadArea(areasToLoad, true, data).done(()=> {
-              populateShipping()
-            })
-        }
-
-        if (afdOptions.magentoOptions.typeahead.adminCreateOrderEnabled) {
-
-            afdOptions.typeahead.containerOnlyContainsControl = true;
-            afdOptions.typeahead.parentClass = 'admin__field';
-
-            $('#order-billing_address_fields .field-country_id').detach().insertAfter('#order-billing_address_fields .field-company');
-            $('#billing-typeahead').detach().insertAfter('#order-billing_address_fields .field-country_id').show();
-            $('#billing-manual-input, #billing-manual-input-search, #billing-search-again').detach().insertAfter('#billing-typeahead');
-            $('#order-billing_address_company').attr('data-afd-result', 'Organisation');
-            $('#order-billing_address_street0').attr('data-afd-result', combineFirstLine ? 'Property,Street' : 'Property');
-            $('#order-billing_address_street1').attr('data-afd-result', combineFirstLine ? 'Locality' : 'Street');
-            !combineFirstLine && $('#order-billing_address_street2').attr('data-afd-result',  'Locality' );
-            $('#order-billing_address_city').attr('data-afd-result', 'Town');
-            $('#order-billing_address_postcode').attr('data-afd-result', 'Postcode');
-            $('#order-billing_address_region').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
-            $('#order-billing_address_region_id').attr('data-afd-result', afdOptions.magentoOptions.typeahead.afdCounty);
-            $('#afd-billing-typeahead').afd('typeahead');
-            
-           populateShipping() 
-            $(document).on('afd:populateRegionIDComplete', (e) => {
-                const container = $(e.target).closest('.admin__page-section-item');
-                showHideRegion(e, null, container);
-            });
-            
-            $(document).on("afd:pceRetrieveComplete", function (e, result) {
-                const countryControl = $('#order-billing_address_country_id')
-                
-                // crown dependency setting
-                if (afdOptions.magentoOptions.typeahead.crownCountries) {
-                    if (result.CountryISO === "GBR") {
-                        switch (result.Country) {
-                            case "Isle of Man":
-                                countryControl.val("IM");
-                                break;
-                            case "Jersey":
-                                countryControl.val("JE");
-                                break;
-                            case "Guernsey":
-                                countryControl.val("GG");
-                                break;
-                            default:
-                                countryControl.val("GB");
-                        }
-                    }
-                }
-            })
-
-        }
-
-        if (afdOptions.magentoOptions.phone.adminCreateOrderEnabled) {
-
-            if (typeof window.intlTelInputUtils === 'undefined') {
-                window.intlTelInputGlobals.loadUtils('https://cdn.afd.co.uk/plugins/shared/utils.js')
-                    .then(function () {
-                        $('#afd-shipping-phone-error').detach().insertAfter('[name="order[shipping_address][telephone]"]');
-                        $('#afd-billing-phone-error').detach().insertAfter('[name="order[billing_address][telephone]"]');
-
-                        afdOptions.phone.countryControl = '#order-shipping_address_country_id';
-                        initPhoneAdminOrder($('[name="order[shipping_address][telephone]"]'));
-                        afdOptions.phone.countryControl = '#order-billing_address_country_id';
-                        initPhoneAdminOrder($('[name="order[billing_address][telephone]"]'));
-                    });
-            } else {
-
-                $('#afd-shipping-phone-error').detach().insertAfter('[name="order[shipping_address][telephone]"]');
-                $('#afd-billing-phone-error').detach().insertAfter('[name="order[billing_address][telephone]"]');
-
-                afdOptions.phone.countryControl = '#order-shipping_address_country_id';
-                initPhoneAdminOrder($('[name="order[shipping_address][telephone]"]'));
-                afdOptions.phone.countryControl = '#order-billing_address_country_id';
-                initPhoneAdminOrder($('[name="order[billing_address][telephone]"]'));
-
-            }
-
-            function initPhoneAdminOrder(el) {
-                el.addClass('afd-padding-fix')
-                    .attr('data-afd-additional-options', 'afdPhoneOptions')
-                    .afd('phone');
-            }
-
-        }
-
-    });
-
-    script;
-?>
-
-<?= /* @noEscape */
-$secureRenderer->renderTag('script', ['type' => 'text/javascript'], $scriptString, false) ?>
-
-<?= /* @noEscape */
-$secureRenderer->renderTag('style', [], '.afd-padding-fix {padding-left: 85px !important}', false) ?>
+<style>
+    .afd-padding-fix {padding-left: 85px !important}
+    .afd-loading > div.iti:before, .afd-loading > div.iti:after, .afd-loading > div.control:before, .afd-loading > div.control:after {
+        right: 8px
+    }
+</style>
