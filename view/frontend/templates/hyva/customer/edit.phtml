@@ -109,7 +109,6 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                         password: typeof afdOptions !== 'undefined' ? afdOptions.password : '',
                         mostUsedCountries: afdOptions?.magentoOptions?.typeahead?.preferredCountriesCount ? afdOptions.magentoOptions.typeahead.preferredCountriesCount : 0
                     };
-                    console.log('Country control options:', window.afdCountryOptions);
                 </script>
                 <div x-data x-afd-country="afdCountryOptions"></div>
                 <?php endif; ?>

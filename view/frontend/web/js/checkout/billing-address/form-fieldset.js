@@ -241,7 +241,6 @@ define([
       })
 
       $(document).on('afd:populateResultsComplete', () => {
-        console.log('hi')
         //zip plus 4
         if (
           !afdOptions.magentoOptions.typeahead.zipPlusFour &&
@@ -253,7 +252,6 @@ define([
 
         if (afdOptions.magentoOptions.typeahead.regionFieldRemoved) return
 
-        console.log(this.regionIDElement)
         this.regionVisibility(false)
         $(this.regionIDElement).change()
       })
@@ -525,6 +523,7 @@ define([
     },
 
     regionVisibility: function (isInitial = true) {
+      if (afdOptions.magentoOptions.typeahead.regionFieldRemoved) return
       const valStore = $(this.regionIDElement).val()
       this.regionComponent.setOptions(this.regionComponent.options())
       this.regionComponent.visible.valueHasMutated() // manually force an update of the select component

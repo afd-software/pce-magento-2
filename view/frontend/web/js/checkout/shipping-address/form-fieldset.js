@@ -342,6 +342,7 @@ define([
     },
 
     regionVisibility: function (isInitial = true) {
+      if (afdOptions.magentoOptions.typeahead.regionFieldRemoved) return
       const valStore = $(this.regionIDElement).val()
       this.regionComponent.setOptions(this.regionComponent.options())
       this.regionComponent.visible.valueHasMutated() // manually force an update of the select component

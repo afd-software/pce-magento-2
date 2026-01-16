@@ -95,4 +95,9 @@
     
     <!-- Address Metadata Repository Interface Preference -->
     <preference for="Afd\Pce\Api\AddressMetadataRepositoryInterface" type="Afd\Pce\Model\OrderAddressMetadataRepository"/>
+    
+    <!-- Exclude pre-minified JS from JShrink minification to prevent regex parsing errors -->
+    <type name="Magento\Framework\View\Asset\Minification">
+        <plugin name="afd_pce_exclude_js_minification" type="Afd\Pce\Plugin\Framework\ExcludeFilesFromMinification" sortOrder="10"/>
+    </type>
 </config>

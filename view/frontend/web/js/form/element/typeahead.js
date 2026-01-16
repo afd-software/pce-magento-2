@@ -65,7 +65,6 @@ define(['uiComponent', 'uiRegistry', 'jquery', 'ko', 'afdPce'], function (
                   $container.find(countrySelector).val()
                 ) > -1
               ) {
-                console.log(1)
                 $container
                   .find('[data-afd-result="TraditionalCounty"].input-text')
                   .closest('.field')

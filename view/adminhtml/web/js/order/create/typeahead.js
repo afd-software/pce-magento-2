@@ -207,7 +207,6 @@ define(['jquery', 'afdPce', 'Magento_Sales/order/create/form'], function ($) {
         const originalVal = $('#order-shipping_address_postcode').val()
         $('#order-shipping_address_postcode').val(originalVal.substr(0, 5))
       }
-      // console.log('hi')
       if (selectRegionCountries.indexOf(billingAddressCountry) > -1) {
         $('#order-billing_address_region').hide()
       } else {
