@@ -1,0 +1,105 @@
+<?php
+/**
+ * AFD PCE Checkout Success - Precision Delivery Template
+ *
+ * @var \Afd\Pce\Block\Checkout\Success\PrecisionDelivery $block
+ */
+
+if (!$block->isEnabled() || !$block->hasMapData()) {
+    return;
+}
+?>
+
+<div class="afd-success-precision-delivery">
+    <div class="afd-success-precision-delivery-inner">
+        <h3 class="afd-success-pd-title"><?= $block->escapeHtml(__('Your Delivery Details')) ?></h3>
+
+        <div class="afd-success-pd-address">
+            <strong><?= $block->escapeHtml(__('Delivery Address:')) ?></strong>
+            <?php foreach ($block->getAddressLines() as $line): ?>
+                <span><?= $block->escapeHtml($line) ?></span><br>
+            <?php endforeach; ?>
+        </div>
+
+        <?php if ($staticMapUrl = $block->getStaticMapUrl()): ?>
+        <div class="afd-success-pd-map">
+            <img src="<?= $block->escapeUrl($staticMapUrl) ?>"
+                 alt="<?= $block->escapeHtml(__('Delivery Location Map')) ?>"
+                 class="afd-success-pd-map-img" />
+        </div>
+        <?php endif; ?>
+
+        <?php if ($block->hasDeliveryNotes()): ?>
+        <div class="afd-success-pd-notes">
+            <strong><?= $block->escapeHtml(__('Delivery Instructions:')) ?></strong>
+            <p class="afd-success-pd-notes-text"><?= $block->escapeHtml($block->getDeliveryNotes()) ?></p>
+        </div>
+        <?php endif; ?>
+    </div>
+</div>
+
+<style>
+.afd-success-precision-delivery {
+    margin: 20px 0;
+    padding: 20px;
+    border: 1px solid #d6d6d6;
+    border-radius: 4px;
+    background: #fafafa;
+}
+
+.afd-success-pd-title {
+    margin: 0 0 16px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.afd-success-pd-address {
+    margin-bottom: 16px;
+    font-size: 14px;
+    color: #444;
+    line-height: 1.5;
+}
+
+.afd-success-pd-address strong {
+    display: block;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.afd-success-pd-map {
+    margin-bottom: 16px;
+}
+
+.afd-success-pd-map-img {
+    display: block;
+    width: 100%;
+    max-width: 480px;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+
+.afd-success-pd-notes strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: #333;
+}
+
+.afd-success-pd-notes-text {
+    margin: 0;
+    padding: 10px 14px;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+    font-size: 14px;
+    color: #555;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+</style>

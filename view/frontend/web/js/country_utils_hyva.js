@@ -104,8 +104,10 @@
       // Handle country change event
       countryInput.addEventListener('change', (event) => {
         const selectedCountry = event.target.value
-        // Update the original select and trigger change event
+        // Update the original select value
         countrySelect.value = selectedCountry
+        // Dispatch both input (for Alpine.js @input listeners) and change (for native listeners)
+        countrySelect.dispatchEvent(new Event('input', { bubbles: true }))
         countrySelect.dispatchEvent(new Event('change', { bubbles: true }))
       })
 

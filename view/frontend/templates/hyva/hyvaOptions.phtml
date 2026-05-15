@@ -12,6 +12,18 @@
         afdHyvaOptions.password = afdOptions.password
     }
 
+    if (afdOptions.platformVersion) {
+        afdHyvaOptions.platformVersion = afdOptions.platformVersion
+    }
+
+
+    // Set the default country to the currently selected country in the form,
+    // falling back to the store default
+    var countrySelect = document.getElementById('country')
+        || document.querySelector('select[name="country_id"]');
+    afdHyvaOptions.defaultCountry = (countrySelect && countrySelect.value)
+        || afdOptions.magentoOptions.typeahead.defaultCountry
+        || 'GB';
 
     afdHyvaOptions.setCrownDependencyCountry = '<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies');?>' === '1'
 

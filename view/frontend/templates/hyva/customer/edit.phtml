@@ -99,7 +99,6 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                 <?php if ($useAdvancedCountryControl): ?>
                 <!-- Advanced country control -->
                 <script>
-                    // Set country options immediately - afdOptions should be defined by afd_options.phtml
                     window.afdCountryOptions = {
                         defaultCountry: '<?= $escaper->escapeJs($block->getCountryId() ?: 'GB') ?>',
                         pceURL: typeof afdOptions !== 'undefined' ? afdOptions.pceUrl : '',
@@ -107,12 +106,30 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                         token: typeof afdOptions !== 'undefined' ? afdOptions.token : '',
                         serial: typeof afdOptions !== 'undefined' ? afdOptions.serial : '',
                         password: typeof afdOptions !== 'undefined' ? afdOptions.password : '',
+                        platformVersion: typeof afdOptions !== 'undefined' ? afdOptions.platformVersion : '',
                         mostUsedCountries: afdOptions?.magentoOptions?.typeahead?.preferredCountriesCount ? afdOptions.magentoOptions.typeahead.preferredCountriesCount : 0
                     };
                 </script>
                 <div x-data x-afd-country="afdCountryOptions"></div>
+                <script>
+                    // Bridge: sync afd-country-input changes to the hidden Magento country select
+                    // so Alpine's changeCountry handler fires and updates availableRegions
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var countrySelect = document.getElementById('country');
+                        if (!countrySelect) return;
+                        document.addEventListener('change', function (e) {
+                            if (!e.target || e.target.tagName !== 'AFD-COUNTRY-INPUT') return;
+                            var newValue = e.detail && e.detail.value ? e.detail.value : e.target.value;
+                            if (newValue && countrySelect.value !== newValue) {
+                                countrySelect.value = newValue;
+                                countrySelect.dispatchEvent(new Event('input', { bubbles: true }));
+                                countrySelect.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        });
+                    });
+                </script>
                 <?php endif; ?>
-                
+
                 <select name="country_id"
                         id="country"
                         title="Country"
@@ -138,11 +155,33 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
                         </option>
                     <?php endforeach; ?>
                 </select>
+                <script>
+                    // Sync country select changes to the afd-typeahead search country
+                    document.addEventListener('DOMContentLoaded', function () {
+                        var countrySelect = document.getElementById('country');
+                        if (!countrySelect) return;
+                        countrySelect.addEventListener('change', function () {
+                            var typeahead = document.querySelector('afd-typeahead');
+                            if (typeahead) {
+                                typeahead.country = countrySelect.value;
+                            }
+                        });
+                    });
+                </script>
             </div>
         </div>
 
         <div class="md:grid gird-cols-2 gap-x-4 gap-y-0">
-
+            <?php if ($block->getCountryId()): ?>
+            <script>
+                // Override defaultCountry with the address's actual country.
+                // hyvaOptions.phtml runs in <head> before the DOM exists, so it cannot
+                // read the country select value; here we correct it using the server-side value.
+                if (typeof afdHyvaOptions !== 'undefined') {
+                    afdHyvaOptions.defaultCountry = '<?= $escaper->escapeJs($block->getCountryId()) ?>';
+                }
+            </script>
+            <?php endif; ?>
             <div x-data x-afd-typeahead="afdHyvaOptions"></div>
         </div>
         <div class="md:grid grid-cols-2 gap-x-4 gap-y-0">
@@ -331,6 +370,7 @@ $showOptionalRegions = $block->getConfig('general/region/display_all');
             <input type="hidden" name="default_shipping" value="1">
         <?php endif; ?>
     </fieldset>
+    <?= $block->getChildHtml('customer.address.metadata.hyva') ?>
     <div class="actions-toolbar">
         <div class="primary">
             <button type="submit"

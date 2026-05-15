@@ -6,6 +6,9 @@
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Afd_Pce::css/address_metadata.css"/>
+    </head>
     <body>
         <!-- Add address metadata wrapper to shipment view page -->
         <referenceContainer name="content">
@@ -50,6 +53,15 @@
                     </container>
                 </container>
             </block>
+            
+            </referenceContainer>
+        
+        <!-- Add Precision Delivery section to shipment view -->
+        <referenceContainer name="extra_shipment_info">
+            <block class="Afd\Pce\Block\Adminhtml\Shipment\View\PrecisionDelivery" 
+                   name="shipment.precision.delivery" 
+                   template="Afd_Pce::order/view/precision_delivery.phtml"
+                   ifconfig="afd_typeahead/precision_delivery/enabled" />
         </referenceContainer>
     </body>
 </page>

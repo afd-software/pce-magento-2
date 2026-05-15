@@ -216,6 +216,29 @@ class OrderAddressMetadata extends AbstractModel implements AddressMetadataInter
     }
 
     /**
+     * Get Map Data (Precision Delivery)
+     * Note: This is a transient property, not stored in this table
+     *
+     * @return array|null
+     */
+    public function getMapData()
+    {
+        return $this->getData('map_data');
+    }
+
+    /**
+     * Set Map Data (Precision Delivery)
+     * Note: This is a transient property, not stored in this table
+     *
+     * @param array|null $mapData
+     * @return $this
+     */
+    public function setMapData($mapData)
+    {
+        return $this->setData('map_data', $mapData);
+    }
+
+    /**
      * Get Created At timestamp
      *
      * @return string|null

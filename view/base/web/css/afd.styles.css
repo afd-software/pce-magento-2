@@ -131,21 +131,26 @@ afd-typeahead > afd-typeahead-results {
 }
 .sales-order-address .afd-typeahead-list,
 .modal-slide #customer-new-adddress .afd-typeahead-list {
-  margin-left: calc( (100%) * .25 + 30px );
+  margin-left: calc(25% + 8px);
   margin-top:30px;
   width: calc( (100%) * 0.5 - 30px );
 }
 
+.modal-slide .afd-manual-input-button,
+.modal-slide .afd-manual-input-search-button,
+.modal-slide .afd-search-again {
+  margin-left: calc(25% + 8px);
+  margin-top: -16px;
+  padding-left: 0;
+  color: #16A19A;
+}
 .sales-order-address .afd-typeahead-container {
   margin-bottom: 0;
 }
 
 .sales-order-address .afd-manual-input-button,
 .sales-order-address .afd-manual-input-search-button,
-.sales-order-address .afd-search-again,
-.modal-slide .afd-manual-input-button,
-.modal-slide .afd-manual-input-search-button,
-.modal-slide .afd-search-again {
+.sales-order-address .afd-search-again {
   margin-left: calc( (100%) * .25 + 8px);
 }
 

@@ -568,13 +568,176 @@
                         <field id="enabled">1</field>
                     </depends>
                 </field>
-                <field id="display_in_packingslip" translate="label" type="select" sortOrder="40" showInDefault="1"
+            </group>
+            <group id="precision_delivery" translate="label" type="text" sortOrder="65" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Precision Delivery</label>
+                <comment>Configure Google Maps integration for precise delivery location selection. Requires Address Metadata to be enabled.</comment>
+                <field id="enabled" translate="label comment" type="select" sortOrder="10" showInDefault="1"
                        showInWebsite="1" showInStore="1">
-                    <label>Display in Packing Slip</label>
+                    <label>Enable Precision Delivery</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <comment>Display captured metadata in the packing slip PDF</comment>
+                    <comment><![CDATA[Enable Google Maps integration for customers to specify exact delivery locations. <strong>Requires Address Metadata to be enabled.</strong>]]></comment>
+                    <depends>
+                        <field id="afd_typeahead/metadata/enabled">1</field>
+                    </depends>
+                </field>
+                <field id="google_maps_api_key" translate="label comment" type="obscure" sortOrder="20" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Google Maps API Key</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment><![CDATA[Enter your Google Maps API key. The key must have the following APIs enabled: Maps JavaScript API, Static Maps API, and Maps URLs. <a href="https://console.cloud.google.com/google/maps-apis" target="_blank">Get your API key from Google Cloud Console</a>]]></comment>
                     <depends>
                         <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="instruction_text" translate="label comment" type="textarea" sortOrder="30" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Instruction Text</label>
+                    <comment>Text displayed to users explaining the precision delivery functionality.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="default_zoom" translate="label comment" type="text" sortOrder="40" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Default Zoom Level</label>
+                    <comment>Zoom level for the map (1-22). 1 = World view, 22 = Building level. Recommended: 19 for house numbers.</comment>
+                    <validate>validate-number validate-digits-range digits-range-1-22</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="default_map_type" translate="label comment" type="select" sortOrder="50" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Default Map Type</label>
+                    <source_model>Afd\Pce\Model\Config\Source\MapType</source_model>
+                    <comment>The default map display type.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="pointer_image" translate="label comment" type="image" sortOrder="60" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Custom Pointer Image</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Image</backend_model>
+                    <upload_dir config="system/filesystem/media" scope_info="1">afd/precision_delivery</upload_dir>
+                    <base_url type="media" scope_info="1">afd/precision_delivery</base_url>
+                    <comment>Upload a custom marker image. Allowed formats: gif, jpg, png. Leave empty to use the default Google Maps marker.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="enable_distance_warning" translate="label comment" type="select" sortOrder="70" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Enable Distance Warning</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Trigger a warning if the selected delivery point exceeds the distance threshold from the original address. Distance is always calculated.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="warning_threshold_urban" translate="label comment" type="text" sortOrder="80" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Warning Threshold - Urban (meters)</label>
+                    <comment>Distance threshold in meters for urban addresses. Warning triggers if exceeded.</comment>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="enable_distance_warning">1</field>
+                    </depends>
+                </field>
+                <field id="warning_threshold_rural" translate="label comment" type="text" sortOrder="90" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Warning Threshold - Rural (meters)</label>
+                    <comment>Distance threshold in meters for rural addresses. Warning triggers if exceeded.</comment>
+                    <validate>validate-number validate-zero-or-greater</validate>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="enable_distance_warning">1</field>
+                    </depends>
+                </field>
+                <field id="trigger_warning_storefront" translate="label comment" type="select" sortOrder="100" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Trigger Warning on Storefront</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Show the distance warning to customers on the frontend during checkout. They must confirm to proceed.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="enable_distance_warning">1</field>
+                    </depends>
+                </field>
+                <field id="warning_message" translate="label comment" type="textarea" sortOrder="110" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Warning Message</label>
+                    <comment>Message shown when distance threshold is exceeded. Use {distance} as placeholder for the distance value.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="enable_distance_warning">1</field>
+                        <field id="trigger_warning_storefront">1</field>
+                    </depends>
+                </field>
+                <field id="display_on_success_page" translate="label comment" type="select" sortOrder="115" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Display on Order Confirmation Page</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Show the delivery address, map and delivery instructions on the checkout confirmation page after order placement.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="display_static_map_order" translate="label comment" type="select" sortOrder="120" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Display Static Map in Admin Order View</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Show the static map image in the admin order view. Uses Google Maps API credits.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="display_static_map_shipment" translate="label comment" type="select" sortOrder="125" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Display Static Map in Admin Shipment View</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Show the static map image in the admin shipment view. Uses Google Maps API credits.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="enable_qr_code" translate="label comment" type="select" sortOrder="130" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Enable QR Code Links</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Generate QR codes linking to Google Maps for the delivery location in admin order view and packing slips.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="display_in_packingslip" translate="label comment" type="select" sortOrder="140" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Display in Packing Slip PDF</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Include Precision Delivery coordinates and information in the packing slip PDF.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="enable_delivery_notes" translate="label comment" type="select" sortOrder="150" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Enable Additional Delivery Information</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Allow customers to provide additional delivery instructions on the frontend.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                    </depends>
+                </field>
+                <field id="delivery_notes_placeholder" translate="label comment" type="text" sortOrder="160" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Delivery Notes Placeholder Text</label>
+                    <comment>Placeholder text shown in the delivery notes textarea on the frontend.</comment>
+                    <depends>
+                        <field id="enabled">1</field>
+                        <field id="enable_delivery_notes">1</field>
                     </depends>
                 </field>
             </group>

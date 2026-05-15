@@ -13,6 +13,18 @@ if (!$block->isMetadataEnabled()) {
 // Get existing metadata for this address (if any)
 $metadata = $block->getAddressMetadata();
 $metadataJson = $metadata ? $block->getMetadataJson() : '{}';
+
+// Get Precision Delivery config
+$precisionDeliveryConfig = $block->getPrecisionDeliveryConfigJson();
+
+// Get Cleanse on Submit config
+$cleanseOnSubmitConfig = $block->getCleanseOnSubmitConfigJson();
+
+// Get map data and metadata lat/lng for existing addresses
+$isEditingExistingAddress = $block->isEditingExistingAddress();
+$mapDataJson = $block->getMapDataJson();
+$metadataLatLngJson = $block->getMetadataLatLngJson();
+$addressId = $block->getAddressId();
 ?>
 
 <!-- Address metadata fields -->
@@ -20,7 +32,14 @@ $metadataJson = $metadata ? $block->getMetadataJson() : '{}';
 $captureFields = $block->getCaptureFields();
 $captureFieldsJson = json_encode(is_array($captureFields) ? $captureFields : []);
 ?>
-<div id="address-metadata-container" data-mage-init='{"addressMetadata": {"captureFields": <?= $captureFieldsJson ?>}}'>
+<div id="address-metadata-container" data-mage-init='{"addressMetadata": {
+    "captureFields": <?= $captureFieldsJson ?>, 
+    "precisionDeliveryConfig": <?= $precisionDeliveryConfig ?>,
+    "isEditingExistingAddress": <?= $isEditingExistingAddress ? 'true' : 'false' ?>,
+    "existingMapData": <?= $mapDataJson ?>,
+    "existingMetadataLatLng": <?= $metadataLatLngJson ?>,
+    "addressId": <?= $addressId ? $addressId : 'null' ?>
+}}'>
     <!-- Hidden fields for metadata -->
     <input type="hidden" 
            id="customer-address-metadata" 
@@ -30,3 +49,16 @@ $captureFieldsJson = json_encode(is_array($captureFields) ? $captureFields : [])
     <!-- Ensure metadata_enabled is always included -->
     <input type="hidden" id="metadata_enabled" name="metadata_enabled" value="1" />
 </div>
+
+<?php if ($block->isCleanseOnSubmitEnabled()): ?>
+<!-- Cleanse on Submit for Customer Address Forms -->
+<script type="text/x-magento-init">
+{
+    "*": {
+        "Afd_Pce/js/customer/address/cleanse-on-submit": {
+            "cleanseOnSubmit": <?= $cleanseOnSubmitConfig ?>
+        }
+    }
+}
+</script>
+<?php endif; ?>

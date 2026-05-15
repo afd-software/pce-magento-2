@@ -13,6 +13,7 @@ if (trim(strip_tags($childHtml)) && strpos($childHtml, 'No metadata found') === 
     <div class="admin__page-section-title">
         <span class="title"><?= $block->escapeHtml(__('Address Metadata')) ?></span>
     </div>
+    <div style="padding: 8px 0 16px 0">Address Metadata was collected in the storefront and may not reflect changes made to the address in the admin section.</div>
     <?= $childHtml ?>
 </div>
 <?php endif; ?>

@@ -1,0 +1,702 @@
+<?php
+/**
+ * AFD PCE Address Metadata Template for Customer Address Edit Form (Hyva)
+ *
+ * Uses vanilla JS instead of jQuery/RequireJS data-mage-init
+ *
+ * @var $block \Afd\Pce\Block\Customer\Address\Metadata
+ */
+
+// Only process if metadata is enabled in configuration
+if (!$block->isMetadataEnabled()) {
+    return;
+}
+
+// Get existing metadata for this address (if any)
+$metadata = $block->getAddressMetadata();
+$metadataJson = $metadata ? $block->getMetadataJson() : '{}';
+
+// Get Precision Delivery config
+$precisionDeliveryConfig = $block->getPrecisionDeliveryConfigJson();
+
+// Get map data and metadata lat/lng for existing addresses
+$isEditingExistingAddress = $block->isEditingExistingAddress();
+$mapDataJson = $block->getMapDataJson();
+$metadataLatLngJson = $block->getMetadataLatLngJson();
+$addressId = $block->getAddressId();
+
+// Get capture fields
+$captureFields = $block->getCaptureFields();
+$captureFieldsJson = json_encode(is_array($captureFields) ? $captureFields : []);
+?>
+
+<!-- Address metadata fields (Hyva) -->
+<div id="address-metadata-container">
+    <input type="hidden"
+           id="customer-address-metadata"
+           name="customer-address-metadata"
+           value="<?= $block->escapeHtmlAttr($metadataJson) ?>" />
+    <input type="hidden" id="metadata_enabled" name="metadata_enabled" value="1" />
+</div>
+
+<script>
+(function() {
+    'use strict';
+
+    const afdMetadataConfig = {
+        captureFields: <?= /* @noEscape */ $captureFieldsJson ?>,
+        precisionDeliveryConfig: <?= /* @noEscape */ $precisionDeliveryConfig ?>,
+        isEditingExistingAddress: <?= $isEditingExistingAddress ? 'true' : 'false' ?>,
+        existingMapData: <?= /* @noEscape */ $mapDataJson ?>,
+        existingMetadataLatLng: <?= /* @noEscape */ $metadataLatLngJson ?>,
+        addressId: <?= $addressId ? (int)$addressId : 'null' ?>
+    };
+
+    const RURAL_CODES = ['D1', 'D2', 'E1', 'E2', 'F1', 'F2', 'S6', 'S7', 'S8'];
+
+    let map = null;
+    let marker = null;
+    let originalLat = null;
+    let originalLng = null;
+    let urbanRural = 'urban';
+    let warningConfirmed = false;
+
+    /**
+     * Map UrbanRuralCode to 'rural' or 'urban'
+     */
+    const mapUrbanRuralCode = (code) => {
+        if (!code) return 'urban';
+        const normalized = code.toString().toUpperCase().trim();
+        return RURAL_CODES.includes(normalized) ? 'rural' : 'urban';
+    };
+
+    /**
+     * Calculate distance between two points using Haversine formula
+     */
+    const calculateHaversineDistance = (lat1, lng1, lat2, lng2) => {
+        const R = 6371000;
+        const dLat = ((lat2 - lat1) * Math.PI) / 180;
+        const dLng = ((lng2 - lng1) * Math.PI) / 180;
+        const a =
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos((lat1 * Math.PI) / 180) *
+            Math.cos((lat2 * Math.PI) / 180) *
+            Math.sin(dLng / 2) *
+            Math.sin(dLng / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
+    /**
+     * Find the insertion point for the map — after all address fields
+     */
+    const findMapInsertionPoint = () => {
+        // Try the address fieldset (second fieldset in the form)
+        const fieldsets = document.querySelectorAll('form.form-address-edit fieldset.fieldset');
+        if (fieldsets.length > 1) {
+            return { el: fieldsets[fieldsets.length - 1], mode: 'append' };
+        }
+        if (fieldsets.length === 1) {
+            return { el: fieldsets[0], mode: 'append' };
+        }
+        // Fallback: the metadata container itself
+        return { el: document.getElementById('address-metadata-container'), mode: 'before' };
+    };
+
+    /**
+     * Update map data in the metadata hidden field
+     */
+    const updateMapDataInMetadata = (selectedLat, selectedLng, distance, isAdjusted) => {
+        const deliveryNotesInput = document.querySelector('.afd-delivery-notes-input');
+        const deliveryNotes = deliveryNotesInput ? deliveryNotesInput.value : '';
+
+        const mapData = {
+            original_lat: originalLat,
+            original_lng: originalLng,
+            selected_lat: selectedLat,
+            selected_lng: selectedLng,
+            distance_from_address: Math.round(distance),
+            urban_rural: urbanRural,
+            is_adjusted: isAdjusted,
+            delivery_notes: deliveryNotes
+        };
+
+        const field = document.getElementById('customer-address-metadata');
+        let currentMetadata = {};
+
+        try {
+            if (field && field.value) {
+                currentMetadata = JSON.parse(field.value);
+            }
+        } catch (e) {
+            console.error('[AFD PCE] Error parsing metadata:', e);
+        }
+
+        currentMetadata.map_data = mapData;
+        if (field) {
+            field.value = JSON.stringify(currentMetadata);
+        }
+    };
+
+    /**
+     * Handle marker movement
+     */
+    const onMarkerMoved = () => {
+        const pdConfig = afdMetadataConfig.precisionDeliveryConfig;
+        const position = marker.getPosition();
+        const newLat = position.lat().toFixed(7);
+        const newLng = position.lng().toFixed(7);
+
+        const origLat = parseFloat(originalLat);
+        const origLng = parseFloat(originalLng);
+        const selLat = parseFloat(newLat);
+        const selLng = parseFloat(newLng);
+
+        let distance = 0;
+        if (window.google && window.google.maps && window.google.maps.geometry) {
+            const original = new google.maps.LatLng(origLat, origLng);
+            const selected = new google.maps.LatLng(selLat, selLng);
+            distance = google.maps.geometry.spherical.computeDistanceBetween(original, selected);
+        } else {
+            distance = calculateHaversineDistance(origLat, origLng, selLat, selLng);
+        }
+
+        const isAdjusted = distance > 1;
+
+        if (pdConfig.enableDistanceWarning && pdConfig.triggerWarningStorefront && !warningConfirmed) {
+            const threshold = urbanRural === 'rural'
+                ? pdConfig.warningThresholdRural
+                : pdConfig.warningThresholdUrban;
+
+            if (distance > threshold) {
+                showDistanceWarning(distance, newLat, newLng);
+                return;
+            }
+        }
+
+        updateMapDataInMetadata(newLat, newLng, distance, isAdjusted);
+    };
+
+    /**
+     * Show distance warning modal
+     */
+    const showDistanceWarning = (distance, newLat, newLng) => {
+        const pdConfig = afdMetadataConfig.precisionDeliveryConfig;
+        const container = document.getElementById('afd-precision-delivery-map-customer-container');
+        if (!container) return;
+
+        const overlay = container.querySelector('.afd-precision-delivery-warning-overlay');
+        const message = overlay ? overlay.querySelector('.warning-message') : null;
+        if (!overlay || !message) return;
+
+        const warningMessage = (pdConfig.warningMessage ||
+            'The distance selected on the map from the original search location is {distance}m, are you sure this is the correct delivery location?'
+        ).replace('{distance}', Math.round(distance));
+
+        message.textContent = warningMessage;
+        overlay.style.display = '';
+
+        const resetBtn = overlay.querySelector('.reset-location');
+        const confirmBtn = overlay.querySelector('.confirm-location');
+
+        if (resetBtn) {
+            const newResetBtn = resetBtn.cloneNode(true);
+            resetBtn.parentNode.replaceChild(newResetBtn, resetBtn);
+            newResetBtn.addEventListener('click', () => {
+                resetMarkerPosition();
+                overlay.style.display = 'none';
+            });
+        }
+
+        if (confirmBtn) {
+            const newConfirmBtn = confirmBtn.cloneNode(true);
+            confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
+            newConfirmBtn.addEventListener('click', () => {
+                warningConfirmed = true;
+                overlay.style.display = 'none';
+                updateMapDataInMetadata(newLat, newLng, distance, true);
+            });
+        }
+    };
+
+    /**
+     * Reset marker to original position
+     */
+    const resetMarkerPosition = () => {
+        if (marker && originalLat && originalLng) {
+            const originalPosition = new google.maps.LatLng(
+                parseFloat(originalLat),
+                parseFloat(originalLng)
+            );
+            marker.setPosition(originalPosition);
+            updateMapDataInMetadata(originalLat, originalLng, 0, false);
+        }
+    };
+
+    /**
+     * Create Google Map
+     */
+    const createMap = (containerId, lat, lng) => {
+        const pdConfig = afdMetadataConfig.precisionDeliveryConfig;
+        const mapContainer = document.getElementById(containerId);
+
+        if (!mapContainer) return;
+
+        const latNum = parseFloat(lat);
+        const lngNum = parseFloat(lng);
+
+        if (isNaN(latNum) || isNaN(lngNum)) return;
+
+        const center = { lat: latNum, lng: lngNum };
+
+        const mapOptions = {
+            center,
+            zoom: pdConfig.defaultZoom || 17,
+            mapTypeId: pdConfig.defaultMapType || 'roadmap',
+            disableDefaultUI: true,
+            zoomControl: true,
+            scrollwheel: true,
+            draggable: true,
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: false
+        };
+
+        map = new google.maps.Map(mapContainer, mapOptions);
+
+        const markerOptions = {
+            position: center,
+            map,
+            draggable: true,
+            title: 'Delivery Location'
+        };
+
+        if (pdConfig.pointerImageUrl) {
+            markerOptions.icon = {
+                url: pdConfig.pointerImageUrl,
+                scaledSize: new google.maps.Size(32, 32)
+            };
+        }
+
+        marker = new google.maps.Marker(markerOptions);
+
+        marker.addListener('dragend', () => {
+            onMarkerMoved();
+        });
+
+        map.addListener('click', (event) => {
+            marker.setPosition(event.latLng);
+            onMarkerMoved();
+        });
+
+        // Listen for delivery notes changes so the hidden field stays in sync
+        // even when the marker hasn't been moved
+        const notesInput = document.getElementById(containerId + '-delivery-notes');
+        if (notesInput) {
+            notesInput.addEventListener('input', () => {
+                const position = marker.getPosition();
+                if (!position) return;
+                let currentMapData = {};
+                try {
+                    const fieldVal = document.getElementById('customer-address-metadata').value;
+                    if (fieldVal) {
+                        const parsed = JSON.parse(fieldVal);
+                        currentMapData = parsed.map_data || {};
+                    }
+                } catch (e) {
+                    // ignore
+                }
+                updateMapDataInMetadata(
+                    position.lat().toFixed(7),
+                    position.lng().toFixed(7),
+                    currentMapData.distance_from_address || 0,
+                    currentMapData.is_adjusted || false
+                );
+            });
+        }
+    };
+
+    /**
+     * Load Google Maps API
+     */
+    const loadGoogleMapsApi = (callback) => {
+        const apiKey = afdMetadataConfig.precisionDeliveryConfig.apiKey;
+
+        if (window.afdGoogleMapsLoading) {
+            window.afdGoogleMapsCallbacks = window.afdGoogleMapsCallbacks || [];
+            window.afdGoogleMapsCallbacks.push(callback);
+            return;
+        }
+
+        window.afdGoogleMapsLoading = true;
+        window.afdGoogleMapsCallbacks = [callback];
+
+        window.afdInitGoogleMaps = () => {
+            window.afdGoogleMapsLoading = false;
+            window.afdGoogleMapsCallbacks.forEach((cb) => cb());
+            window.afdGoogleMapsCallbacks = [];
+        };
+
+        const script = document.createElement('script');
+        script.src = 'https://maps.googleapis.com/maps/api/js?key=' +
+            apiKey + '&libraries=geometry&callback=afdInitGoogleMaps';
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    };
+
+    /**
+     * Initialize Google Map
+     */
+    const initGoogleMap = (containerId, lat, lng) => {
+        if (window.google && window.google.maps) {
+            createMap(containerId, lat, lng);
+        } else {
+            loadGoogleMapsApi(() => {
+                createMap(containerId, lat, lng);
+            });
+        }
+    };
+
+    /**
+     * Create the map HTML and insert into DOM
+     */
+    const createPrecisionDeliveryMapHtml = (containerId) => {
+        const pdConfig = afdMetadataConfig.precisionDeliveryConfig;
+        let deliveryNotesHtml = '';
+
+        if (pdConfig.enableDeliveryNotes) {
+            deliveryNotesHtml =
+                '<div class="afd-precision-delivery-notes">' +
+                '<label class="label" for="' + containerId + '-delivery-notes">Delivery Instructions</label>' +
+                '<textarea id="' + containerId + '-delivery-notes" ' +
+                'class="input-text afd-delivery-notes-input" ' +
+                'placeholder="' + (pdConfig.deliveryNotesPlaceholder || 'Any specific delivery information?') + '" ' +
+                'rows="3" maxlength="500"></textarea></div>';
+        }
+
+        return (
+            '<div class="afd-precision-delivery-container field" id="' + containerId + '-container">' +
+            '<div class="afd-precision-delivery-header">' +
+            '<h4 class="afd-precision-delivery-title">Precision Delivery</h4>' +
+            '<p class="afd-precision-delivery-instructions">' +
+            (pdConfig.instructionText ||
+                'To specify a delivery location please click on the map and drag the pointer to the exact location you would like the parcel to be delivered to.') +
+            '</p></div>' +
+            '<div class="afd-precision-delivery-map-wrapper">' +
+            '<div id="' + containerId + '" class="afd-precision-delivery-map" style="width: 100%; height: 300px;"></div>' +
+            '</div>' +
+            deliveryNotesHtml +
+            '<div class="afd-precision-delivery-warning-overlay" style="display: none;">' +
+            '<div class="afd-precision-delivery-warning-modal">' +
+            '<div class="afd-precision-delivery-warning-content">' +
+            '<h4>Distance Warning</h4>' +
+            '<p class="warning-message"></p></div>' +
+            '<div class="afd-precision-delivery-warning-actions">' +
+            '<button type="button" class="action secondary reset-location">Reset Location</button>' +
+            '<button type="button" class="action primary confirm-location">Confirm Location</button>' +
+            '</div></div></div></div>'
+        );
+    };
+
+    /**
+     * Update existing map and marker to new coordinates
+     */
+    const updateExistingMap = (lat, lng) => {
+        const latNum = parseFloat(lat);
+        const lngNum = parseFloat(lng);
+        if (isNaN(latNum) || isNaN(lngNum)) return;
+
+        const center = new google.maps.LatLng(latNum, lngNum);
+        map.setCenter(center);
+        marker.setPosition(center);
+    };
+
+    /**
+     * Create and show the precision delivery map
+     */
+    const createAndShowMap = (mapContainerId, lat, lng, deliveryNotes) => {
+        let existingContainer = document.getElementById(mapContainerId + '-container');
+
+        if (!existingContainer) {
+            const mapHtml = createPrecisionDeliveryMapHtml(mapContainerId);
+            const target = findMapInsertionPoint();
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = mapHtml;
+            const mapElement = tempDiv.firstElementChild;
+
+            if (target && target.el) {
+                if (target.mode === 'append') {
+                    target.el.appendChild(mapElement);
+                } else {
+                    target.el.before(mapElement);
+                }
+            } else {
+                const metadataContainer = document.getElementById('address-metadata-container');
+                if (metadataContainer) {
+                    metadataContainer.before(mapElement);
+                }
+            }
+        } else {
+            existingContainer.style.display = '';
+        }
+
+        if (deliveryNotes) {
+            const notesField = document.getElementById(mapContainerId + '-delivery-notes');
+            if (notesField) {
+                notesField.value = deliveryNotes;
+            }
+        }
+
+        if (map && marker) {
+            updateExistingMap(lat, lng);
+        } else {
+            initGoogleMap(mapContainerId, lat, lng);
+        }
+    };
+
+    /**
+     * Flatten nested metadata structures
+     */
+    const flattenMetadata = (data, prefix = '') => {
+        const result = {};
+        for (const key in data) {
+            if (Object.prototype.hasOwnProperty.call(data, key)) {
+                const value = data[key];
+                const newKey = prefix === '' ? key : prefix + '_' + key;
+                if (value !== null && typeof value === 'object' && !Array.isArray(value)) {
+                    const nested = flattenMetadata(value, newKey);
+                    Object.assign(result, nested);
+                } else {
+                    result[newKey] = value;
+                }
+            }
+        }
+        return result;
+    };
+
+    /**
+     * Initialize precision delivery for existing addresses
+     */
+    const initExistingAddressPrecisionDelivery = () => {
+        const pdConfig = afdMetadataConfig.precisionDeliveryConfig;
+
+        if (!pdConfig || !pdConfig.enabled) {
+            return;
+        }
+
+        if (!afdMetadataConfig.isEditingExistingAddress) {
+            return;
+        }
+
+        const mapContainerId = 'afd-precision-delivery-map-customer';
+
+        // Case 1: Has existing map data
+        if (afdMetadataConfig.existingMapData) {
+            const data = afdMetadataConfig.existingMapData;
+            const lat = data.selected_lat || data.original_lat;
+            const lng = data.selected_lng || data.original_lng;
+            const ur = data.urban_rural || 'urban';
+            const deliveryNotes = data.delivery_notes || '';
+
+            if (lat && lng) {
+                originalLat = data.original_lat;
+                originalLng = data.original_lng;
+                urbanRural = mapUrbanRuralCode(ur);
+                warningConfirmed = false;
+
+                createAndShowMap(mapContainerId, lat, lng, deliveryNotes);
+
+                const distance = data.distance_from_address || 0;
+                const isAdjusted = data.is_adjusted || false;
+                updateMapDataInMetadata(
+                    data.selected_lat || lat,
+                    data.selected_lng || lng,
+                    distance,
+                    isAdjusted
+                );
+                return;
+            }
+        }
+
+        // Case 2: Has metadata lat/lng but no map data
+        if (afdMetadataConfig.existingMetadataLatLng) {
+            const latLng = afdMetadataConfig.existingMetadataLatLng;
+            const lat2 = latLng.lat;
+            const lng2 = latLng.lng;
+            const ur2 = latLng.urban_rural || 'urban';
+
+            if (lat2 && lng2) {
+                originalLat = lat2;
+                originalLng = lng2;
+                urbanRural = mapUrbanRuralCode(ur2);
+                warningConfirmed = false;
+
+                createAndShowMap(mapContainerId, lat2, lng2, '');
+                updateMapDataInMetadata(lat2, lng2, 0, false);
+                return;
+            }
+        }
+    };
+
+    /**
+     * Process a new address selection from the Alpine store
+     */
+    const processAddressSelection = (selectedItem) => {
+        if (!selectedItem || !Object.keys(selectedItem).length) return;
+
+        const flatData = flattenMetadata(selectedItem);
+
+        // Update metadata hidden field
+        const field = document.getElementById('customer-address-metadata');
+        if (field) {
+            let currentMetadata = {};
+            try {
+                if (field.value) {
+                    currentMetadata = JSON.parse(field.value);
+                }
+            } catch (e) {
+                // ignore
+            }
+
+            const captureFields = afdMetadataConfig.captureFields;
+
+            if (captureFields && captureFields.length > 0) {
+                captureFields.forEach((cf) => {
+                    const fieldName = cf.field || cf;
+                    const normalized = fieldName.toLowerCase().replace(/[_\s]/g, '');
+                    for (const key in flatData) {
+                        if (Object.prototype.hasOwnProperty.call(flatData, key)) {
+                            if (key.toLowerCase().replace(/[_\s]/g, '') === normalized) {
+                                currentMetadata[fieldName] = flatData[key];
+                            }
+                        }
+                    }
+                });
+            } else {
+                Object.assign(currentMetadata, flatData);
+            }
+
+            currentMetadata.is_validated = true;
+            field.value = JSON.stringify(currentMetadata);
+        }
+
+        // Initialize precision delivery map
+        const pdConfig = afdMetadataConfig.precisionDeliveryConfig;
+        if (pdConfig && pdConfig.enabled) {
+            const lat = flatData.Latitude || flatData.latitude;
+            const lng = flatData.Longitude || flatData.longitude;
+            const urbanRuralCode = flatData.UrbanRuralCode || flatData.UrbanRuralName || '';
+
+            if (lat && lng) {
+                originalLat = lat;
+                originalLng = lng;
+                urbanRural = mapUrbanRuralCode(urbanRuralCode);
+                warningConfirmed = false;
+
+                const addBtnContainer = document.getElementById('afd-precision-delivery-add-btn-container');
+                if (addBtnContainer) addBtnContainer.remove();
+
+                createAndShowMap('afd-precision-delivery-map-customer', lat, lng, '');
+
+                // Populate the hidden field so map data is included even if the pin isn't moved
+                updateMapDataInMetadata(lat, lng, 0, false);
+            }
+        }
+    };
+
+    /**
+     * Watch the Alpine store for address selection changes
+     */
+    const bindPceEvents = () => {
+
+        const watchStore = () => {
+            if (!window.Alpine) {
+                setTimeout(watchStore, 200);
+                return;
+            }
+
+            // Try common store IDs (with and without form ID suffix)
+            const storeIDs = ['AFDState', 'AFDState0', 'AFDState1'];
+
+            const tryWatch = () => {
+                for (const storeID of storeIDs) {
+                    const store = window.Alpine.store(storeID);
+                    if (store && store.selectedItem) {
+                        window.Alpine.effect(() => {
+                            const state = window.Alpine.store(storeID);
+                            if (!state) return;
+
+                            if (state.addressStoreEmpty) {
+                                const mapContainer = document.getElementById('afd-precision-delivery-map-customer-container');
+                                if (mapContainer) mapContainer.style.display = 'none';
+                                return;
+                            }
+
+                            const item = state.selectedItem;
+                            if (!item) return;
+
+                            processAddressSelection(item);
+                        });
+                        return true;
+                    }
+                }
+                return false;
+            };
+
+            if (!tryWatch()) {
+                // Store not yet initialized, retry
+                let attempts = 0;
+                const retry = setInterval(() => {
+                    if (tryWatch() || ++attempts > 50) {
+                        clearInterval(retry);
+                    }
+                }, 200);
+            }
+        };
+
+        watchStore();
+    };
+
+    /**
+     * Initialize on DOM ready
+     */
+    /**
+     * Sync delivery notes from textarea into hidden field before form submit
+     */
+    const syncDeliveryNotesBeforeSubmit = () => {
+        const notesInput = document.querySelector('.afd-delivery-notes-input');
+        if (!notesInput) return;
+
+        const field = document.getElementById('customer-address-metadata');
+        if (!field || !field.value) return;
+
+        try {
+            const currentMetadata = JSON.parse(field.value);
+            if (currentMetadata.map_data) {
+                currentMetadata.map_data.delivery_notes = notesInput.value || '';
+                field.value = JSON.stringify(currentMetadata);
+            }
+        } catch (e) {
+            // ignore
+        }
+    };
+
+    const init = () => {
+        bindPceEvents();
+        initExistingAddressPrecisionDelivery();
+
+        // Before form submit, sync delivery notes into the hidden field
+        const form = document.querySelector('form#form-validate, form.form-address-edit');
+        if (form) {
+            form.addEventListener('submit', syncDeliveryNotesBeforeSubmit);
+        }
+    };
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();
+</script>

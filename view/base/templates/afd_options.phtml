@@ -61,7 +61,7 @@
                 val = regionIndex;
                 break;
             }
-            if (['CN', 'BG', 'IT', 'FR', 'DE', 'GR'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
+            if (['CN', 'BG', 'IT', 'FR', 'DE', 'GR', 'AU'].indexOf(mappedCountry) > 0 && regions[mappedCountry][regionIndex].name.match(result.TraditionalCounty)) {
                 val = regionIndex;
             }
         }
@@ -71,7 +71,7 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010803',
+        platformVersion: 'mag010900',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
             pushUp: true,
@@ -151,6 +151,7 @@
         },
         phone: {
             defaultDialingCode: '<?php echo $block->getConfig('afd_phone/fields/dialingCode');?>',
+            defaultCountry: '<?php echo $block->getConfig('general/country/default') ?: 'GB'; ?>',
             loadingSpinner: '.control',
             countryControl: '[name="country_id"]'
         },

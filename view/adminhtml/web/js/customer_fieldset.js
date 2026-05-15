@@ -121,19 +121,19 @@ define(['jquery', 'Magento_Ui/js/form/components/fieldset'], function (
               // crown dependency setting
               if (afdOptions.magentoOptions.typeahead.crownCountries) {
                 if (result.CountryISO === 'GBR') {
+                  let countryCode = 'GB'
                   switch (result.Country) {
                     case 'Isle of Man':
-                      countryControl.val('IM')
+                      countryCode = 'IM'
                       break
                     case 'Jersey':
-                      countryControl.val('JE')
+                      countryCode = 'JE'
                       break
                     case 'Guernsey':
-                      countryControl.val('GG')
+                      countryCode = 'GG'
                       break
-                    default:
-                      countryControl.val('GB')
                   }
+                  countryControl.val(countryCode).trigger('change')
                 }
               }
             })

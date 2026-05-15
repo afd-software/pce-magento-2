@@ -3,9 +3,10 @@ define([
   'uiRegistry',
   'underscore',
   'jquery',
+  'ko',
   'Magento_Checkout/js/model/quote',
   'Afd_Pce/js/checkout/metadata-store'
-], function (Component, registry, _, $, quote, metadataStore) {
+], function (Component, registry, _, $, ko, quote, metadataStore) {
   'use strict'
   //  extends base UIComponent /vendor/magento/module-ui/view/base/web/js/lib/core/collection
 
@@ -35,6 +36,7 @@ define([
     regionComponent: null,
     regionIDElement: null,
     countryComponent: null,
+    precisionDeliveryMap: null,
 
     initialize: function () {
       this._super()
@@ -87,6 +89,9 @@ define([
         // Do not process 'clear' events where data is null, to prevent overwriting.
         if (data) {
           this.processMetadata(data)
+
+          // Initialize Precision Delivery map if enabled and we have coordinates
+          this.initPrecisionDeliveryMap(data)
         }
       })
 
@@ -121,6 +126,10 @@ define([
 
         this.regionVisibility(false)
         $(this.regionIDElement).change()
+      })
+
+      $(document).on('click', '.afd-search-again', () => {
+        $('#afd-precision-delivery-map-shipping-container').hide()
       })
 
       $(document).on('afd:countryChanged', (e, country) => {
@@ -246,32 +255,16 @@ define([
     },
 
     removeFieldChangeListeners: function () {
-      const debugMode = window.checkoutConfig?.afdDebugMode || false
-      const fieldsToWatch = [
-        'street[0]',
-        'street[1]',
-        'street[2]',
-        'city',
-        'postcode',
-        'region',
-        'region_id'
-      ]
-
-      fieldsToWatch.forEach((fieldName) => {
-        const field = $('[name="' + fieldName + '"]')
-        if (field.length) {
-          field.off('input.afdvalidation change.afdvalidation')
-        }
-      })
-
-      if (debugMode) {
-        console.log('[AFD PCE] Removed all field change listeners')
+      const $shippingForm = $('.form-shipping-address')
+      if ($shippingForm.length) {
+        $shippingForm
+          .find('input, select')
+          .off('input.afdvalidation change.afdvalidation')
       }
     },
 
     setupFieldChangeListeners: function () {
       const self = this
-      const debugMode = window.checkoutConfig?.afdDebugMode || false
       const fieldsToWatch = [
         'street[0]',
         'street[1]',
@@ -282,22 +275,15 @@ define([
         'region_id'
       ]
 
-      if (debugMode) {
-        console.log('[AFD PCE] Setting up field change listeners')
+      const $shippingForm = $('.form-shipping-address')
+      if (!$shippingForm.length) {
+        return
       }
 
       fieldsToWatch.forEach((fieldName) => {
-        const field = $('[name="' + fieldName + '"]')
+        const field = $shippingForm.find('[name="' + fieldName + '"]')
         if (field.length) {
-          // Use namespaced events and 'one' to fire only once
           field.one('input.afdvalidation change.afdvalidation', function () {
-            if (debugMode) {
-              console.log(
-                '[AFD PCE] User manually edited field:',
-                fieldName,
-                '- invalidating metadata'
-              )
-            }
             const currentMetadata = metadataStore.get()
             if (currentMetadata && currentMetadata !== '{}') {
               try {
@@ -305,19 +291,11 @@ define([
                 if (metadataObj.is_validated === true) {
                   metadataObj.is_validated = false
                   metadataStore.set(JSON.stringify(metadataObj))
-
-                  if (debugMode) {
-                    console.log(
-                      '[AFD PCE] Metadata invalidated, new value:',
-                      metadataStore.get()
-                    )
-                  }
-
-                  // Remove all listeners after invalidation
                   self.removeFieldChangeListeners()
                 }
               } catch (e) {
-                console.error('[AFD PCE] Error invalidating metadata:', e)
+                console.log(e)
+                // Ignore parse errors
               }
             }
           })
@@ -357,6 +335,458 @@ define([
           $(this.regionIDElement).closest('.field').hide()
         }
       }
+    },
+
+    initPrecisionDeliveryMap: function (metadata) {
+      const precisionDeliveryConfig =
+        window.checkoutConfig?.afd?.precisionDelivery
+      const debugMode = window.checkoutConfig?.afdDebugMode || false
+
+      if (!precisionDeliveryConfig || !precisionDeliveryConfig.enabled) {
+        if (debugMode) {
+          console.log('[AFD PCE] Precision Delivery is not enabled')
+        }
+        return
+      }
+
+      // Get coordinates from metadata
+      const flattenedMetadata = this.flattenMetadata(metadata)
+      const lat = flattenedMetadata.Latitude || flattenedMetadata.latitude
+      const lng = flattenedMetadata.Longitude || flattenedMetadata.longitude
+      const urbanRuralCode =
+        flattenedMetadata.UrbanRuralCode ||
+        flattenedMetadata.UrbanRuralName ||
+        ''
+
+      if (!lat || !lng) {
+        if (debugMode) {
+          console.log(
+            '[AFD PCE] No coordinates found in metadata for Precision Delivery'
+          )
+        }
+        return
+      }
+
+      if (debugMode) {
+        console.log('[AFD PCE] Initializing Precision Delivery map with:', {
+          lat,
+          lng,
+          urbanRuralCode
+        })
+      }
+
+      // Create map container if it doesn't exist
+      const mapContainerId = 'afd-precision-delivery-map-shipping'
+      let $mapContainer = $('#' + mapContainerId)
+
+      if (!$mapContainer.length) {
+        const mapHtml = this.createPrecisionDeliveryMapHtml(
+          mapContainerId,
+          precisionDeliveryConfig
+        )
+        // Insert after the typeahead field
+        $('[data-afd-control="typeahead"]').closest('.field').after(mapHtml)
+        $mapContainer = $('#' + mapContainerId)
+      } else {
+        $('#' + mapContainerId + '-container').show()
+      }
+
+      // Initialize or update the map
+      this.initGoogleMap(
+        mapContainerId,
+        lat,
+        lng,
+        urbanRuralCode,
+        precisionDeliveryConfig
+      )
+    },
+
+    createPrecisionDeliveryMapHtml: function (containerId, config) {
+      const deliveryNotesHtml = config.enableDeliveryNotes
+        ? `
+          <div class="afd-precision-delivery-notes">
+            <label class="label" for="${containerId}-delivery-notes">Delivery Instructions</label>
+            <textarea id="${containerId}-delivery-notes" 
+                      class="input-text afd-delivery-notes-input"
+                      placeholder="${config.deliveryNotesPlaceholder || 'Any specific delivery information?'}"
+                      rows="3"
+                      maxlength="500"></textarea>
+          </div>
+      `
+        : ''
+
+      return `
+        <div class="afd-precision-delivery-container field" id="${containerId}-container">
+          <div class="afd-precision-delivery-header">
+            <h4 class="afd-precision-delivery-title">Precision Delivery</h4>
+            <p class="afd-precision-delivery-instructions">${config.instructionText || 'To specify a delivery location please click on the map and drag the pointer to the exact location you would like the parcel to be delivered to.'}</p>
+          </div>
+          <div class="afd-precision-delivery-map-wrapper">
+            <div id="${containerId}" class="afd-precision-delivery-map" style="width: 100%; height: 300px;"></div>
+          </div>
+          ${deliveryNotesHtml}
+          <div class="afd-precision-delivery-warning-overlay" style="display: none;">
+            <div class="afd-precision-delivery-warning-modal">
+              <div class="afd-precision-delivery-warning-content">
+                <h4>Distance Warning</h4>
+                <p class="warning-message"></p>
+              </div>
+              <div class="afd-precision-delivery-warning-actions">
+                <button type="button" class="action secondary reset-location">Reset Location</button>
+                <button type="button" class="action primary confirm-location">Confirm Location</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    },
+
+    initGoogleMap: function (containerId, lat, lng, urbanRuralCode, config) {
+      const self = this
+
+      // Store original coordinates
+      this.originalLat = lat
+      this.originalLng = lng
+      this.urbanRural = this.mapUrbanRuralCode(urbanRuralCode)
+      this.warningConfirmed = false
+
+      // Load Google Maps API if not already loaded
+      if (!window.google || !window.google.maps) {
+        this.loadGoogleMapsApi(config.apiKey, function () {
+          self.createMap(containerId, lat, lng, config)
+        })
+      } else {
+        this.createMap(containerId, lat, lng, config)
+      }
+    },
+
+    loadGoogleMapsApi: function (apiKey, callback) {
+      if (window.afdGoogleMapsLoading) {
+        window.afdGoogleMapsCallbacks = window.afdGoogleMapsCallbacks || []
+        window.afdGoogleMapsCallbacks.push(callback)
+        return
+      }
+
+      window.afdGoogleMapsLoading = true
+      window.afdGoogleMapsCallbacks = [callback]
+
+      window.afdInitGoogleMaps = function () {
+        window.afdGoogleMapsLoading = false
+        window.afdGoogleMapsCallbacks.forEach(function (cb) {
+          cb()
+        })
+        window.afdGoogleMapsCallbacks = []
+      }
+
+      const script = document.createElement('script')
+      script.src =
+        'https://maps.googleapis.com/maps/api/js?key=' +
+        apiKey +
+        '&libraries=geometry&callback=afdInitGoogleMaps'
+      script.async = true
+      script.defer = true
+      document.head.appendChild(script)
+    },
+
+    createMap: function (containerId, lat, lng, config) {
+      const self = this
+      const debugMode = window.checkoutConfig?.afdDebugMode || false
+      const mapContainer = document.getElementById(containerId)
+
+      if (!mapContainer) {
+        console.error('[AFD PCE] Map container not found:', containerId)
+        return
+      }
+
+      const latNum = parseFloat(lat)
+      const lngNum = parseFloat(lng)
+
+      if (isNaN(latNum) || isNaN(lngNum)) {
+        console.error('[AFD PCE] Invalid coordinates:', lat, lng)
+        return
+      }
+
+      const center = { lat: latNum, lng: lngNum }
+
+      const mapOptions = {
+        center: center,
+        zoom: config.defaultZoom || 17,
+        mapTypeId: config.defaultMapType || 'roadmap',
+        disableDefaultUI: true,
+        zoomControl: true,
+        scrollwheel: true,
+        draggable: true,
+        mapTypeControl: false,
+        streetViewControl: false,
+        fullscreenControl: false
+      }
+
+      // Create map
+      this.map = new google.maps.Map(mapContainer, mapOptions)
+
+      // Marker options
+      const markerOptions = {
+        position: center,
+        map: this.map,
+        draggable: true,
+        title: 'Delivery Location'
+      }
+
+      // Custom marker icon
+      if (config.pointerImageUrl) {
+        markerOptions.icon = {
+          url: config.pointerImageUrl,
+          scaledSize: new google.maps.Size(32, 32)
+        }
+      }
+
+      // Create marker
+      this.marker = new google.maps.Marker(markerOptions)
+
+      // Handle marker drag
+      this.marker.addListener('dragend', function () {
+        self.onMarkerMoved(config)
+      })
+
+      // Handle map click
+      this.map.addListener('click', function (event) {
+        self.marker.setPosition(event.latLng)
+        self.onMarkerMoved(config)
+      })
+
+      // Store initial map data so it's saved even if user doesn't move the pin
+      this.updateMapDataInStore(lat, lng, 0, false)
+
+      // Bind delivery notes change event
+      this.bindDeliveryNotesChange()
+
+      if (debugMode) {
+        console.log('[AFD PCE] Precision Delivery map initialized')
+      }
+    },
+
+    onMarkerMoved: function (config) {
+      const position = this.marker.getPosition()
+      const newLat = position.lat().toFixed(7)
+      const newLng = position.lng().toFixed(7)
+
+      // Calculate distance using Google's geometry library or fallback to Haversine
+      let distance = 0
+      const origLat = parseFloat(this.originalLat)
+      const origLng = parseFloat(this.originalLng)
+      const selLat = parseFloat(newLat)
+      const selLng = parseFloat(newLng)
+
+      if (window.google && window.google.maps && window.google.maps.geometry) {
+        const original = new google.maps.LatLng(origLat, origLng)
+        const selected = new google.maps.LatLng(selLat, selLng)
+        distance = google.maps.geometry.spherical.computeDistanceBetween(
+          original,
+          selected
+        )
+      } else {
+        // Fallback: Haversine formula for distance in meters
+        distance = this.calculateHaversineDistance(
+          origLat,
+          origLng,
+          selLat,
+          selLng
+        )
+      }
+
+      const isAdjusted = distance > 1
+
+      // Check for warning threshold
+      if (
+        config.enableDistanceWarning &&
+        config.triggerWarningStorefront &&
+        !this.warningConfirmed
+      ) {
+        const threshold =
+          this.urbanRural === 'rural'
+            ? config.warningThresholdRural
+            : config.warningThresholdUrban
+
+        if (distance > threshold) {
+          this.showDistanceWarning(config, distance, newLat, newLng)
+          return
+        }
+      }
+
+      // Update metadata store with map data
+      this.updateMapDataInStore(newLat, newLng, distance, isAdjusted)
+    },
+
+    showDistanceWarning: function (config, distance, newLat, newLng) {
+      const self = this
+      const $container = $('#afd-precision-delivery-map-shipping-container')
+      const $overlay = $container.find(
+        '.afd-precision-delivery-warning-overlay'
+      )
+      const $message = $overlay.find('.warning-message')
+
+      const warningMessage = (
+        config.warningMessage ||
+        'The distance selected on the map from the original search location is {distance}m, are you sure this is the correct delivery location?'
+      ).replace('{distance}', Math.round(distance))
+
+      $message.text(warningMessage)
+      $overlay.show()
+
+      // Bind button handlers
+      $overlay
+        .find('.reset-location')
+        .off('click')
+        .on('click', function () {
+          self.resetMarkerPosition()
+          $overlay.hide()
+        })
+
+      $overlay
+        .find('.confirm-location')
+        .off('click')
+        .on('click', function () {
+          self.warningConfirmed = true
+          $overlay.hide()
+          self.updateMapDataInStore(newLat, newLng, distance, true)
+        })
+    },
+
+    resetMarkerPosition: function () {
+      if (this.marker && this.originalLat && this.originalLng) {
+        const originalPosition = new google.maps.LatLng(
+          parseFloat(this.originalLat),
+          parseFloat(this.originalLng)
+        )
+        this.marker.setPosition(originalPosition)
+        this.updateMapDataInStore(this.originalLat, this.originalLng, 0, false)
+      }
+    },
+
+    updateMapDataInStore: function (
+      selectedLat,
+      selectedLng,
+      distance,
+      isAdjusted
+    ) {
+      const debugMode = window.checkoutConfig?.afdDebugMode || false
+
+      // Get delivery notes from textarea if it exists
+      const deliveryNotesInput = document.querySelector(
+        '.afd-delivery-notes-input'
+      )
+      const deliveryNotes = deliveryNotesInput ? deliveryNotesInput.value : ''
+
+      const mapData = {
+        original_lat: this.originalLat,
+        original_lng: this.originalLng,
+        selected_lat: selectedLat,
+        selected_lng: selectedLng,
+        distance_from_address: Math.round(distance),
+        urban_rural: this.urbanRural,
+        is_adjusted: isAdjusted,
+        delivery_notes: deliveryNotes
+      }
+
+      // Get current metadata and add map_data
+      const currentMetadata = metadataStore.get()
+      let metadataObj = {}
+
+      if (currentMetadata && currentMetadata !== '{}') {
+        try {
+          metadataObj = JSON.parse(currentMetadata)
+        } catch (e) {
+          console.error('[AFD PCE] Error parsing metadata:', e)
+        }
+      }
+
+      metadataObj.map_data = mapData
+      metadataStore.set(JSON.stringify(metadataObj))
+
+      if (debugMode) {
+        console.log('[AFD PCE] Updated map data in store:', mapData)
+      }
+    },
+
+    // Bind delivery notes change event to update metadata
+    bindDeliveryNotesChange: function () {
+      const self = this
+      $(document).on('change keyup', '.afd-delivery-notes-input', function () {
+        // Re-update map data with new delivery notes
+        if (self.marker) {
+          const position = self.marker.getPosition()
+          const lat = position.lat().toFixed(7)
+          const lng = position.lng().toFixed(7)
+
+          let distance = 0
+          const origLat = parseFloat(self.originalLat)
+          const origLng = parseFloat(self.originalLng)
+          const selLat = parseFloat(lat)
+          const selLng = parseFloat(lng)
+
+          if (
+            window.google &&
+            window.google.maps &&
+            window.google.maps.geometry
+          ) {
+            const original = new google.maps.LatLng(origLat, origLng)
+            const selected = new google.maps.LatLng(selLat, selLng)
+            distance = google.maps.geometry.spherical.computeDistanceBetween(
+              original,
+              selected
+            )
+          } else {
+            distance = self.calculateHaversineDistance(
+              origLat,
+              origLng,
+              selLat,
+              selLng
+            )
+          }
+
+          self.updateMapDataInStore(lat, lng, distance, distance > 1)
+        }
+      })
+    },
+
+    /**
+     * Rural codes are: D1, D2, E1, E2, F1, F2, S6, S7, S8
+     * All other codes default to 'urban'
+     *
+     * @param {string} code - The UrbanRuralCode from AFD API
+     * @return {string} 'rural' or 'urban'
+     */
+    mapUrbanRuralCode: function (code) {
+      if (!code) return 'urban'
+
+      const ruralCodes = ['D1', 'D2', 'E1', 'E2', 'F1', 'F2', 'S6', 'S7', 'S8']
+      const normalizedCode = code.toString().toUpperCase().trim()
+
+      return ruralCodes.includes(normalizedCode) ? 'rural' : 'urban'
+    },
+
+    /**
+     * Calculate distance between two points using Haversine formula
+     * Fallback when Google geometry library isn't available
+     *
+     * @param {number} lat1
+     * @param {number} lng1
+     * @param {number} lat2
+     * @param {number} lng2
+     * @return {number} Distance in meters
+     */
+    calculateHaversineDistance: function (lat1, lng1, lat2, lng2) {
+      const R = 6371000 // Earth's radius in meters
+      const dLat = ((lat2 - lat1) * Math.PI) / 180
+      const dLng = ((lng2 - lng1) * Math.PI) / 180
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos((lat1 * Math.PI) / 180) *
+          Math.cos((lat2 * Math.PI) / 180) *
+          Math.sin(dLng / 2) *
+          Math.sin(dLng / 2)
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
+      return R * c
     }
   })
 })

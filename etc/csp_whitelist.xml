@@ -11,14 +11,29 @@
             <values>
                 <!--Google-->
                 <value id="google" type="host" >www.google.com</value>
+                <value id="google-maps" type="host" >maps.googleapis.com</value>
 
                 <!--AFD-->
                 <value id="afd" type="host">*.afd.co.uk</value>
                 <value id="jsdelivr" type="host">*.jsdelivr.net</value>
             </values>
         </policy>
+        <policy id="style-src">
+            <values>
+                <value id="google" type="host">fonts.googleapis.com</value>
+            </values>
+        </policy>
+        <policy id="font-src">
+            <values>
+                <value id="google" type="host">fonts.gstatic.com</value>
+            </values>
+        </policy>
         <policy id="img-src">
             <values>
+                <!--Google Maps-->
+                <value id="google-maps" type="host" >*.googleapis.com</value>
+                <value id="google-maps-static" type="host">*.gstatic.com</value>
+                
                 <!--AFD-->
                 <value id="afd" type="host">*.afd.co.uk</value>
             </values>
@@ -26,6 +41,7 @@
         <policy id="connect-src">
             <values>
                 <value id="afd" type="host">*.afd.co.uk</value>
+                <value id="google-maps" type="host">*.googleapis.com</value>
             </values>
         </policy>
     </policies>

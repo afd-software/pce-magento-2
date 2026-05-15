@@ -85,6 +85,20 @@
                 <distanceUnit>m</distanceUnit>
                 <distanceTemplate>{distance} Miles</distanceTemplate>
             </what3words>
+            <precision_delivery>
+                <enabled>0</enabled>
+                <instruction_text>To specify a delivery location please click on the map and drag the pointer to the exact location you would like the parcel to be delivered to.</instruction_text>
+                <default_zoom>19</default_zoom>
+                <default_map_type>hybrid</default_map_type>
+                <enable_distance>1</enable_distance>
+                <enable_distance_warning>1</enable_distance_warning>
+                <warning_threshold_urban>150</warning_threshold_urban>
+                <warning_threshold_rural>750</warning_threshold_rural>
+                <trigger_warning_storefront>0</trigger_warning_storefront>
+                <warning_message>The distance selected on the map from the original search location is {distance}m, are you sure this is the correct delivery location?</warning_message>
+                <enable_qr_code>1</enable_qr_code>
+                <display_on_success_page>0</display_on_success_page>
+            </precision_delivery>
             <advanced>
                 <enterpriseEdition>1</enterpriseEdition>
                 <customPCESearchParams>a:0:{}</customPCESearchParams>

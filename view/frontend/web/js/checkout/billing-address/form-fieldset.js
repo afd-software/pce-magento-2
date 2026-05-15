@@ -4,8 +4,8 @@ define([
   'underscore',
   'jquery',
   'Magento_Checkout/js/model/quote',
-  'Afd_Pce/js/checkout/metadata-store'
-], function (Component, registry, _, $, quote, metadataStore) {
+  'Afd_Pce/js/checkout/billing-metadata-store'
+], function (Component, registry, _, $, quote, billingMetadataStore) {
   'use strict'
   //  extends base UIComponent /vendor/magento/module-ui/view/base/web/js/lib/core/collection
 
@@ -118,6 +118,8 @@ define([
                 }
                 billingAddress['extension_attributes']['afd_address_metadata'] =
                   shippingMetadata
+
+                billingMetadataStore.set(shippingMetadata)
 
                 console.log(
                   '[AFD PCE] Copied metadata from shipping to billing (same as shipping checked)'
@@ -349,7 +351,12 @@ define([
         is_validated: true
       }
 
-      metadataStore.set(metadataJson)
+      billingMetadataStore.set(metadataObject)
+
+      this.removeFieldChangeListeners()
+      setTimeout(() => {
+        this.setupFieldChangeListeners()
+      }, 500)
 
       const address = quote.billingAddress()
 
@@ -364,95 +371,42 @@ define([
         ...(address['extension_attributes'] || {})
       }
       address['extension_attributes']['afd_address_metadata'] = metadataObject
-
-      // Remove any existing listeners before adding new ones (in case of re-search)
-      this.removeFieldChangeListeners()
-
-      // Set up listeners AFTER a short delay to avoid triggering on AFD population
-      setTimeout(() => {
-        this.setupFieldChangeListeners(address)
-      }, 500)
     },
 
     removeFieldChangeListeners: function () {
-      const debugMode = window.checkoutConfig?.afdDebugMode || false
-      const fieldsToWatch = [
-        'billing-address-fieldset.street.0',
-        'billing-address-fieldset.street.1',
-        'billing-address-fieldset.street.2',
-        'billing-address-fieldset.city',
-        'billing-address-fieldset.postcode',
-        'billing-address-fieldset.region',
-        'billing-address-fieldset.region_id'
-      ]
-
-      fieldsToWatch.forEach((fieldName) => {
-        const field = $('[name="' + fieldName + '"]')
-        if (field.length) {
-          field.off('input.afdvalidation change.afdvalidation')
-        }
-      })
-
-      if (debugMode) {
-        console.log('[AFD PCE Billing] Removed all field change listeners')
+      const $billingForm = $('.billing-address-form')
+      if ($billingForm.length) {
+        $billingForm
+          .find('input, select')
+          .off('input.afdvalidation change.afdvalidation')
       }
     },
 
-    setupFieldChangeListeners: function (address) {
+    setupFieldChangeListeners: function () {
       const self = this
-      const debugMode = window.checkoutConfig?.afdDebugMode || false
       const fieldsToWatch = [
-        'billing-address-fieldset.street.0',
-        'billing-address-fieldset.street.1',
-        'billing-address-fieldset.street.2',
-        'billing-address-fieldset.city',
-        'billing-address-fieldset.postcode',
-        'billing-address-fieldset.region',
-        'billing-address-fieldset.region_id'
+        'street[0]',
+        'street[1]',
+        'street[2]',
+        'city',
+        'postcode',
+        'region',
+        'region_id'
       ]
 
-      if (debugMode) {
-        console.log('[AFD PCE Billing] Setting up field change listeners')
+      const $billingForm = $('.billing-address-form')
+      if (!$billingForm.length) {
+        return
       }
 
       fieldsToWatch.forEach((fieldName) => {
-        const field = $('[name="' + fieldName + '"]')
+        const field = $billingForm.find('[name="' + fieldName + '"]')
         if (field.length) {
-          // Use namespaced events and 'one' to fire only once
           field.one('input.afdvalidation change.afdvalidation', function () {
-            if (debugMode) {
-              console.log(
-                '[AFD PCE Billing] User manually edited field:',
-                fieldName,
-                '- invalidating metadata'
-              )
-            }
-            if (
-              address &&
-              address.extensionAttributes &&
-              address.extensionAttributes['afd_address_metadata']
-            ) {
-              // Only invalidate if it's currently true
-              if (
-                address.extensionAttributes['afd_address_metadata']
-                  .is_validated === true
-              ) {
-                address.extensionAttributes[
-                  'afd_address_metadata'
-                ].is_validated = false
-                address['extension_attributes'][
-                  'afd_address_metadata'
-                ].is_validated = false
-
-                if (debugMode) {
-                  console.log(
-                    '[AFD PCE Billing] Metadata invalidated, is_validated set to false'
-                  )
-                }
-
-                // Remove all listeners after invalidation
-                self.removeFieldChangeListeners()
-              }
+            const storedMetadata = billingMetadataStore.get()
+            if (storedMetadata && storedMetadata.is_validated === true) {
+              billingMetadataStore.clear()
+              self.removeFieldChangeListeners()
             }
           })
         }

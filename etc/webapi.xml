@@ -2,4 +2,12 @@
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
     <!-- This file ensures that extension attributes are properly handled by the Web API -->
+    
+    <!-- Save customer address map data -->
+    <route url="/V1/afd-pce/customer-address-map-data" method="POST">
+        <service class="Afd\Pce\Api\CustomerAddressMapDataManagementInterface" method="save"/>
+        <resources>
+            <resource ref="self"/>
+        </resources>
+    </route>
 </routes>

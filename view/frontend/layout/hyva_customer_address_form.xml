@@ -16,5 +16,10 @@
         <action method="setTemplate">
             <argument name="template" xsi:type="string">Afd_Pce::hyva/customer/edit.phtml</argument>
         </action>
+        <block class="Afd\Pce\Block\Customer\Address\Metadata"
+               name="customer.address.metadata.hyva"
+               template="Afd_Pce::hyva/customer/address/metadata.phtml"
+               after="-"
+               ifconfig="afd_typeahead/metadata/enabled" />
     </referenceBlock>
 </page>

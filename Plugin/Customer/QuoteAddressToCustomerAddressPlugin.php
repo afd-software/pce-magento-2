@@ -16,6 +16,7 @@ namespace Afd\Pce\Plugin\Customer;
 
 use Afd\Pce\Api\Data\AddressMetadataInterfaceFactory;
 use Afd\Pce\Model\CustomerAddressMetadataRepository;
+use Afd\Pce\Model\QuoteAddressMapDataRepository;
 use Afd\Pce\Model\QuoteAddressMetadataRepository;
 use Magento\Customer\Api\Data\AddressInterface as CustomerAddressInterface;
 use Magento\Customer\Api\Data\AddressExtensionFactory;
@@ -54,6 +55,11 @@ class QuoteAddressToCustomerAddressPlugin
     private $quoteAddressMetadataRepository;
 
     /**
+     * @var QuoteAddressMapDataRepository
+     */
+    private $quoteAddressMapDataRepository;
+
+    /**
      * @var AddressMetadataInterfaceFactory
      */
     private $addressMetadataFactory;
@@ -73,6 +79,7 @@ class QuoteAddressToCustomerAddressPlugin
      *
      * @param CustomerAddressMetadataRepository $customerAddressMetadataRepository
      * @param QuoteAddressMetadataRepository $quoteAddressMetadataRepository
+     * @param QuoteAddressMapDataRepository $quoteAddressMapDataRepository
      * @param AddressMetadataInterfaceFactory $addressMetadataFactory
      * @param AddressExtensionFactory $addressExtensionFactory
      * @param LoggerInterface $logger
@@ -80,12 +87,14 @@ class QuoteAddressToCustomerAddressPlugin
     public function __construct(
         CustomerAddressMetadataRepository $customerAddressMetadataRepository,
         QuoteAddressMetadataRepository $quoteAddressMetadataRepository,
+        QuoteAddressMapDataRepository $quoteAddressMapDataRepository,
         AddressMetadataInterfaceFactory $addressMetadataFactory,
         AddressExtensionFactory $addressExtensionFactory,
         LoggerInterface $logger
     ) {
         $this->customerAddressMetadataRepository = $customerAddressMetadataRepository;
         $this->quoteAddressMetadataRepository = $quoteAddressMetadataRepository;
+        $this->quoteAddressMapDataRepository = $quoteAddressMapDataRepository;
         $this->addressMetadataFactory = $addressMetadataFactory;
         $this->addressExtensionFactory = $addressExtensionFactory;
         $this->logger = $logger;
@@ -115,12 +124,38 @@ class QuoteAddressToCustomerAddressPlugin
                 'quote'
             );
 
+            // Embed map data from the separate quote map data table into the metadata JSON
+            // so that SaveCustomerAddressMetadataPlugin::saveMapDataFromMetadata() can extract it
+            try {
+                $quoteMapData = $this->quoteAddressMapDataRepository->getByParentId(
+                    (int)$subject->getId()
+                );
+                $metadataJson = $quoteAddressMetadata->getMetadata();
+                $metadataArray = $metadataJson ? json_decode($metadataJson, true) : [];
+                if (!is_array($metadataArray)) {
+                    $metadataArray = [];
+                }
+                $metadataArray['map_data'] = [
+                    'original_lat' => $quoteMapData->getOriginalLat(),
+                    'original_lng' => $quoteMapData->getOriginalLng(),
+                    'selected_lat' => $quoteMapData->getSelectedLat(),
+                    'selected_lng' => $quoteMapData->getSelectedLng(),
+                    'distance_from_address' => $quoteMapData->getDistanceFromAddress(),
+                    'urban_rural' => $quoteMapData->getUrbanRural(),
+                    'is_adjusted' => $quoteMapData->getIsAdjusted(),
+                    'delivery_notes' => $quoteMapData->getDeliveryNotes(),
+                ];
+                $quoteAddressMetadata->setMetadata(json_encode($metadataArray));
+            } catch (NoSuchEntityException $e) {
+                // No map data exists for this quote address - that's fine
+            }
+
             // Set extension attributes on customer address
             $extensionAttributes = $result->getExtensionAttributes();
             if ($extensionAttributes === null) {
                 $extensionAttributes = $this->addressExtensionFactory->create();
             }
-            
+
             $extensionAttributes->setAfdAddressMetadata($quoteAddressMetadata);
             $extensionAttributes->setAfdAddressValidated($quoteAddressMetadata->getIsValidated());
             $result->setExtensionAttributes($extensionAttributes);

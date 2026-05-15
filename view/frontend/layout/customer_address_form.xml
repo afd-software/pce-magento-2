@@ -8,6 +8,8 @@
         <css src="Afd_Pce::css/jquery.result.list.afd.css"/>
         <css src="Afd_Pce::css/afd.styles.css"/>
         <css src="Afd_Pce::css/address-metadata.css"/>
+        <css src="Afd_Pce::css/precision-delivery.css"/>
+        <css src="Afd_Pce::css/cleanse-on-submit.css"/>
     </head>
     <referenceContainer name="head.components">
         <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"

@@ -168,7 +168,7 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                         <?php if ($block->getConfig('afd_typeahead/reverseGeocode/enable') == 1): ?>
                             <div class="reverse-geocode-container">
                                 <button class="primary action reverse-geocode-button"
-                                        data-afd-control="reverseGeocodeButton" id="reverseGeocodeButton">
+                                        id="reverseGeocodeButton">
                                     <span><?php echo $block->getConfig('afd_typeahead/reverseGeocode/buttonText') ?></span>
                                 </button>
                             </div>
@@ -177,7 +177,6 @@ $requiredAttributesPrechecked = $block->getData('required_attributes_prechecked'
                                 class="input-text"
                                 type="search"
                                 autocomplete="password-new"
-                                data-afd-control="typeahead"
                                 id="typeahead"
                                 placeholder="<?php echo $block->getConfig('afd_typeahead/fields/placeholder') ?>"
                                 name="afd-search-<?php echo rand(); ?>"

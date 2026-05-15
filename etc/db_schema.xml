@@ -70,4 +70,95 @@
             <column name="parent_id"/>
         </index>
     </table>
+    <!-- Precision Delivery Map Data Tables -->
+    <table name="afd_quote_address_map_data" resource="default" engine="innodb" comment="AFD PCE Quote Address Map Data">
+        <column xsi:type="int" name="map_data_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Map Data ID"/>
+        <column xsi:type="int" name="parent_id" padding="10" unsigned="true" nullable="false" identity="false"
+                comment="Quote Address ID"/>
+        <column xsi:type="varchar" name="original_lat" length="50" nullable="true" comment="Original Latitude from AFD"/>
+        <column xsi:type="varchar" name="original_lng" length="50" nullable="true" comment="Original Longitude from AFD"/>
+        <column xsi:type="varchar" name="selected_lat" length="50" nullable="true" comment="User Selected Latitude"/>
+        <column xsi:type="varchar" name="selected_lng" length="50" nullable="true" comment="User Selected Longitude"/>
+        <column xsi:type="decimal" name="distance_from_address" scale="2" precision="12" unsigned="true" nullable="true"
+                comment="Distance from Original Address in Meters"/>
+        <column xsi:type="varchar" name="urban_rural" length="20" nullable="true" comment="Urban or Rural Classification"/>
+        <column xsi:type="boolean" name="is_adjusted" nullable="false" default="0"
+                comment="Flag indicating if delivery point was adjusted from original"/>
+        <column xsi:type="text" name="delivery_notes" nullable="true"
+                comment="Additional delivery information provided by customer"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="map_data_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="AFD_QUOTE_ADDR_MAP_DATA_PARENT_ID_QUOTE_ADDR_ADDR_ID"
+                    table="afd_quote_address_map_data" column="parent_id" referenceTable="quote_address"
+                    referenceColumn="address_id" onDelete="CASCADE"/>
+        <index referenceId="AFD_QUOTE_ADDR_MAP_DATA_PARENT_ID" indexType="btree">
+            <column name="parent_id"/>
+        </index>
+    </table>
+    <table name="afd_order_address_map_data" resource="default" engine="innodb" comment="AFD PCE Order Address Map Data">
+        <column xsi:type="int" name="map_data_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Map Data ID"/>
+        <column xsi:type="int" name="parent_id" padding="10" unsigned="true" nullable="false" identity="false"
+                comment="Order Address ID"/>
+        <column xsi:type="varchar" name="original_lat" length="50" nullable="true" comment="Original Latitude from AFD"/>
+        <column xsi:type="varchar" name="original_lng" length="50" nullable="true" comment="Original Longitude from AFD"/>
+        <column xsi:type="varchar" name="selected_lat" length="50" nullable="true" comment="User Selected Latitude"/>
+        <column xsi:type="varchar" name="selected_lng" length="50" nullable="true" comment="User Selected Longitude"/>
+        <column xsi:type="decimal" name="distance_from_address" scale="2" precision="12" unsigned="true" nullable="true"
+                comment="Distance from Original Address in Meters"/>
+        <column xsi:type="varchar" name="urban_rural" length="20" nullable="true" comment="Urban or Rural Classification"/>
+        <column xsi:type="boolean" name="is_adjusted" nullable="false" default="0"
+                comment="Flag indicating if delivery point was adjusted from original"/>
+        <column xsi:type="text" name="delivery_notes" nullable="true"
+                comment="Additional delivery information provided by customer"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="map_data_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="AFD_ORDER_ADDR_MAP_DATA_PARENT_ID_SALES_ORDER_ADDR_ENTITY_ID"
+                    table="afd_order_address_map_data" column="parent_id" referenceTable="sales_order_address"
+                    referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="AFD_ORDER_ADDR_MAP_DATA_PARENT_ID" indexType="btree">
+            <column name="parent_id"/>
+        </index>
+    </table>
+    <table name="afd_customer_address_map_data" resource="default" engine="innodb" comment="AFD PCE Customer Address Map Data">
+        <column xsi:type="int" name="map_data_id" padding="10" unsigned="true" nullable="false" identity="true"
+                comment="Map Data ID"/>
+        <column xsi:type="int" name="parent_id" padding="10" unsigned="true" nullable="false" identity="false"
+                comment="Customer Address ID"/>
+        <column xsi:type="varchar" name="original_lat" length="50" nullable="true" comment="Original Latitude from AFD"/>
+        <column xsi:type="varchar" name="original_lng" length="50" nullable="true" comment="Original Longitude from AFD"/>
+        <column xsi:type="varchar" name="selected_lat" length="50" nullable="true" comment="User Selected Latitude"/>
+        <column xsi:type="varchar" name="selected_lng" length="50" nullable="true" comment="User Selected Longitude"/>
+        <column xsi:type="decimal" name="distance_from_address" scale="2" precision="12" unsigned="true" nullable="true"
+                comment="Distance from Original Address in Meters"/>
+        <column xsi:type="varchar" name="urban_rural" length="20" nullable="true" comment="Urban or Rural Classification"/>
+        <column xsi:type="boolean" name="is_adjusted" nullable="false" default="0"
+                comment="Flag indicating if delivery point was adjusted from original"/>
+        <column xsi:type="text" name="delivery_notes" nullable="true"
+                comment="Additional delivery information provided by customer"/>
+        <column xsi:type="timestamp" name="created_at" on_update="false" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Created At"/>
+        <column xsi:type="timestamp" name="updated_at" on_update="true" nullable="false" default="CURRENT_TIMESTAMP"
+                comment="Updated At"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="map_data_id"/>
+        </constraint>
+        <constraint xsi:type="foreign" referenceId="AFD_CUST_ADDR_MAP_DATA_PARENT_ID_CUST_ADDR_ENTITY_ENTITY_ID"
+                    table="afd_customer_address_map_data" column="parent_id" referenceTable="customer_address_entity"
+                    referenceColumn="entity_id" onDelete="CASCADE"/>
+        <index referenceId="AFD_CUST_ADDR_MAP_DATA_PARENT_ID" indexType="btree">
+            <column name="parent_id"/>
+        </index>
+    </table>
 </schema>

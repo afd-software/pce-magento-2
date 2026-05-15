@@ -56,28 +56,24 @@
             // crown dependency setting
             if ('<?php echo $block->getConfig('afd_typeahead/fields/crownDependencies');?>' === '1') {
 
-                var country;
-
                 var countryFields = $("#country, " + countrySelector);
 
                 if (result.CountryISO === "GBR") {
+                    var countryCode = "GB";
                     switch (result.Country) {
                         case "Isle of Man":
-                            countryFields.val("IM");
+                            countryCode = "IM";
                             break;
                         case "Jersey":
-                            countryFields.val("JE");
+                            countryCode = "JE";
                             break;
                         case "Guernsey":
-                            countryFields.val("GG");
+                            countryCode = "GG";
                             break;
-                        default:
-                            countryFields.val("GB");
                     }
+                    countryFields.val(countryCode).trigger('change');
                 }
             }
-
-
 
         });
 

@@ -10,8 +10,11 @@ declare(strict_types=1);
 namespace Afd\Pce\Block\Customer\Address;
 
 use Afd\Pce\Helper\AddressMetadata as AddressMetadataHelper;
+use Afd\Pce\Helper\PrecisionDelivery as PrecisionDeliveryHelper;
+use Afd\Pce\Helper\CleanseOnSubmit as CleanseOnSubmitHelper;
 use Afd\Pce\Model\CustomerAddressMetadataFactory;
 use Afd\Pce\Model\CustomerAddressMetadataRepository;
+use Afd\Pce\Model\CustomerAddressMapDataRepository;
 use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\Exception\LocalizedException;
@@ -53,6 +56,21 @@ class Metadata extends Template
     private $serializer;
 
     /**
+     * @var PrecisionDeliveryHelper
+     */
+    private $precisionDeliveryHelper;
+
+    /**
+     * @var CleanseOnSubmitHelper
+     */
+    private $cleanseOnSubmitHelper;
+
+    /**
+     * @var CustomerAddressMapDataRepository
+     */
+    private $customerAddressMapDataRepository;
+
+    /**
      * @param Context $context
      * @param AddressMetadataHelper $addressMetadataHelper
      * @param CustomerAddressMetadataRepository $customerAddressMetadataRepository
@@ -60,6 +78,9 @@ class Metadata extends Template
      * @param CustomerSession $customerSession
      * @param AddressRepositoryInterface $addressRepository
      * @param Json $serializer
+     * @param PrecisionDeliveryHelper $precisionDeliveryHelper
+     * @param CleanseOnSubmitHelper $cleanseOnSubmitHelper
+     * @param CustomerAddressMapDataRepository $customerAddressMapDataRepository
      * @param array $data
      */
     public function __construct(
@@ -70,6 +91,9 @@ class Metadata extends Template
         CustomerSession $customerSession,
         AddressRepositoryInterface $addressRepository,
         Json $serializer,
+        PrecisionDeliveryHelper $precisionDeliveryHelper,
+        CleanseOnSubmitHelper $cleanseOnSubmitHelper,
+        CustomerAddressMapDataRepository $customerAddressMapDataRepository,
         array $data = []
     ) {
         $this->addressMetadataHelper = $addressMetadataHelper;
@@ -78,6 +102,9 @@ class Metadata extends Template
         $this->customerSession = $customerSession;
         $this->addressRepository = $addressRepository;
         $this->serializer = $serializer;
+        $this->precisionDeliveryHelper = $precisionDeliveryHelper;
+        $this->cleanseOnSubmitHelper = $cleanseOnSubmitHelper;
+        $this->customerAddressMapDataRepository = $customerAddressMapDataRepository;
         parent::__construct($context, $data);
     }
 
@@ -174,5 +201,145 @@ class Metadata extends Template
         
         $jsonResult = json_encode($metadataArray);
         return $jsonResult;
+    }
+
+    /**
+     * Get Precision Delivery configuration as JSON
+     *
+     * @return string
+     */
+    public function getPrecisionDeliveryConfigJson(): string
+    {
+        $config = $this->precisionDeliveryHelper->getConfigArray();
+        return json_encode($config);
+    }
+
+    /**
+     * Check if Precision Delivery is enabled
+     *
+     * @return bool
+     */
+    public function isPrecisionDeliveryEnabled(): bool
+    {
+        return $this->precisionDeliveryHelper->isEnabled();
+    }
+
+    /**
+     * Check if we are editing an existing address (vs adding new)
+     *
+     * @return bool
+     */
+    public function isEditingExistingAddress(): bool
+    {
+        return $this->getAddressId() !== null;
+    }
+
+    /**
+     * Get map data for the current address
+     *
+     * @return array|null
+     */
+    public function getMapData(): ?array
+    {
+        $addressId = $this->getAddressId();
+        if (!$addressId) {
+            return null;
+        }
+
+        try {
+            $mapData = $this->customerAddressMapDataRepository->getByParentId($addressId);
+            return [
+                'original_lat' => $mapData->getOriginalLat(),
+                'original_lng' => $mapData->getOriginalLng(),
+                'selected_lat' => $mapData->getSelectedLat(),
+                'selected_lng' => $mapData->getSelectedLng(),
+                'distance_from_address' => $mapData->getDistanceFromAddress(),
+                'urban_rural' => $mapData->getUrbanRural(),
+                'is_adjusted' => $mapData->getIsAdjusted(),
+                'delivery_notes' => $mapData->getDeliveryNotes()
+            ];
+        } catch (NoSuchEntityException $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Get map data as JSON string
+     *
+     * @return string
+     */
+    public function getMapDataJson(): string
+    {
+        $mapData = $this->getMapData();
+        return $mapData ? json_encode($mapData) : 'null';
+    }
+
+    /**
+     * Get lat/lng from metadata (fallback when no map data exists)
+     *
+     * @return array|null
+     */
+    public function getMetadataLatLng(): ?array
+    {
+        $metadata = $this->getAddressMetadata();
+        if (!$metadata) {
+            return null;
+        }
+
+        $metadataString = $metadata->getMetadata();
+        if (!$metadataString) {
+            return null;
+        }
+
+        try {
+            $metadataArray = $this->serializer->unserialize($metadataString);
+            $lat = $metadataArray['Latitude'] ?? $metadataArray['latitude'] ?? null;
+            $lng = $metadataArray['Longitude'] ?? $metadataArray['longitude'] ?? null;
+            $urbanRural = $metadataArray['UrbanRuralCode'] ?? $metadataArray['UrbanRuralName'] ?? null;
+
+            if ($lat && $lng) {
+                return [
+                    'lat' => $lat,
+                    'lng' => $lng,
+                    'urban_rural' => $urbanRural
+                ];
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        return null;
+    }
+
+    /**
+     * Get metadata lat/lng as JSON string
+     *
+     * @return string
+     */
+    public function getMetadataLatLngJson(): string
+    {
+        $latLng = $this->getMetadataLatLng();
+        return $latLng ? json_encode($latLng) : 'null';
+    }
+
+    /**
+     * Check if Cleanse on Submit is enabled for customer account
+     *
+     * @return bool
+     */
+    public function isCleanseOnSubmitEnabled(): bool
+    {
+        return $this->cleanseOnSubmitHelper->isEnabledForCustomerAccount();
+    }
+
+    /**
+     * Get Cleanse on Submit configuration as JSON
+     *
+     * @return string
+     */
+    public function getCleanseOnSubmitConfigJson(): string
+    {
+        $config = $this->cleanseOnSubmitHelper->getConfigArray();
+        return json_encode($config);
     }
 }

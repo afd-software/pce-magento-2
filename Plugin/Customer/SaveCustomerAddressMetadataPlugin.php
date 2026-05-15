@@ -11,8 +11,11 @@ namespace Afd\Pce\Plugin\Customer;
 
 use Afd\Pce\Api\Data\AddressMetadataInterface;
 use Afd\Pce\Helper\AddressMetadata as AddressMetadataHelper;
+use Afd\Pce\Helper\PrecisionDelivery as PrecisionDeliveryHelper;
 use Afd\Pce\Model\CustomerAddressMetadataFactory;
 use Afd\Pce\Model\CustomerAddressMetadataRepository;
+use Afd\Pce\Model\CustomerAddressMapDataFactory;
+use Afd\Pce\Model\CustomerAddressMapDataRepository;
 use Magento\Customer\Api\AddressRepositoryInterface;
 use Magento\Customer\Api\Data\AddressInterface;
 use Magento\Framework\App\RequestInterface;
@@ -39,6 +42,21 @@ class SaveCustomerAddressMetadataPlugin
      * @var CustomerAddressMetadataFactory
      */
     private $customerAddressMetadataFactory;
+
+    /**
+     * @var CustomerAddressMapDataRepository
+     */
+    private $customerAddressMapDataRepository;
+
+    /**
+     * @var CustomerAddressMapDataFactory
+     */
+    private $customerAddressMapDataFactory;
+
+    /**
+     * @var PrecisionDeliveryHelper
+     */
+    private $precisionDeliveryHelper;
 
     /**
      * @var RequestInterface
@@ -69,6 +87,9 @@ class SaveCustomerAddressMetadataPlugin
      * @param AddressMetadataHelper $addressMetadataHelper
      * @param CustomerAddressMetadataRepository $customerAddressMetadataRepository
      * @param CustomerAddressMetadataFactory $customerAddressMetadataFactory
+     * @param CustomerAddressMapDataRepository $customerAddressMapDataRepository
+     * @param CustomerAddressMapDataFactory $customerAddressMapDataFactory
+     * @param PrecisionDeliveryHelper $precisionDeliveryHelper
      * @param RequestInterface $request
      * @param Json $serializer
      * @param LoggerInterface $logger
@@ -78,6 +99,9 @@ class SaveCustomerAddressMetadataPlugin
         AddressMetadataHelper $addressMetadataHelper,
         CustomerAddressMetadataRepository $customerAddressMetadataRepository,
         CustomerAddressMetadataFactory $customerAddressMetadataFactory,
+        CustomerAddressMapDataRepository $customerAddressMapDataRepository,
+        CustomerAddressMapDataFactory $customerAddressMapDataFactory,
+        PrecisionDeliveryHelper $precisionDeliveryHelper,
         RequestInterface $request,
         Json $serializer,
         LoggerInterface $logger,
@@ -86,6 +110,9 @@ class SaveCustomerAddressMetadataPlugin
         $this->addressMetadataHelper = $addressMetadataHelper;
         $this->customerAddressMetadataRepository = $customerAddressMetadataRepository;
         $this->customerAddressMetadataFactory = $customerAddressMetadataFactory;
+        $this->customerAddressMapDataRepository = $customerAddressMapDataRepository;
+        $this->customerAddressMapDataFactory = $customerAddressMapDataFactory;
+        $this->precisionDeliveryHelper = $precisionDeliveryHelper;
         $this->request = $request;
         $this->serializer = $serializer;
         $this->logger = $logger;
@@ -208,6 +235,9 @@ class SaveCustomerAddressMetadataPlugin
                         'address_id' => $addressId
                     ]);
                     
+                    // Save map data if present and Precision Delivery is enabled
+                    $this->saveMapDataFromMetadata($pending['metadata'], (int)$addressId);
+                    
                     unset($this->pendingMetadata[$addressKey]);
                     
                     // Clean up old pending metadata (older than 5 minutes)
@@ -243,6 +273,9 @@ class SaveCustomerAddressMetadataPlugin
                             ]);
                         }
                     }
+                    
+                    // Save map data from request if Precision Delivery is enabled
+                    $this->saveMapDataFromRequest((int)$addressId);
                 }
             }
         } catch (\Exception $e) {
@@ -345,5 +378,130 @@ class SaveCustomerAddressMetadataPlugin
         }
         
         return $metadata;
+    }
+    
+    /**
+     * Save map data from request parameters if Precision Delivery is enabled
+     * This handles the customer address edit form submission flow
+     *
+     * @param int $addressId
+     * @return void
+     */
+    private function saveMapDataFromRequest(int $addressId): void
+    {
+        if (!$this->precisionDeliveryHelper->isEnabled()) {
+            return;
+        }
+        
+        $metadataFieldName = 'customer-address-metadata';
+        $metadataJson = $this->request->getParam($metadataFieldName);
+        
+        if (!$metadataJson || $metadataJson === '{}') {
+            $this->logger->debug('[AFD PCE MapData] No metadata in request for map data extraction');
+            return;
+        }
+        
+        try {
+            $metadataArray = json_decode($metadataJson, true);
+            
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $this->logger->error('[AFD PCE MapData] Invalid JSON in request metadata');
+                return;
+            }
+            
+            if (!isset($metadataArray['map_data']) || !is_array($metadataArray['map_data'])) {
+                $this->logger->debug('[AFD PCE MapData] No map_data found in request metadata');
+                return;
+            }
+            
+            $mapDataArray = $metadataArray['map_data'];
+            
+            $this->logger->info('[AFD PCE MapData] Processing map_data from request: ' . json_encode($mapDataArray));
+            
+            // Check if map data already exists for this customer address
+            try {
+                $existingMapData = $this->customerAddressMapDataRepository->getByParentId($addressId);
+                $this->logger->info('[AFD PCE MapData] Updating existing map data for customer address ID: ' . $addressId);
+                $mapData = $existingMapData;
+            } catch (NoSuchEntityException $e) {
+                // Create new map data
+                $mapData = $this->customerAddressMapDataFactory->create();
+                $mapData->setParentId($addressId);
+                $this->logger->info('[AFD PCE MapData] Creating new map data for customer address ID: ' . $addressId);
+            }
+            
+            $mapData->setOriginalLat($mapDataArray['original_lat'] ?? null);
+            $mapData->setOriginalLng($mapDataArray['original_lng'] ?? null);
+            $mapData->setSelectedLat($mapDataArray['selected_lat'] ?? null);
+            $mapData->setSelectedLng($mapDataArray['selected_lng'] ?? null);
+            $mapData->setDistanceFromAddress($mapDataArray['distance_from_address'] ?? 0);
+            $mapData->setUrbanRural($mapDataArray['urban_rural'] ?? null);
+            $mapData->setIsAdjusted($mapDataArray['is_adjusted'] ?? false);
+            $mapData->setDeliveryNotes($mapDataArray['delivery_notes'] ?? null);
+            
+            $this->customerAddressMapDataRepository->save($mapData);
+            
+            $this->logger->info('[AFD PCE MapData] Saved map data from request for customer address ID: ' . $addressId);
+        } catch (\Exception $e) {
+            $this->logger->error('[AFD PCE MapData] Error saving map data from request: ' . $e->getMessage());
+        }
+    }
+    
+    /**
+     * Save map data from metadata JSON if Precision Delivery is enabled
+     *
+     * @param string|null $metadataJson
+     * @param int $addressId
+     * @return void
+     */
+    private function saveMapDataFromMetadata($metadataJson, int $addressId): void
+    {
+        if (!$this->precisionDeliveryHelper->isEnabled()) {
+            return;
+        }
+        
+        if (!$metadataJson) {
+            return;
+        }
+        
+        try {
+            $metadataArray = json_decode($metadataJson, true);
+            
+            if (!isset($metadataArray['map_data']) || !is_array($metadataArray['map_data'])) {
+                $this->logger->debug('[AFD PCE MapData] No map_data found in customer address metadata');
+                return;
+            }
+            
+            $mapDataArray = $metadataArray['map_data'];
+            
+            $this->logger->info('[AFD PCE MapData] Processing customer address map_data: ' . json_encode($mapDataArray));
+            
+            // Check if map data already exists for this customer address
+            try {
+                $existingMapData = $this->customerAddressMapDataRepository->getByParentId($addressId);
+                $this->logger->info('[AFD PCE MapData] Updating existing map data for customer address ID: ' . $addressId);
+                $mapData = $existingMapData;
+            } catch (NoSuchEntityException $e) {
+                // Create new map data
+                $mapData = $this->customerAddressMapDataFactory->create();
+                $mapData->setParentId($addressId);
+                $this->logger->info('[AFD PCE MapData] Creating new map data for customer address ID: ' . $addressId);
+            }
+            
+            $mapData->setOriginalLat($mapDataArray['original_lat'] ?? null);
+            $mapData->setOriginalLng($mapDataArray['original_lng'] ?? null);
+            $mapData->setSelectedLat($mapDataArray['selected_lat'] ?? null);
+            $mapData->setSelectedLng($mapDataArray['selected_lng'] ?? null);
+            $mapData->setDistanceFromAddress($mapDataArray['distance_from_address'] ?? 0);
+            $mapData->setUrbanRural($mapDataArray['urban_rural'] ?? null);
+            $mapData->setIsAdjusted($mapDataArray['is_adjusted'] ?? false);
+            $mapData->setDeliveryNotes($mapDataArray['delivery_notes'] ?? null);
+            
+            $this->customerAddressMapDataRepository->save($mapData);
+            
+            $this->logger->info('[AFD PCE MapData] Saved map data for customer address ID: ' . $addressId);
+        } catch (\Exception $e) {
+            $this->logger->error('[AFD PCE MapData] Error saving customer address map data: ' . $e->getMessage());
+        }
     }
 }

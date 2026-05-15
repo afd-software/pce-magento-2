@@ -36,6 +36,16 @@ define(['jquery', 'afdCountry', 'afdCountryUtils'], function (
 
       // Initialize country control
       afdCountryUtils.initCountryControl('[name="country_id"]')
+
+      // Update region required state on initial load
+      setTimeout(function () {
+        if ($countrySelect.length && $countrySelect.val()) {
+          afdCountryUtils.updateRegionRequiredState(
+            $countrySelect,
+            $countrySelect.val()
+          )
+        }
+      }, 100)
     }
 
     // Initialize when DOM is ready

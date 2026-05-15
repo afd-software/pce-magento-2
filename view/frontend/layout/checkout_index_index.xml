@@ -1,5 +1,9 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Afd_Pce::css/precision-delivery.css"/>
+        <css src="Afd_Pce::css/cleanse-on-submit.css"/>
+    </head>
     <body>
         <referenceBlock name="head.components">
             <block class="Afd\Pce\Block\Afd" name="afd.options" template="Afd_Pce::afd_options.phtml"

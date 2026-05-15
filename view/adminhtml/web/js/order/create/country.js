@@ -51,6 +51,26 @@ define(['jquery', 'afdCountry', 'afdCountryUtils'], function (
     // Initialize shipping address country control
     afdCountryUtils.initCountryControl('#order-shipping_address_country_id')
 
+    // Update region required state on initial load for both address forms
+    setTimeout(function () {
+      const $billingCountry = $('#order-billing_address_country_id')
+      const $shippingCountry = $('#order-shipping_address_country_id')
+
+      if ($billingCountry.length && $billingCountry.val()) {
+        afdCountryUtils.updateRegionRequiredState(
+          $billingCountry,
+          $billingCountry.val()
+        )
+      }
+
+      if ($shippingCountry.length && $shippingCountry.val()) {
+        afdCountryUtils.updateRegionRequiredState(
+          $shippingCountry,
+          $shippingCountry.val()
+        )
+      }
+    }, 100)
+
     // Override the setShippingAsBilling method to reinitialize country control
     if (
       typeof window.order !== 'undefined' &&
@@ -66,6 +86,15 @@ define(['jquery', 'afdCountry', 'afdCountryUtils'], function (
           afdCountryUtils.initCountryControl(
             '#order-shipping_address_country_id'
           )
+
+          // Update region required state for shipping address
+          const $shippingCountry = $('#order-shipping_address_country_id')
+          if ($shippingCountry.length && $shippingCountry.val()) {
+            afdCountryUtils.updateRegionRequiredState(
+              $shippingCountry,
+              $shippingCountry.val()
+            )
+          }
         }, 500)
       }
     }

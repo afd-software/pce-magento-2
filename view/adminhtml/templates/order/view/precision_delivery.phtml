@@ -1,0 +1,181 @@
+<?php
+/**
+ * AFD PCE Precision Delivery Admin Order View Template
+ *
+ * @var \Afd\Pce\Block\Adminhtml\Order\View\PrecisionDelivery $block
+ */
+
+if (!$block->isEnabled() || !$block->hasMapData()) {
+    return;
+}
+?>
+
+<div class="admin__page-section afd-precision-delivery-section">
+    <div class="admin__page-section-title">
+        <span class="title"><?= $block->escapeHtml(__('Precision Delivery')) ?></span>
+    </div>
+    <div class="admin__page-section-content">
+        <div class="afd-precision-delivery-content">
+            <?php if ($block->isStaticMapEnabled()): ?>
+            <div class="afd-precision-delivery-map-container">
+                <?php if ($staticMapUrl = $block->getStaticMapUrl(300, 250)): ?>
+                    <a href="<?= $block->escapeUrl($block->getGoogleMapsUrl()) ?>" target="_blank" title="<?= $block->escapeHtml(__('Open in Google Maps')) ?>">
+                        <img src="<?= $block->escapeUrl($staticMapUrl) ?>" 
+                             alt="<?= $block->escapeHtml(__('Delivery Location Map')) ?>"
+                             class="afd-precision-delivery-static-map" />
+                    </a>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+            
+            <div class="afd-precision-delivery-info">
+                <div class="metadata-category-section">
+                    <div class="metadata-category-header">
+                        <?= $block->escapeHtml(__('Delivery Location')) ?>
+                    </div>
+                    <div class="metadata-category-content">
+                        <table class="metadata-category-table">
+                            <tbody>
+                                <tr>
+                                    <th><?= $block->escapeHtml(__('Delivery Coordinates')) ?></th>
+                                    <td><?= $block->escapeHtml($block->getFormattedCoordinates()) ?></td>
+                                </tr>
+                                <tr>
+                                    <th><?= $block->escapeHtml(__('Adjusted from Original')) ?></th>
+                                    <td>
+                                        <?php if ($block->isAdjusted()): ?>
+                                            <span class="afd-validated-badge"><?= $block->escapeHtml(__('Yes')) ?></span>
+                                        <?php else: ?>
+                                            <?= $block->escapeHtml(__('No')) ?>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                                <?php if ($block->isAdjusted()): ?>
+                                <tr>
+                                    <th><?= $block->escapeHtml(__('Distance from Address')) ?></th>
+                                    <td><?= $block->escapeHtml($block->getFormattedDistance()) ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <?php if ($urbanRural = $block->getUrbanRural()): ?>
+                                <tr>
+                                    <th><?= $block->escapeHtml(__('Area Type')) ?></th>
+                                    <td><?= $block->escapeHtml(ucfirst($urbanRural)) ?></td>
+                                </tr>
+                                <?php endif; ?>
+                                <tr>
+                                    <th><?= $block->escapeHtml(__('Google Maps')) ?></th>
+                                    <td>
+                                        <a href="<?= $block->escapeUrl($block->getGoogleMapsUrl()) ?>" target="_blank" class="action-default">
+                                            <?= $block->escapeHtml(__('Open in Google Maps')) ?>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <?php if ($block->hasDeliveryNotes()): ?>
+                <div class="metadata-category-section">
+                    <div class="metadata-category-header">
+                        <?= $block->escapeHtml(__('Delivery Instructions')) ?>
+                    </div>
+                    <div class="metadata-category-content">
+                        <div class="afd-delivery-notes-content">
+                            <?= $block->escapeHtml($block->getDeliveryNotes()) ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+                
+                <?php if ($block->isQrCodeEnabled() && $qrCodeUrl = $block->getQrCodeUrl(120)): ?>
+                <div class="afd-precision-delivery-qr">
+                    <p class="qr-label"><?= $block->escapeHtml(__('Scan to open in Maps:')) ?></p>
+                    <img src="<?= $block->escapeUrl($qrCodeUrl) ?>" 
+                         alt="<?= $block->escapeHtml(__('QR Code for Delivery Location')) ?>"
+                         class="afd-precision-delivery-qr-code" />
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.afd-precision-delivery-section {
+    margin-top: 20px;
+}
+
+.afd-precision-delivery-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.afd-precision-delivery-map-container {
+    flex: 0 0 auto;
+}
+
+.afd-precision-delivery-static-map {
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    max-width: 100%;
+    height: auto;
+}
+
+.afd-precision-delivery-info {
+    flex: 1;
+    min-width: 300px;
+}
+
+.afd-validated-badge {
+    color: #006400;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.afd-precision-delivery-qr {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e3e3e3;
+}
+
+.afd-precision-delivery-qr .qr-label {
+    margin: 0 0 10px 0;
+    font-size: 13px;
+    color: #666;
+}
+
+.afd-precision-delivery-qr-code {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background: #fff;
+    padding: 5px;
+}
+
+.afd-delivery-notes-content {
+    padding: 10px;
+    background: #f9f9f9;
+    border: 1px solid #e3e3e3;
+    border-radius: 3px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+    .afd-precision-delivery-content {
+        flex-direction: column;
+    }
+    
+    .afd-precision-delivery-map-container {
+        width: 100%;
+    }
+    
+    .afd-precision-delivery-static-map {
+        width: 100%;
+    }
+}
+</style>

@@ -312,19 +312,20 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
         <?php endif; ?>
         $('#email_address').afd('email')
 
-
-
         let validationTimeout;
         const VALIDATION_TIMEOUT_MS = 10000; // 10 seconds
+        let emailValidationInProgress = false;
         
         $.validator.addMethod("afdEmailCheck", function(value, element) {
             const isValid = $(element).data('afd-email-valid');
-            // If validation hasn't completed yet, consider it valid to prevent blocking
-            return isValid !== false;
+            // Require explicit true - undefined or false both fail validation
+            // This prevents form submission when validation hasn't completed
+            return isValid === true;
         }, afdOptions.email.invalidEmailMessage);
         
         $('#email_address').on('afd:emailValidationUpdatedFocusOut',function(e, $el) {
             clearTimeout(validationTimeout);
+            emailValidationInProgress = false;
             
             $el.data('afd-email-valid',
                 $el.data('email-is-afd-valid')
@@ -335,11 +336,15 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
         // Add timeout handler to prevent indefinite blocking
         $(document).on('afd:emailValidationStarted', function(e, el) {
             const $el = $(el);
+            emailValidationInProgress = true;
             
             clearTimeout(validationTimeout);
             validationTimeout = setTimeout(function() {
-                // If validation hasn't completed after timeout, re-enable form
+                // If validation hasn't completed after timeout, mark as timed out but allow submission
                 console.warn('Email validation timed out after ' + VALIDATION_TIMEOUT_MS + 'ms');
+                emailValidationInProgress = false;
+                // Set to true on timeout to allow form submission (graceful degradation)
+                $el.data('afd-email-valid', true);
                 $el.closest('form').find('button').attr('disabled', false);
                 $el.closest('.afd-loading').removeClass('afd-loading');
             }, VALIDATION_TIMEOUT_MS);
@@ -348,15 +353,40 @@ $emailActive = $block->getConfig('afd_email/enable/enable') == 1 && $block->getC
         // Clear timeout on success
         $(document).on('afd:emailValidationSuccess', function() {
             clearTimeout(validationTimeout);
+            emailValidationInProgress = false;
         });
         
         // Handle validation errors gracefully
         $(document).on('afd:emailValidationError', function(e, error) {
             clearTimeout(validationTimeout);
+            emailValidationInProgress = false;
             console.error('Email validation error:', error);
-            // Re-enable form on error
+            // Set to true on error to allow form submission (graceful degradation)
+            $('#email_address').data('afd-email-valid', true);
             $('#email_address').closest('form').find('button').attr('disabled', false);
             $('#email_address').closest('.afd-loading').removeClass('afd-loading');
+        });
+        
+        // Block form submission if email validation is in progress
+        $('#form-validate').on('submit', function(e) {
+            const $emailField = $('#email_address');
+            const isValid = $emailField.data('afd-email-valid');
+            
+            // Block if validation is in progress
+            if (emailValidationInProgress) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Block if email has a value but hasn't been validated yet (isValid is undefined)
+            if ($emailField.val() && isValid !== true) {
+                e.preventDefault();
+                // Trigger focus out to start validation
+                $emailField.trigger('focusout');
+                return false;
+            }
+            
+            return true;
         });
 
     })

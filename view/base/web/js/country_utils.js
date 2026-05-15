@@ -77,6 +77,21 @@ define(['jquery'], ($) => {
         }
       })
 
+      // If crown dependencies are enabled, ensure the crown dependency countries are in the list
+      if (afdOptions.magentoOptions.typeahead.crownCountries) {
+        const crownDependencies = [
+          { name: 'Isle of Man', iso2: 'IM', iso3: 'IMN' },
+          { name: 'Jersey', iso2: 'JE', iso3: 'JEY' },
+          { name: 'Guernsey', iso2: 'GG', iso3: 'GGY' }
+        ]
+
+        crownDependencies.forEach((crownCountry) => {
+          if (!countries.find((c) => c.iso2 === crownCountry.iso2)) {
+            countries.push(crownCountry)
+          }
+        })
+      }
+
       // Reorder countries if preferred countries are provided
       if (preferredCountries && preferredCountries.length) {
         countries = module.reorderCountriesWithPreferred(
@@ -96,8 +111,19 @@ define(['jquery'], ($) => {
       // Handle country change event
       $countryInput.on('change', function (event) {
         const selectedCountry = event.target.value
-        // Update the original select and trigger change event
-        $countrySelect.val(selectedCountry).trigger('change')
+        // Update the original select value
+        $countrySelect.val(selectedCountry)
+
+        // Dispatch input event for Alpine.js @input listeners (Hyva theme)
+        $countrySelect[0].dispatchEvent(new Event('input', { bubbles: true }))
+
+        // Dispatch a native DOM change event so that Prototype.js listeners
+        // (used by Magento's admin order form) detect the country change
+        // and reload the region options accordingly
+        $countrySelect[0].dispatchEvent(new Event('change', { bubbles: true }))
+
+        // Update region field required state for admin order forms
+        module.updateRegionRequiredState($countrySelect, selectedCountry)
       })
 
       // Update the advanced country control when the original select changes
@@ -224,6 +250,98 @@ define(['jquery'], ($) => {
       })
 
       return orderedCountries
+    },
+
+    /**
+     * Update the region field's required state based on the selected country
+     * This is needed for admin order forms where Magento's region validation
+     * may not properly update when using the advanced country control
+     * @param {jQuery} $countrySelect - The country select element
+     * @param {string} selectedCountry - The selected country ISO2 code
+     */
+    updateRegionRequiredState: ($countrySelect, selectedCountry) => {
+      // Find the container (fieldset) for the address form
+      const $container = $countrySelect.closest('fieldset')
+      if (!$container.length) {
+        return
+      }
+
+      // Get the region fields
+      const $regionText = $container.find(
+        '[name$="[region]"], [name="region"], #order-billing_address_region, #order-shipping_address_region'
+      )
+      const $regionSelect = $container.find(
+        '[name$="[region_id]"], [name="region_id"], #order-billing_address_region_id, #order-shipping_address_region_id'
+      )
+
+      // Countries that require a region selection (have predefined regions in Magento)
+      const selectRegionCountries =
+        typeof window.selectRegionCountries !== 'undefined'
+          ? window.selectRegionCountries
+          : ['US', 'CA', 'MX', 'CN', 'JP', 'IN', 'BR']
+
+      // Get the list of countries that require state/province from Magento config
+      // This is typically set in afdOptions from the PHP template
+      let requireRegionCountries = []
+      if (
+        typeof afdOptions !== 'undefined' &&
+        typeof afdOptions.magentoOptions !== 'undefined' &&
+        typeof afdOptions.magentoOptions.requireRegionCountries !== 'undefined'
+      ) {
+        requireRegionCountries =
+          afdOptions.magentoOptions.requireRegionCountries
+      }
+
+      // Check if the selected country requires a region
+      const countryRequiresRegion =
+        selectRegionCountries.indexOf(selectedCountry) > -1 ||
+        requireRegionCountries.indexOf(selectedCountry) > -1
+
+      // Update the required state of the region fields
+      if (countryRequiresRegion) {
+        // Country requires region - show region_id (dropdown) and hide region (text)
+        $regionText.closest('.field, .admin__field').hide()
+        $regionSelect
+          .closest('.field, .admin__field')
+          .show()
+          .removeClass('ignore-validate')
+        $regionSelect
+          .addClass('required-entry')
+          .removeClass('validate-select')
+          .removeAttr('data-validate')
+        $regionText.removeClass('required-entry')
+      } else {
+        // Country does not require region - show region (text) and hide region_id (dropdown)
+        // Hide the select and remove required validation to prevent form validation issues
+        $regionSelect.closest('.field, .admin__field').hide()
+        $regionText.closest('.field, .admin__field').show()
+        $regionSelect
+          .removeClass('required-entry validate-select')
+          .removeAttr('data-validate')
+        $regionText.removeClass('required-entry')
+
+        // Remove the required indicator (*) from the label if present
+        const $regionTextField = $regionText.closest('.field, .admin__field')
+        const $regionSelectField = $regionSelect.closest(
+          '.field, .admin__field'
+        )
+
+        // Remove required class from the field container and add ignore-validate
+        $regionTextField.removeClass('required _required')
+        $regionSelectField
+          .removeClass('required _required')
+          .addClass('ignore-validate')
+
+        // Clear any existing validation error messages
+        $regionText
+          .removeClass('mage-error')
+          .siblings('.mage-error, .field-error')
+          .remove()
+        $regionSelect
+          .removeClass('mage-error')
+          .siblings('.mage-error, .field-error')
+          .remove()
+      }
     }
   }
 

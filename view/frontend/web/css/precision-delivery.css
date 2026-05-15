@@ -1,0 +1,375 @@
+.afd-precision-delivery-container {
+  margin: 15px 0;
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #fafafa;
+}
+
+.afd-precision-delivery-header {
+  margin-bottom: 15px;
+}
+
+.afd-precision-delivery-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.afd-precision-delivery-instructions {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+}
+
+.afd-precision-delivery-map-wrapper {
+  margin-bottom: 15px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.afd-precision-delivery-map {
+  width: 100%;
+  height: 300px;
+  min-height: 250px;
+}
+
+.afd-precision-delivery-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  background-color: #f5f5f5;
+  color: #666;
+  font-size: 14px;
+}
+
+.afd-precision-delivery-info {
+  padding: 10px;
+  background-color: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.afd-precision-delivery-coords,
+.afd-precision-delivery-distance {
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.afd-precision-delivery-coords:last-child,
+.afd-precision-delivery-distance:last-child {
+  margin-bottom: 0;
+}
+
+.afd-precision-delivery-info .label {
+  font-weight: 600;
+  margin-right: 8px;
+  color: #333;
+}
+
+.afd-precision-delivery-info .value {
+  color: #666;
+  font-family: monospace;
+}
+
+/* Warning Modal */
+.afd-precision-delivery-warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.afd-precision-delivery-warning-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  max-width: 450px;
+  width: 90%;
+  padding: 25px;
+}
+
+.afd-precision-delivery-warning-content h4 {
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #d9534f;
+}
+
+.afd-precision-delivery-warning-content p {
+  margin: 0 0 20px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.afd-precision-delivery-warning-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.afd-precision-delivery-warning-actions .action {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.afd-precision-delivery-warning-actions .action.secondary {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+.afd-precision-delivery-warning-actions .action.secondary:hover {
+  background-color: #e8e8e8;
+}
+
+.afd-precision-delivery-warning-actions .action.primary {
+  background-color: #1979c3;
+  border: 1px solid #1979c3;
+  color: #fff;
+}
+
+.afd-precision-delivery-warning-actions .action.primary:hover {
+  background-color: #006bb4;
+}
+
+/* Add Precise Delivery Data Button */
+.afd-precision-delivery-add {
+  margin: 10px 0;
+}
+
+.afd-add-precision-data-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+/* Precision Delivery Modal */
+.modals-wrapper .modal-popup.afd-precision-delivery-modal-wrapper {
+  z-index: 902 !important;
+}
+
+.modals-wrapper
+  .modal-popup.afd-precision-delivery-modal-wrapper
+  .modal-inner-wrap {
+  width: 50vw !important;
+  max-width: 800px !important;
+  min-width: 400px !important;
+  background: #fff;
+}
+
+.modals-wrapper
+  .modal-popup.afd-precision-delivery-modal-wrapper._show
+  ~ .modals-overlay {
+  z-index: 901 !important;
+}
+
+@media (max-width: 768px) {
+  .modals-wrapper
+    .modal-popup.afd-precision-delivery-modal-wrapper
+    .modal-inner-wrap {
+    width: 90vw !important;
+    min-width: auto !important;
+  }
+}
+
+.afd-precision-delivery-modal {
+  padding: 20px;
+}
+
+.afd-precision-modal-header h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.afd-precision-modal-instructions {
+  margin: 0 0 15px 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.afd-precision-modal-loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+}
+
+.afd-precision-modal-loading .error {
+  color: #e02b27;
+}
+
+.afd-precision-modal-map-container {
+  margin-top: 15px;
+}
+
+.afd-precision-modal-map-container .afd-precision-delivery-map {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.afd-precision-modal-map-container .afd-precision-delivery-notes {
+  margin-top: 15px;
+}
+
+.afd-precision-modal-map-container .afd-precision-delivery-notes .label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+}
+
+.afd-precision-modal-map-container
+  .afd-precision-delivery-notes
+  .afd-delivery-notes-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #c2c2c2;
+  border-radius: 4px;
+  resize: vertical;
+}
+
+.afd-precision-modal-actions {
+  margin-top: 20px;
+  padding-top: 15px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.afd-precision-modal-actions .action {
+  padding: 12px 24px;
+  min-width: 120px;
+  border-radius: 3px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.afd-precision-modal-actions .action.secondary {
+  background: #f5f5f5;
+  border: 1px solid #c2c2c2;
+  color: #333;
+}
+
+.afd-precision-modal-actions .action.secondary:hover {
+  background: #e8e8e8;
+}
+
+.afd-precision-modal-actions .action.primary {
+  background: #1979c3;
+  border: 1px solid #1979c3;
+  color: #fff;
+}
+
+.afd-precision-modal-actions .action.primary:hover {
+  background: #006bb4;
+}
+
+/* Static Map Preview for Saved Addresses */
+.afd-precision-delivery-preview {
+  margin: 10px 0;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.afd-precision-delivery-preview-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+.afd-precision-delivery-static-map {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+
+.afd-precision-delivery-preview-notes {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #666;
+}
+
+.afd-precision-delivery-preview-notes .label {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.afd-precision-delivery-preview-notes .value {
+  font-style: italic;
+}
+
+/* Delivery Notes */
+.afd-precision-delivery-notes {
+  margin-top: 15px;
+}
+
+.afd-precision-delivery-notes .label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #333;
+}
+
+.afd-precision-delivery-notes textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 80px;
+  font-family: inherit;
+}
+
+.afd-precision-delivery-notes textarea:focus {
+  border-color: #1979c3;
+  outline: none;
+  box-shadow: 0 0 3px rgba(25, 121, 195, 0.3);
+}
+
+.afd-precision-delivery-notes textarea::placeholder {
+  color: #999;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .afd-precision-delivery-map {
+    height: 250px;
+    min-height: 200px;
+  }
+
+  .afd-precision-delivery-warning-modal {
+    padding: 20px;
+  }
+
+  .afd-precision-delivery-warning-actions {
+    flex-direction: column;
+  }
+
+  .afd-precision-delivery-warning-actions .action {
+    width: 100%;
+    text-align: center;
+  }
+}

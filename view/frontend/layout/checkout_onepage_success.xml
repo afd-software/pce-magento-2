@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceContainer name="order.success.additional.info">
+            <block class="Afd\Pce\Block\Checkout\Success\PrecisionDelivery"
+                   name="afd.checkout.success.precision.delivery"
+                   template="Afd_Pce::checkout/success/precision_delivery.phtml"
+                   cacheable="false"
+                   ifconfig="afd_typeahead/precision_delivery/display_on_success_page" />
+        </referenceContainer>
+    </body>
+</page>

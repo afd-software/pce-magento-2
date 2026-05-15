@@ -3,23 +3,23 @@
  */
 
 .fieldset.address-metadata {
-    margin-top: 20px;
-    border-top: 1px solid #cccccc;
-    padding-top: 20px;
+  margin-top: 20px;
+  border-top: 1px solid #cccccc;
+  padding-top: 20px;
 }
 
 .fieldset.address-metadata .field.metadata-field {
-    margin-bottom: 15px;
+  margin-bottom: 15px;
 }
 
 .fieldset.address-metadata .field.metadata-field .label {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .fieldset.address-metadata .field.metadata-field .control {
-    margin-top: 5px;
+  margin-top: 5px;
 }
 
 .fieldset.address-metadata .field.metadata-field .metadata-input {
-    width: 100%;
+  width: 100%;
 }

@@ -42,15 +42,7 @@ define([
           this.loadMetadataForAddress(selectedAddress)
         }
 
-        // Subscribe to shipping address changes to update metadata when address is changed
-        // Arrow function preserves 'this' context - no need for 'const self = this'
         quote.shippingAddress.subscribe((newAddress) => {
-          if (debugMode) {
-            console.log(
-              '[AFD PCE Address List] Shipping address changed:',
-              newAddress
-            )
-          }
           if (newAddress && newAddress.customerAddressId) {
             this.loadMetadataForAddress(newAddress)
           }
@@ -152,15 +144,6 @@ define([
               )
             }
           }
-        } else {
-          if (debugMode) {
-            console.log(
-              '[AFD PCE Address List] No metadata found for address ID ' +
-                addressId
-            )
-          }
-          // Clear metadata store for addresses without metadata
-          metadataStore.set('{}')
         }
       }
     })

@@ -1,0 +1,196 @@
+/**
+ * AFD PCE Cleanse on Submit Modal Styles
+ */
+
+/* Modal wrapper */
+.afd-cleanse-modal-wrapper .modal-inner-wrap {
+  max-width: 700px;
+  width: 90%;
+}
+
+.afd-cleanse-modal-wrapper .modal-header {
+  border-bottom: 1px solid #e0e0e0;
+  padding-bottom: 15px;
+}
+
+.afd-cleanse-modal-wrapper .action-close {
+  display: none;
+}
+
+.afd-cleanse-modal-wrapper .modal-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Modal content */
+.afd-cleanse-modal {
+  padding: 10px 0;
+}
+
+.afd-cleanse-message {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Side-by-side comparison */
+.afd-cleanse-comparison {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.afd-cleanse-address {
+  flex: 1;
+  min-width: 250px;
+  padding: 20px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fafafa;
+  display: flex;
+  flex-direction: column;
+}
+
+.afd-cleanse-address h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.afd-cleanse-address-content {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #444;
+  flex-grow: 1;
+  margin-bottom: 15px;
+}
+
+/* User address styling */
+.afd-cleanse-user-address {
+  border-color: #ccc;
+}
+
+/* Suggested address styling - highlight as recommended */
+.afd-cleanse-suggested-address {
+  border-color: #1979c3;
+  background: #f0f7fc;
+}
+
+.afd-cleanse-suggested-address h4 {
+  color: #1979c3;
+}
+
+/* Buttons */
+.afd-cleanse-address .action {
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+  margin-top: auto;
+}
+
+.afd-cleanse-reject {
+  background: #fff;
+  border: 1px solid #ccc;
+  color: #666;
+}
+
+.afd-cleanse-reject:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.afd-cleanse-accept {
+  background: #1979c3;
+  border: 1px solid #1979c3;
+  color: #fff;
+}
+
+.afd-cleanse-accept:hover {
+  background: #006bb4;
+  border-color: #006bb4;
+}
+
+/* No suggestion modal */
+.afd-cleanse-no-suggestion {
+  text-align: center;
+  padding: 20px;
+}
+
+.afd-cleanse-no-suggestion .afd-cleanse-message {
+  font-size: 15px;
+  margin-bottom: 25px;
+}
+
+.afd-cleanse-actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.afd-cleanse-continue {
+  padding: 12px 30px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #1979c3;
+  border: 1px solid #1979c3;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.afd-cleanse-continue:hover {
+  background: #006bb4;
+  border-color: #006bb4;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .afd-cleanse-comparison {
+    flex-direction: column;
+  }
+
+  .afd-cleanse-address {
+    min-width: 100%;
+  }
+
+  .afd-cleanse-modal-wrapper .modal-inner-wrap {
+    width: 95%;
+    margin: 10px auto;
+  }
+}
+
+/* Loading state */
+.afd-cleanse-loading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.afd-cleanse-loading::after {
+  content: '';
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border: 3px solid #e0e0e0;
+  border-top-color: #1979c3;
+  border-radius: 50%;
+  animation: afd-cleanse-spin 1s linear infinite;
+}
+
+@keyframes afd-cleanse-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

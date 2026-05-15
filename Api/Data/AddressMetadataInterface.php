@@ -140,6 +140,21 @@ interface AddressMetadataInterface
     public function setIsValidated($isValidated);
 
     /**
+     * Get Map Data (Precision Delivery)
+     *
+     * @return array|null
+     */
+    public function getMapData();
+
+    /**
+     * Set Map Data (Precision Delivery)
+     *
+     * @param array|null $mapData
+     * @return $this
+     */
+    public function setMapData($mapData);
+
+    /**
      * Get Created At timestamp
      *
      * @return string|null

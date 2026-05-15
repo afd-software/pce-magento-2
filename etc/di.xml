@@ -100,4 +100,39 @@
     <type name="Magento\Framework\View\Asset\Minification">
         <plugin name="afd_pce_exclude_js_minification" type="Afd\Pce\Plugin\Framework\ExcludeFilesFromMinification" sortOrder="10"/>
     </type>
+    
+    <!-- Map Data Interface Preference -->
+    <preference for="Afd\Pce\Api\Data\MapDataInterface" type="Afd\Pce\Model\OrderAddressMapData"/>
+    
+    <!-- Quote Address Map Data Repository -->
+    <type name="Afd\Pce\Model\QuoteAddressMapDataRepository">
+        <arguments>
+            <argument name="resource" xsi:type="object">Afd\Pce\Model\ResourceModel\QuoteAddressMapData</argument>
+            <argument name="mapDataFactory" xsi:type="object">Afd\Pce\Model\QuoteAddressMapDataFactory</argument>
+        </arguments>
+    </type>
+    
+    <!-- Order Address Map Data Repository -->
+    <type name="Afd\Pce\Model\OrderAddressMapDataRepository">
+        <arguments>
+            <argument name="resource" xsi:type="object">Afd\Pce\Model\ResourceModel\OrderAddressMapData</argument>
+            <argument name="mapDataFactory" xsi:type="object">Afd\Pce\Model\OrderAddressMapDataFactory</argument>
+        </arguments>
+    </type>
+    
+    <!-- Customer Address Map Data Repository -->
+    <type name="Afd\Pce\Model\CustomerAddressMapDataRepository">
+        <arguments>
+            <argument name="resource" xsi:type="object">Afd\Pce\Model\ResourceModel\CustomerAddressMapData</argument>
+            <argument name="mapDataFactory" xsi:type="object">Afd\Pce\Model\CustomerAddressMapDataFactory</argument>
+        </arguments>
+    </type>
+    
+    <!-- Shipment PDF Plugin for Precision Delivery -->
+    <type name="Magento\Sales\Model\Order\Pdf\Shipment">
+        <plugin name="afd_pce_shipment_pdf_precision_delivery" type="Afd\Pce\Plugin\Sales\Order\Pdf\ShipmentPlugin" sortOrder="10"/>
+    </type>
+    
+    <!-- Customer Address Map Data Management API -->
+    <preference for="Afd\Pce\Api\CustomerAddressMapDataManagementInterface" type="Afd\Pce\Model\CustomerAddressMapDataManagement"/>
 </config>

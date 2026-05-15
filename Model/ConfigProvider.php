@@ -10,8 +10,14 @@ declare(strict_types=1);
 namespace Afd\Pce\Model;
 
 use Afd\Pce\Model\Config\Source\CategorisedMetadataFields;
+use Afd\Pce\Helper\PrecisionDelivery;
+use Afd\Pce\Helper\CleanseOnSubmit;
+use Afd\Pce\Model\CustomerAddressMapDataRepository;
+use Afd\Pce\Model\CustomerAddressMetadataRepository;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Customer\Model\Session as CustomerSession;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 
 class ConfigProvider implements ConfigProviderInterface
 {
@@ -31,20 +37,60 @@ class ConfigProvider implements ConfigProviderInterface
     protected $scopeConfig;
     
     /**
+     * @var PrecisionDelivery
+     */
+    protected $precisionDeliveryHelper;
+
+    /**
+     * @var CustomerSession
+     */
+    protected $customerSession;
+
+    /**
+     * @var CustomerAddressMapDataRepository
+     */
+    protected $customerAddressMapDataRepository;
+
+    /**
+     * @var CustomerAddressMetadataRepository
+     */
+    protected $customerAddressMetadataRepository;
+
+    /**
+     * @var CleanseOnSubmit
+     */
+    protected $cleanseOnSubmitHelper;
+
+    /**
      * Constructor
      *
      * @param \Afd\Pce\Helper\Data $helperData
      * @param CategorisedMetadataFields $categorisedMetadataFields
      * @param ScopeConfigInterface $scopeConfig
+     * @param PrecisionDelivery $precisionDeliveryHelper
+     * @param CustomerSession $customerSession
+     * @param CustomerAddressMapDataRepository $customerAddressMapDataRepository
+     * @param CustomerAddressMetadataRepository $customerAddressMetadataRepository
+     * @param CleanseOnSubmit $cleanseOnSubmitHelper
      */
     public function __construct(
         \Afd\Pce\Helper\Data $helperData,
         CategorisedMetadataFields $categorisedMetadataFields,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        PrecisionDelivery $precisionDeliveryHelper,
+        CustomerSession $customerSession,
+        CustomerAddressMapDataRepository $customerAddressMapDataRepository,
+        CustomerAddressMetadataRepository $customerAddressMetadataRepository,
+        CleanseOnSubmit $cleanseOnSubmitHelper
     ){
         $this->helperData = $helperData;
         $this->categorisedMetadataFields = $categorisedMetadataFields;
         $this->scopeConfig = $scopeConfig;
+        $this->precisionDeliveryHelper = $precisionDeliveryHelper;
+        $this->customerSession = $customerSession;
+        $this->customerAddressMapDataRepository = $customerAddressMapDataRepository;
+        $this->customerAddressMetadataRepository = $customerAddressMetadataRepository;
+        $this->cleanseOnSubmitHelper = $cleanseOnSubmitHelper;
     }
 
     /**
@@ -124,6 +170,110 @@ class ConfigProvider implements ConfigProviderInterface
         // Set metadataFields as a proper JSON array for the frontend
         $config['afd']['metadataFields'] = $metadataFields;
         
+        // Add Precision Delivery configuration
+        $config['afd']['precisionDelivery'] = $this->precisionDeliveryHelper->getConfigArray();
+        
+        // Add Cleanse on Submit configuration
+        $config['afd']['cleanseOnSubmit'] = $this->cleanseOnSubmitHelper->getConfigArray();
+        
+        // Add customer address map data and metadata for logged-in customers
+        $config['afd']['customerAddressMapData'] = $this->getCustomerAddressMapData();
+        $config['afd']['customerAddressMetadata'] = $this->getCustomerAddressMetadata();
+        
         return $config;
+    }
+
+    /**
+     * Get map data for all customer addresses
+     *
+     * @return array
+     */
+    protected function getCustomerAddressMapData(): array
+    {
+        $mapData = [];
+        
+        if (!$this->customerSession->isLoggedIn()) {
+            return $mapData;
+        }
+
+        try {
+            $customer = $this->customerSession->getCustomer();
+            $addresses = $customer->getAddresses();
+            
+            if (!$addresses) {
+                return $mapData;
+            }
+            
+            foreach ($addresses as $address) {
+                $addressId = $address->getId();
+                if (!$addressId) {
+                    continue;
+                }
+                
+                try {
+                    $addressMapData = $this->customerAddressMapDataRepository->getByParentId((int)$addressId);
+                    $mapData[$addressId] = [
+                        'original_lat' => $addressMapData->getOriginalLat(),
+                        'original_lng' => $addressMapData->getOriginalLng(),
+                        'selected_lat' => $addressMapData->getSelectedLat(),
+                        'selected_lng' => $addressMapData->getSelectedLng(),
+                        'distance_from_address' => $addressMapData->getDistanceFromAddress(),
+                        'urban_rural' => $addressMapData->getUrbanRural(),
+                        'is_adjusted' => $addressMapData->getIsAdjusted(),
+                        'delivery_notes' => $addressMapData->getDeliveryNotes()
+                    ];
+                } catch (NoSuchEntityException $e) {
+                    // No map data for this address
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error but don't break checkout
+        }
+
+        return $mapData;
+    }
+
+    /**
+     * Get metadata for all customer addresses
+     *
+     * @return array
+     */
+    protected function getCustomerAddressMetadata(): array
+    {
+        $metadata = [];
+        
+        if (!$this->customerSession->isLoggedIn()) {
+            return $metadata;
+        }
+
+        try {
+            $customer = $this->customerSession->getCustomer();
+            $addresses = $customer->getAddresses();
+            
+            if (!$addresses) {
+                return $metadata;
+            }
+            
+            foreach ($addresses as $address) {
+                $addressId = $address->getId();
+                if (!$addressId) {
+                    continue;
+                }
+                
+                try {
+                    $addressMetadata = $this->customerAddressMetadataRepository->getByParentId((int)$addressId, 'customer');
+                    $metadataJson = $addressMetadata->getMetadata();
+                    if ($metadataJson) {
+                        $metadata[$addressId] = json_decode($metadataJson, true);
+                    }
+                } catch (NoSuchEntityException $e) {
+                    // No metadata for this address
+                }
+            }
+        } catch (\Exception $e) {
+            // Log error but don't break checkout
+        }
+
+        return $metadata;
     }
 }

@@ -50,5 +50,13 @@
                 </container>
             </block>
         </referenceBlock>
+        
+        <!-- Add Precision Delivery section -->
+        <referenceBlock name="order_additional_info">
+            <block class="Afd\Pce\Block\Adminhtml\Order\View\PrecisionDelivery" 
+                   name="afd.precision.delivery" 
+                   template="Afd_Pce::order/view/precision_delivery.phtml"
+                   ifconfig="afd_typeahead/precision_delivery/enabled" />
+        </referenceBlock>
     </body>
 </page>
