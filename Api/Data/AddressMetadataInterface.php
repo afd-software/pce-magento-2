@@ -142,14 +142,14 @@ interface AddressMetadataInterface
     /**
      * Get Map Data (Precision Delivery)
      *
-     * @return array|null
+     * @return mixed
      */
     public function getMapData();
 
     /**
      * Set Map Data (Precision Delivery)
      *
-     * @param array|null $mapData
+     * @param mixed $mapData
      * @return $this
      */
     public function setMapData($mapData);

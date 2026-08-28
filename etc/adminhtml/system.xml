@@ -756,6 +756,16 @@
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>
+            <group id="cache" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Validation Cache</label>
+                <field id="enable" translate="label comment" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Cache Validated Email Addresses</label>
+                    <comment>Remember validation results for the lifetime of the browser tab.</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
             <group id="account" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>Email Authentication Settings</label>
@@ -891,6 +901,16 @@
                 <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1"
                        showInWebsite="1" showInStore="1">
                     <label>Enable Phone Validation</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="cache" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1"
+                   showInStore="1">
+                <label>Validation Cache</label>
+                <field id="enable" translate="label comment" type="select" sortOrder="1" showInDefault="1"
+                       showInWebsite="1" showInStore="1">
+                    <label>Cache Validated Phone Numbers</label>
+                    <comment>Remember validation results for the lifetime of the browser tab.</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>

@@ -96,7 +96,7 @@ class PaymentInformationManagementPlugin
         callable $proceed,
         $cartId,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         $this->logger->info('=== AFD PCE: PaymentInformationManagementPlugin::aroundSavePaymentInformation CALLED ===');
         $this->logger->info('Cart ID: ' . $cartId);

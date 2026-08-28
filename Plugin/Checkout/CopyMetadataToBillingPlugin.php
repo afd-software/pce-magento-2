@@ -116,7 +116,7 @@ class CopyMetadataToBillingPlugin
         $cartId,
         $email,
         $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         if ($this->debugConfig->isDebugEnabled()) {
             $this->logger->info('=== AFD PCE: CopyMetadataToBillingPlugin::aroundSavePaymentInformationAndPlaceOrder CALLED ===');

@@ -147,8 +147,7 @@ class ShippingInformationManagementPlugin
     }
     
     /**
-     * Before save shipping information - extract and store metadata, then remove from address
-     * to prevent response serialization issues in Magento 2.4.5
+     * Before saving the shipping information - store the metadata for use after save has happened
      *
      * @param ShippingInformationManagement $subject
      * @param int $cartId
@@ -237,12 +236,6 @@ class ShippingInformationManagementPlugin
                 
                 if ($this->debugConfig->isDebugEnabled() && $mapData) {
                     $this->logger->info('[AFD PCE Metadata] map_data found in extension attributes: ' . json_encode($mapData));
-                }
-                
-                // Remove from response to prevent serialization issues
-                $extensionAttributes->setAfdAddressMetadata(null);
-                if ($this->debugConfig->isDebugEnabled()) {
-                    $this->logger->info('[AFD PCE Metadata] Removed extension attribute from response');
                 }
             }
         } catch (\Exception $e) {

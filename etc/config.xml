@@ -114,6 +114,9 @@
             <enable>
                 <enable>0</enable>
             </enable>
+            <cache>
+                <enable>0</enable>
+            </cache>
             <account>
                 <useDefaultCredentials>1</useDefaultCredentials>
                 <method>id</method>
@@ -141,6 +144,9 @@
             <enable>
                 <enable>0</enable>
             </enable>
+            <cache>
+                <enable>0</enable>
+            </cache>
             <account>
                 <useDefaultCredentials>1</useDefaultCredentials>
                 <method>id</method>

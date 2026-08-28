@@ -336,7 +336,7 @@ class AddressMetadata extends AbstractExtensibleObject implements AddressMetadat
     /**
      * Get Map Data (Precision Delivery)
      *
-     * @return array|null
+     * @return mixed
      */
     public function getMapData()
     {
@@ -346,7 +346,7 @@ class AddressMetadata extends AbstractExtensibleObject implements AddressMetadat
     /**
      * Set Map Data (Precision Delivery)
      *
-     * @param array|null $mapData
+     * @param mixed $mapData
      * @return $this
      */
     public function setMapData($mapData)

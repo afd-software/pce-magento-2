@@ -14,14 +14,17 @@ class Afd extends \Magento\Framework\View\Element\Template
      */
     private $cspNonceProvider;
     protected $helperData;
+    private $appState;
 
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Afd\Pce\Helper\Data $helperData,
-        CspNonceProvider $cspNonceProvider
+        CspNonceProvider $cspNonceProvider,
+        \Magento\Framework\App\State $appState
     ){
         $this->helperData = $helperData;
         $this->cspNonceProvider = $cspNonceProvider;
+        $this->appState = $appState;
         return parent::__construct($context);
     }
 
@@ -37,6 +40,10 @@ class Afd extends \Magento\Framework\View\Element\Template
 
     public function getNonce(): string{
         return $this->cspNonceProvider->generateNonce();
+    }
+
+    public function isAdminArea(): bool{
+        return $this->appState->getAreaCode() === \Magento\Framework\App\Area::AREA_ADMINHTML;
     }
 
     /**

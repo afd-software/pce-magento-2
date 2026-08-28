@@ -135,7 +135,7 @@ class GuestPaymentInformationManagementPlugin
         $cartId,
         $email,
         PaymentInterface $paymentMethod,
-        AddressInterface $billingAddress = null
+        ?AddressInterface $billingAddress = null
     ) {
         $this->logger->info('=== AFD PCE: GuestPaymentInformationManagementPlugin::aroundSavePaymentInformationAndPlaceOrder CALLED ===');
         $this->logger->info('Cart ID: ' . $cartId);

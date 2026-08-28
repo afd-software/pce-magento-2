@@ -71,7 +71,7 @@
     };
 
     var afdOptions = {
-        platformVersion: 'mag010900',
+        platformVersion: 'mag011000',
         typeahead: {
             maxItems: '<?php echo $block->getConfig('afd_typeahead/quantity/maxItems');?>',
             pushUp: true,
@@ -150,12 +150,14 @@
             customCountryControl: '[name="country_id"], .form-address-edit #country, #order-billing_address_country_id, #order-shipping_address_country_id'
         },
         phone: {
+            cacheValidatedPhoneNumber: <?php echo (!$block->isAdminArea() && $block->getConfig('afd_phone/cache/enable') == 1) ? 'true' : 'false'; ?>,
             defaultDialingCode: '<?php echo $block->getConfig('afd_phone/fields/dialingCode');?>',
             defaultCountry: '<?php echo $block->getConfig('general/country/default') ?: 'GB'; ?>',
             loadingSpinner: '.control',
             countryControl: '[name="country_id"]'
         },
         email: {
+            cacheValidatedEmails: <?php echo (!$block->isAdminArea() && $block->getConfig('afd_email/cache/enable') == 1) ? 'true' : 'false'; ?>,
             loadingSpinner: '.field',
             task: '<?php echo $block->getConfig('afd_email/fields/emailTask');?>',
             invalidEmailMessage: '<?php echo $block->getConfig('afd_email/fields/msg');?>'
